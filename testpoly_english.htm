@@ -1,0 +1,498 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QPTP4QSV32');
+</script>
+<title>Polygon Test & NAS6LIB　Help Document</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+
+<script language="JavaScript" type="text/javascript" src="./javascripts/x3dom/jquery-2.1.4.min.js" ></script>
+<link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
+<script language="JavaScript" type='text/javascript' src='./javascripts/x3dom/x3dom.js'> </script>
+<link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
+
+
+<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/timer.js"></script>
+<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/vector.js"></script>
+<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/matrix.js"></script>
+<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/quaternion.js"></script>
+<script language="JavaScript" type="text/javascript" src="./javascripts_english/nas6/help.js"></script>
+<script language="JavaScript" type="text/javascript" src="./javascripts/nas6/testpoly.js"></script>
+
+
+<style>
+article, aside, dialog, figure, footer, header,
+hgroup, menu, nav, section { display: block; }
+#x3dabs{
+    position: absolute;
+    float: left;
+    top: 60px;
+    left: 20px;
+    background:#8080b0;
+    border: 2px #000000 solid;
+}
+</style>
+</head>
+<body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg">
+<b>
+<h1>Polygon Test & NAS6LIB　Help document</h1>
+
+<div style = 'width:500px; height:250px; border: 0px; overflow:hidden;'>
+
+<x3d id='x3dabs' width='500px' height='250px'>
+    <scene>
+        <Viewpoint id='viewp001' position='0 3 20' orientation='0 1 0 0' description='camera'></Viewpoint>
+<!--
+        <Viewpoint id='viewp001' position='0 0 200' orientation='0 1 0 0' description='camera'></Viewpoint>
+        <navigationInfo type='"none"' id="navType"></navigationInfo>
+//-->
+
+
+	<directionalLight id="directional" direction='1 -1 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'></directionalLight> 
+	
+        <Transform center='0 0 0' translation='0 0 8' id='box0' DEF='box0'>
+            <Transform rotation='0 1 0 0' id='box1' DEF='box1'>
+
+<!--
+                <shape>
+                    <appearance>
+                        <ImageTexture  url="./img/koala.jpg"></ImageTexture>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </appearance>
+                    <Box size = '5 5 5'></Box>
+                </shape>
+//-->
+
+                <Shape DEF='Front'>
+                    <IndexedFaceSet coordIndex='0 4 5 1' texCoordIndex='0 1 2 3'>
+                        <Coordinate DEF='Points' point='2.5 2.5 2.5 2.5 -2.5 2.5 2.5 -2.5 -2.5 2.5 2.5 -2.5 -2.5 2.5 2.5 -2.5 -2.5 2.5 -2.5 -2.5 -2.5 -2.5 2.5 -2.5'></Coordinate>
+                        <TextureCoordinate DEF='DefaultTextureCoordinate' point='0 0 1 0 1 1 0 1'></TextureCoordinate>
+                    </IndexedFaceSet>
+                    <Appearance>
+                        <ImageTexture  url="./img/koalaF.jpg"></ImageTexture>
+                        <TextureTransform DEF='Rotate180' rotation='3.14'></TextureTransform>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </Appearance>
+                </Shape>
+                <Shape DEF='Back'>
+                    <IndexedFaceSet coordIndex='3 2 6 7' texCoordIndex='0 1 2 3'>
+                        <Coordinate USE='Points'></Coordinate>
+                        <TextureCoordinate USE='DefaultTextureCoordinate'></TextureCoordinate>
+                    </IndexedFaceSet>
+                    <Appearance>
+                        <ImageTexture  url="./img/koala.jpg"></ImageTexture>
+                        <TextureTransform DEF='RotateRight' rotation='-1.57'></TextureTransform>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </Appearance>
+                </Shape>
+                <Shape DEF='Left'>
+                    <IndexedFaceSet coordIndex='7 6 5 4' texCoordIndex='0 1 2 3'>
+                        <Coordinate USE='Points'></Coordinate>
+                        <TextureCoordinate USE='DefaultTextureCoordinate'></TextureCoordinate>
+                    </IndexedFaceSet>
+                    <Appearance>
+                        <ImageTexture  url="./img/koala.jpg"></ImageTexture>
+                        <TextureTransform USE='RotateRight'></TextureTransform>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </Appearance>
+                </Shape>
+                <Shape DEF='Right'>
+                    <IndexedFaceSet coordIndex='0 1 2 3' texCoordIndex='0 1 2 3'>
+                        <Coordinate USE='Points'></Coordinate>
+                        <TextureCoordinate USE='DefaultTextureCoordinate'></TextureCoordinate>
+                    </IndexedFaceSet>
+                    <Appearance>
+                        <ImageTexture  url="./img/koala.jpg"></ImageTexture>
+                        <TextureTransform USE='RotateRight'></TextureTransform>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </Appearance>
+                </Shape>
+                <Shape DEF='Top'>
+                    <IndexedFaceSet coordIndex='0 3 7 4' texCoordIndex='0 1 2 3'>
+                        <Coordinate USE='Points'></Coordinate>
+                        <TextureCoordinate USE='DefaultTextureCoordinate'></TextureCoordinate>
+                    </IndexedFaceSet>
+                    <Appearance>
+                        <ImageTexture  url="./img/koala.jpg"></ImageTexture>
+                        <TextureTransform DEF='RotateLeft' rotation='1.57'></TextureTransform>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </Appearance>
+                </Shape>
+                <Shape DEF='Bottom'>
+                    <IndexedFaceSet coordIndex='1 5 6 2' texCoordIndex='0 1 2 3'>
+                        <Coordinate USE='Points'></Coordinate>
+                        <TextureCoordinate USE='DefaultTextureCoordinate'></TextureCoordinate>
+                    </IndexedFaceSet>
+                    <Appearance>
+                        <ImageTexture  url="./img/koala.jpg"></ImageTexture>
+                        <TextureTransform USE='Rotate180'></TextureTransform>
+                        <material diffuseColor='0.8 0.8 0.8'></material>
+                    </Appearance>
+                </Shape>
+
+            </Transform>
+        </Transform>
+    </scene>
+</x3d>
+
+</div>
+
+<font size="3">
+<br>
+<br>
+</b>
+<hr>
+<b>
+<br>
+<br>
+<p id='debug'>　</p>
+<br>
+<br>
+</b>
+<hr>
+<b>
+<br>
+<br>
+//################################################################<br>
+//Programed by NAS6<br>
+//################################################################<br>
+//./javascripts/nas6lib/timer.js<br>
+//./javascripts/nas6lib/vector.js<br>
+//./javascripts/nas6lib/matrix.js<br>
+//./javascripts/nas6lib/quaternion.js<br>
+//./javascripts/nas6lib/keyboard.js<br>
+//################################################################<br>
+//timer,vector,matrix,quaternion,logarithm quaternion,2/3D CG matrix calculation javascript library<br>
+//################################################################<br>
+<br>
+<br>
+</b>
+<hr>
+<b>
+<br>
+<br>
+<a href="./htm000.htm">back</a><br>
+</b>
+<br>
+<br>
+<hr>
+<b>
+<br>
+<br>
+　■■■　./nas6lib/keyboard.js　memo　■■■　<br>
+<br>
+keyID、keycode fig.<br>
+<br>
+<font size="2">
+realID、U.S. standard keyboard<br>
+<table border="1" bgcolor="#81c2d8">
+<tbody>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0xYX</p></td><td><p>0</p></td><td><p>1</p></td><td><p>2</p></td><td><p>3</p></td><td><p>4</p></td><td><p>5</p></td><td><p>6</p></td><td><p>7</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>8</p></td><td><p>9</p></td><td><p>A</p></td><td><p>B</p></td><td><p>C</p></td><td><p>D</p></td><td><p>E</p></td><td><p>F</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0x0X</p></td><td><p>VK_$00</p></td><td><p>VK_LBUTTON</p></td><td><p>VK_RBUTTON</p></td><td><p>VK_CANCEL : Break</p></td><td><p>VK_MBUTTON</p></td><td><p>VK_XBUTTON1</p></td><td><p>VK_XBUTTON2</p></td><td><p>VK_$07</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_BACK : BackSpace</p></td><td><p>VK_TAB : Tab</p></td><td><p>VK_$0A</p></td><td><p>VK_$0B</p></td><td><p>VK_CLEAR</p></td><td><p>VK_RETURN : Enter</p></td><td><p>VK_$0E</p></td><td><p>VK_$0F</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0x1X</p></td><td><p>VK_SHIFT : Shift</p></td><td><p>VK_CONTROL : Ctrl</p></td><td><p>VK_MENU : Alt</p></td><td><p>VK_PAUSE</p></td><td><p>VK_CAPITAL</p></td><td><p>VK_KANA</p></td><td><p>VK_$16</p></td><td><p>VK_JUNJA</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_FINAL</p></td><td><p>VK_KANJI</p></td><td><p>VK_$1A</p></td><td><p>VK_ESCAPE : Esc</p></td><td><p>VK_CONVERT : 変換</p></td><td><p>VK_NONCONVERT : 無変換</p></td><td><p>VK_ACCEPT</p></td><td><p>VK_MODCHANGE</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0x2X</p></td><td><p>VK_SPACE : Space</p></td><td><p>VK_PRIOR : PgUp</p></td><td><p>VK_NEXT : PgDn</p></td><td><p>VK_END : End</p></td><td><p>VK_HOME : Home</p></td><td><p>VK_LEFT : ←</p></td><td><p>VK_UP : ↑</p></td><td><p>VK_RIGHT : →</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_DOWN : ↓</p></td><td><p>VK_SELECT</p></td><td><p>VK_PRINT</p></td><td><p>VK_EXECUTE</p></td><td><p>VK_SNAPSHOT : Print Screen</p></td><td><p>VK_INSERT : Ins</p></td><td><p>VK_DELETE : Del</p></td><td><p>VK_HELP</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0x3X</p></td><td><p>VK_0</p></td><td><p>VK_1</p></td><td><p>VK_2</p></td><td><p>VK_3</p></td><td><p>VK_4</p></td><td><p>VK_5</p></td><td><p>VK_6</p></td><td><p>VK_7</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_8</p></td><td><p>VK_9</p></td><td><p>VK_$3A</p></td><td><p>VK_$3B</p></td><td><p>VK_$3C</p></td><td><p>VK_$3D</p></td><td><p>VK_$3E</p></td><td><p>VK_$3F</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0x4X</p></td><td><p>VK_$40</p></td><td><p>VK_A</p></td><td><p>VK_B</p></td><td><p>VK_C</p></td><td><p>VK_D</p></td><td><p>VK_E</p></td><td><p>VK_F</p></td><td><p>VK_G</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_H</p></td><td><p>VK_I</p></td><td><p>VK_J</p></td><td><p>VK_K</p></td><td><p>VK_L</p></td><td><p>VK_M</p></td><td><p>VK_N</p></td><td><p>VK_O</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0x5X</p></td><td><p>VK_P</p></td><td><p>VK_Q</p></td><td><p>VK_R</p></td><td><p>VK_S</p></td><td><p>VK_T</p></td><td><p>VK_U</p></td><td><p>VK_V</p></td><td><p>VK_W</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_X</p></td><td><p>VK_Y</p></td><td><p>VK_Z</p></td><td><p>VK_LWIN</p></td><td><p>VK_RWIN</p></td><td><p>VK_APPS</p></td><td><p>VK_$5E</p></td><td><p>VK_SLEEP</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0x6X</p></td><td><p>VK_NUMPAD0</p></td><td><p>VK_NUMPAD1</p></td><td><p>VK_NUMPAD2</p></td><td><p>VK_NUMPAD3</p></td><td><p>VK_NUMPAD4</p></td><td><p>VK_NUMPAD5</p></td><td><p>VK_NUMPAD6</p></td><td><p>VK_NUMPAD7</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_NUMPAD8</p></td><td><p>VK_NUMPAD9</p></td><td><p>VK_MULTIPLY : numpad *</p></td><td><p>VK_ADD : numpad +</p></td><td><p>VK_SEPARATOR : numpad enter</p></td><td><p>VK_SUBTRACT : numpad -</p></td><td><p>VK_DECIMAL : numpad .</p></td><td><p>VK_DIVIDE : numpad /</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0x7X</p></td><td><p>VK_F1</p></td><td><p>VK_F2</p></td><td><p>VK_F3</p></td><td><p>VK_F4</p></td><td><p>VK_F5</p></td><td><p>VK_F6</p></td><td><p>VK_F7</p></td><td><p>VK_F8</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_F9</p></td><td><p>VK_F10</p></td><td><p>VK_F11</p></td><td><p>VK_F12</p></td><td><p>VK_F13</p></td><td><p>VK_F14</p></td><td><p>VK_F15</p></td><td><p>VK_F16</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0x8X</p></td><td><p>VK_F17</p></td><td><p>VK_F18</p></td><td><p>VK_F19</p></td><td><p>VK_F20</p></td><td><p>VK_F21</p></td><td><p>VK_F22</p></td><td><p>VK_F23</p></td><td><p>VK_F24</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_$88</p></td><td><p>VK_$89</p></td><td><p>VK_$8A</p></td><td><p>VK_$8B</p></td><td><p>VK_$8C</p></td><td><p>VK_$8D</p></td><td><p>VK_$8E</p></td><td><p>VK_$8F</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0x9X</p></td><td><p>VK_NUMLOCK : Num Lock</p></td><td><p>VK_SCROLL : Scroll Lock</p></td><td><p>VK_$92</p></td><td><p>VK_$93</p></td><td><p>VK_$94</p></td><td><p>VK_$95</p></td><td><p>VK_$96</p></td><td><p>VK_$97</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_$98</p></td><td><p>VK_$99</p></td><td><p>VK_$9A</p></td><td><p>VK_$9B</p></td><td><p>VK_$9C</p></td><td><p>VK_$9D</p></td><td><p>VK_$9E</p></td><td><p>VK_$9F</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0xAX</p></td><td><p>VK_LSHIFT</p></td><td><p>VK_RSHIFT</p></td><td><p>VK_LCONTROL</p></td><td><p>VK_RCONTROL</p></td><td><p>VK_LMENU</p></td><td><p>VK_RMENU</p></td><td><p>VK_BROWSER_BACK</p></td><td><p>VK_BROWSER_FORWARD</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_BROWSER_REFRESH</p></td><td><p>VK_BROWSER_STOP</p></td><td><p>VK_BROWSER_SERCH</p></td><td><p>VK_BROWSER_FAVORITES</p></td><td><p>VK_BROWSER_HOME</p></td><td><p>VK_VOLUME_MUTE</p></td><td><p>VK_VOLUME_DOWN</p></td><td><p>VK_VOLUME_UP</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0xBX</p></td><td><p>VK_MEDIA_NEXT_TRACK</p></td><td><p>VK_MEDIA_PREV_TRACK</p></td><td><p>VK_MEDIA_STOP</p></td><td><p>VK_MEDIA_PLAY_PAUSE</p></td><td><p>VK_LAUNCH_MAIL</p></td><td><p>VK_LAUNCH_MEDIA_SELECT</p></td><td><p>VK_LAUNCH_APP1</p></td><td><p>VK_LAUNCH_APP2</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_$B8</p></td><td><p>VK_$B9</p></td><td><p>VK_OEM_1 : [:;]</p></td><td><p>VK_OEM_PLUS : [+]</p></td><td><p>VK_OEM_COMMA : [,]</p></td><td><p>VK_OEM_MINUS : [-]</p></td><td><p>VK_OEM_PERIOD : [.]</p></td><td><p>VK_OEM_2 : [/?]</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0xCX</p></td><td><p>VK_OEM_3 : [`~]</p></td><td><p>VK_$C1</p></td><td><p>VK_$C2</p></td><td><p>VK_$C3</p></td><td><p>VK_$C4</p></td><td><p>VK_$C5</p></td><td><p>VK_$C6</p></td><td><p>VK_$C7</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_$C8</p></td><td><p>VK_$C9</p></td><td><p>VK_$CA</p></td><td><p>VK_$CB</p></td><td><p>VK_$CC</p></td><td><p>VK_$CD</p></td><td><p>VK_$CE</p></td><td><p>VK_$CF</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0xDX</p></td><td><p>VK_$D0</p></td><td><p>VK_$D1</p></td><td><p>VK_$D2</p></td><td><p>VK_$D3</p></td><td><p>VK_$D4</p></td><td><p>VK_$D5</p></td><td><p>VK_$D6</p></td><td><p>VK_$D7</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_$D8</p></td><td><p>VK_$D9</p></td><td><p>VK_$DA</p></td><td><p>VK_OEM_4 : [[{]</p></td><td><p>VK_OEM_5 : [\|]</p></td><td><p>VK_OEM_6 : []}]</p></td><td><p>VK_OEM_7 : [']</p></td><td><p>VK_OEM_8</p></td></tr>
+<tr bgcolor="#a1d2e8"><td rowspan="2"><p>0xEX</p></td><td><p>VK_$E0</p></td><td><p>VK_OEM_AX</p></td><td><p>VK_OEM_102 : [\_]</p></td><td><p>VK_ICO_HELP</p></td><td><p>VK_ICO_00</p></td><td><p>VK_PROCESSKEY</p></td><td><p>VK_ICO_CLEAR</p></td><td><p>VK_PACKET</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_$E8</p></td><td><p>VK_OEM_RESET</p></td><td><p>VK_OEM_JUMP</p></td><td><p>VK_OEM_PA1</p></td><td><p>VK_OEM_PA2</p></td><td><p>VK_OEM_PA3</p></td><td><p>VK_OEM_WSCTRL</p></td><td><p>VK_OEM_CUSEL</p></td></tr>
+<tr bgcolor="#81c2d8"><td rowspan="2"><p>0xFX</p></td><td><p>VK_OEM_ATTN</p></td><td><p>VK_OEM_FINISH</p></td><td><p>VK_OEM_COPY</p></td><td><p>VK_OEM_AUTO</p></td><td><p>VK_OEM_ENLW</p></td><td><p>VK_OEM_BACKTAB</p></td><td><p>VK_ATTN</p></td><td><p>VK_CRSEL</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_EXSEL</p></td><td><p>VK_EREOF</p></td><td><p>VK_PLAY</p></td><td><p>VK_ZOOM</p></td><td><p>VK_NONAME</p></td><td><p>VK_PA1</p></td><td><p>VK_OEM_CLEAR</p></td><td><p>VK_$FF</p></td></tr>
+</tbody>
+</table>
+<br>
+realID, aliasID<br>
+<table border="1" bgcolor="#81c2d8">
+<tbody>
+<tr bgcolor="#81c2d8"><td><p>VK_RETURN, VK_ENTER</p></td><td><p>VK_ESCAPE, VK_ESC</p></td><td><p>VK_OEM_MINUS, VK_-</p></td><td><p>VK_OEM_7, VK_^</p></td><td><p>VK_NUMPAD1, VK_N1</p></td><td><p>VK_NUMPAD2, VK_N2</p></td><td><p>VK_NUMPAD3, VK_N3</p></td><td><p>VK_NUMPAD4, VK_N4</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_NUMPAD5, VK_N5</p></td><td><p>VK_NUMPAD6, VK_N6</p></td><td><p>VK_NUMPAD7, VK_N7</p></td><td><p>VK_NUMPAD8, VK_N8</p></td><td><p>VK_NUMPAD9, VK_N9</p></td><td><p>VK_NUMPAD0, VK_N0</p></td><td><p>VK_DECIMAL, VK_N.</p></td><td><p>VK_ADD, VK_N+</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_SUBTRACT, VK_N-</p></td><td><p>VK_MULTIPLY, VK_N*</p></td><td><p>VK_DIVIDE, VK_N/</p></td><td><p>VK_NUMLOCK, VK_NLK</p></td><td><p>VK_OEM_5, VK_|</p></td><td><p>VK_OEM_3, VK_@</p></td><td><p>VK_OEM_4, VK_[</p></td><td><p>VK_OEM_PLUS, VK_;</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_OEM_1, VK_:</p></td><td><p>VK_OEM_6, VK_]</p></td><td><p>VK_OEM_COMMA, VK_,</p></td><td><p>VK_OEM_PERIOD, VK_.</p></td><td><p>VK_OEM_2, VK_/</p></td><td><p>VK_OEM_102, VK__</p></td><td><p>VK_CONTROL, VK_CTRL</p></td><td><p>VK_MENU, VK_ALT</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_CONVERT, VK_CNVT</p></td><td><p>VK_NONCONVERT, VK_NONCNVT</p></td><td><p>VK_PRIOR, VK_PGUP</p></td><td><p>VK_NEXT, VK_PGDN</p></td><td><p>VK_LEFT, VK_←</p></td><td><p>VK_UP, VK_↑</p></td><td><p>VK_RIGHT, VK_→</p></td><td><p>VK_DOWN, VK_↓</p></td></tr>
+<tr bgcolor="#a1d2e8"><td><p>VK_INSERT, VK_INS</p></td><td><p>VK_DELETE, VK_DEL</p></td><td><p>VK_SCROLL, VK_SLK</p></td><td><p>VK_SNAPSHOT, VK_PRTSCRN</p></td><td><p>VK_OEM_ATTN, VK_CLK</p></td><td><p>VK_OEM_COPY, VK_KANA</p></td><td><p>VK_OEM_ENLW, VK_ZEN</p></td><td><p>VK_OEM_AUTO, VK_ZEN2</p></td></tr>
+<tr bgcolor="#81c2d8"><td><p>VK_PAUSE, VK_BRK</p></td><td><p>VK_CLEAR, VK_CLS</p></td><td><p>－－－</p></td><td><p>－－－</p></td><td><p>－－－</p></td><td><p>－－－</p></td><td><p>－－－</p></td><td><p>－－－</p></td></tr>
+</tbody>
+</table>
+</font>
+<br>
+Interconversion of real name ID and alias ID can KeyB.ToRealID(str) and KeyB.ToAliasID(str, ary){alias list has been returned to the array ary}.<br>
+You can determine depression of the keyboard in if(KeyB.keystate[KeyB.indexof(KeyB.ToRealID(str))]).<br>
+Alias additional definition in KeyB.addAlias([srcIDstr, destIDstr]).<br>
+Delete together also tying the alias KeyB.delAlias(str).<br>
+KeyB.UnityAlias(aliasID) is unity alias name.<br>
+KeyB.isPressUnityAlias(aliasID) is press info unity alias.<br>
+It can handle more than one key as one of the key in the unity-related<br>
+<br>
+<a name="helptop">■NAS6LIB　Help Document■</a><br>
+<div width="300px" style="float :left; background-image:url(./img/grntrns.png);">
+<font col="white" size="3">
+<br>
+<br>
+//########　N6LTimerMan　########<br>
+//./javascripts/nas6lib/timer.js<br>
+//########　timer manager　########<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(300);">N6LTimerMan：construction</a><br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(301);">N6LTimerMan.add()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(302);">N6LTimerMan.changeinterval(int)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(303);">N6LTimerMan.start()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(304);">N6LTimerMan.stop()</a><br>
+<br>
+//########　N6LTimerMan.timer[id]　########<br>
+//./javascripts/nas6lib/timer.js<br>
+//########　timer　########<br>
+//id：timer id<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(351);">N6LTimerMan.timer[id].start()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(352);">N6LTimerMan.timer[id].stop()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(353);">N6LTimerMan.timer[id].reset()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(354);">N6LTimerMan.timer[id].copy(src)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(355);">N6LTimerMan.timer[id].now()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(356);">N6LTimerMan.timer[id].setalerm(func(id),alm)</a><br>
+<br>
+//########　N6LVector　########<br>
+//./javascripts/nas6lib/vector.js<br>
+//########　vector　########<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(0);">N6LVector：construction</a><br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(1);">N6LVector.Equal(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(37);">N6LVector.EpsEqual(rh, eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(39);">N6LVector.Str()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(40);">N6LVector.Parse(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(41);">N6LVector.ToX3DOM(b)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(42);">N6LVector.FromX3DOM(sf)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(50);">N6LVector.To3JS(b)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(51);">N6LVector.From3JS(ary)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(2);">N6LVector.Add(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(3);">N6LVector.Sub(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(4);">N6LVector.Mul(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(5);">N6LVector.Div(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(34);">N6LVector.SetHomo(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(38);">N6LVector.Repair(eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(6);">N6LVector.Dot(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(7);">N6LVector.Cross(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(35);">N6LVector.isParallel()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(36);">N6LVector.Max()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(43);">N6LVector.DivMax()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(44);">N6LVector.LookAtMat2(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(45);">N6LVector.RotArcQuat(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(8);">N6LVector.ZeroVec()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(9);">N6LVector.UnitVec(a)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(10);">N6LVector.NormalVec(a)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(11);">N6LVector.SquareAbs()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(12);">N6LVector.Abs()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(13);">N6LVector.DirectionCosine()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(14);">N6LVector.Theta(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(15);">N6LVector.ThetaN(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(16);">N6LVector.Rot2D(theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(17);">N6LVector.RotAxis(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(18);">N6LVector.RotAxisQuat(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(33);">N6LVector.RotAxisVec(rotvec)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(19);">N6LVector.ProjectAxis(axis)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(20);">N6LVector.DistanceDotLine(p, a, b)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(21);">N6LVector.DistancePointLineLine(reta, retb, a0, a1, b0, b1)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(22);">N6LVector.PointLineLine(reta, retb, a0, a1, b0, b1)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(23);">N6LVector.DistanceLineLine(a0, a1, b0, b1)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(24);">N6LVector.Homogeneous()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(25);">N6LVector.ToHomo()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(26);">N6LVector.ToNormal()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(27);">N6LVector.Matrix()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(46);">N6LVector.PosVecGetTQ(out)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(49);">N6LVector.PosVecSetTQ(t,q)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(47);">N6LVector.PosVecMatrix()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(48);">N6LVector.PosVecMul(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(28);">N6LVector.Sphere4D()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(29);">N6LVector.FromLogAxis(base, range, x)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(30);">N6LVector.ToLogAxis(base, range, x)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(31);">N6LVector.FrustumInfVec(base, range, v)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(32);">N6LVector.InvFrustumInfVec(base, range, v, z)</a><br>
+<br>
+//########　N6LMatrix　########<br>
+//./javascripts/nas6lib/matrix.js<br>
+//########　matrix　########<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(100);">N6LMatrix：construction</a><br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(101);">N6LMatrix.Equal(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(142);">N6LMatrix.EpsEqual(rh, eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(144);">N6LMatrix.Str()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(145);">N6LMatrix.Parse(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(146);">N6LMatrix.ToX3DOM()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(147);">N6LMatrix.FromX3DOM(sf)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(156);">N6LMatrix.To3JS()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(157);">N6LMatrix.From3JS(ary)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(151);">N6LMatrix.GetCol(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(152);">N6LMatrix.GetRow(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(153);">N6LMatrix.SetCol(rh, val)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(154);">N6LMatrix.SetRow(rh, val)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(102);">N6LMatrix.Add(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(103);">N6LMatrix.Sub(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(104);">N6LMatrix.Mul(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(105);">N6LMatrix.Div(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(139);">N6LMatrix.SetHomo(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(143);">N6LMatrix.Repair(eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(141);">N6LMatrix.Max()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(148);">N6LMatrix.DivMax()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(106);">N6LMatrix.ZeroMat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(107);">N6LMatrix.UnitMat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(124);">N6LMatrix.NormalMat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(108);">N6LMatrix.TransposedMat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(130);">N6LMatrix.TranslatedMat(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(131);">N6LMatrix.ScaleMat(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(132);">N6LMatrix.AffineMat(scale, rotate, translate)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(149);">N6LMatrix.MoveMat(outmat, outv, d, pyr, v, a, vmin, vmax)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(126);">N6LMatrix.LookAtMat(eye, lookat, up)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(150);">N6LMatrix.LookAtMat2(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(109);">N6LMatrix.InverseMat(dt, sw)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(110);">N6LMatrix.InverseMat00(dt)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(111);">N6LMatrix.InverseMat01(dt)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(112);">N6LMatrix.DeterminMatInvMat(dt)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(113);">N6LMatrix.DeterminMat(dt)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(114);">N6LMatrix.Jacobi(n, ct, eps, A, A1, A2, X1, X2)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(115);">N6LMatrix.EigenVec(ct, eps, A, det, eigen)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(116);">N6LMatrix.DiagonalMat(ct, eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(117);">N6LMatrix.Diagonal(ct, eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(140);">N6LMatrix.Rot2D(theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(118);">N6LMatrix.RotAxis(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(125);">N6LMatrix.RotAxisQuat(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(136);">N6LMatrix.RotAxisVec(rotvec)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(119);">N6LMatrix.Homogeneous()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(127);">N6LMatrix.ToHomo()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(128);">N6LMatrix.ToNormal()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(120);">N6LMatrix.Pos()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(135);">N6LMatrix.Scale()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(121);">N6LMatrix.Trace()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(122);">N6LMatrix.Quaternion()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(123);">N6LMatrix.Vector()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(155);">N6LMatrix.PosVector()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(129);">N6LMatrix.FrustumMat(left, right, top, bottom, near, far)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(138);">N6LMatrix.OrthoMat(left, right, top, bottom, near, far)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(133);">N6LMatrix.Householder()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(134);">N6LMatrix.QRMethod()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(137);">N6LMatrix.EulerAngle(first, second, third, eps)</a><br>
+<br>
+//########　N6LQuaternion　########<br>
+//./javascripts/nas6lib/quaternion.js<br>
+//########　Quaternion　########<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(200);">N6LQuaternion：construction</a><br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(201);">N6LQuaternion.Equal(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(221);">N6LQuaternion.EpsEqual(rh, eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(224);">N6LQuaternion.Str()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(225);">N6LQuaternion.Parse(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(202);">N6LQuaternion.Add(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(203);">N6LQuaternion.Sub(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(204);">N6LQuaternion.Mul(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(205);">N6LQuaternion.Div(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(226);">N6LQuaternion.DivMax()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(222);">N6LQuaternion.Repair(eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(206);">N6LQuaternion.SquareAbs()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(207);">N6LQuaternion.Abs()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(208);">N6LQuaternion.ConjugationQuat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(209);">N6LQuaternion.InverseQuat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(218);">N6LQuaternion.ZeroQuat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(219);">N6LQuaternion.UnitQuat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(210);">N6LQuaternion.NormalQuat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(211);">N6LQuaternion.Dot(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(212);">N6LQuaternion.RotAxisQuat(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(220);">N6LQuaternion.RotAxisVec(rotvec)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(223);">N6LQuaternion.Axis(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(213);">N6LQuaternion.Matrix()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(214);">N6LQuaternion.Lerp(q, t)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(215);">N6LQuaternion.Slerp(q, t)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(216);">N6LQuaternion.Slerp2(q, t)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(217);">N6LQuaternion.Sphere4D()</a><br>
+<br>
+//########　N6LLnQuaternion　########<br>
+//./javascripts/nas6lib/quaternion.js<br>
+//########　logarithm quaternion　########<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(250);">N6LLnQuaternion：construction</a><br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(251);">N6LLnQuaternion.Equal(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(263);">N6LLnQuaternion.EpsEqual(rh, eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(265);">N6LLnQuaternion.Str()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(266);">N6LLnQuaternion.Parse(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(252);">N6LLnQuaternion.Add(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(253);">N6LLnQuaternion.Sub(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(254);">N6LLnQuaternion.Mul(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(255);">N6LLnQuaternion.Div(rh)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(267);">N6LLnQuaternion.DivMax()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(264);">N6LLnQuaternion.Repair(eps)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(256);">N6LLnQuaternion.SquareAbs()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(257);">N6LLnQuaternion.Abs()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(262);">N6LLnQuaternion.ZeroLnQuat()</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(258);">N6LLnQuaternion.RotAxisLnQuat(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(259);">N6LLnQuaternion.Axis(axis, theta)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(260);">N6LLnQuaternion.Lerp(q, t)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(261);">N6LLnQuaternion.Lerp2(d0, q, d)</a><br>
+<br>
+//########　N6LKeyBoard　########<br>
+//./javascripts/nas6lib/keyboard.js<br>
+//########　KeyBoard　########<br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(400);">N6LKeyBoard：construction</a><br>
+<br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(401);">N6LKeyBoard.setfunc(func)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(411);">N6LKeyBoard.setenable(b)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(402);">N6LKeyBoard.indexof(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(403);">N6LKeyBoard.addAlias(ary)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(404);">N6LKeyBoard.delAlias(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(407);">N6LKeyBoard.addUnityAlias(ary)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(408);">N6LKeyBoard.delUnityAlias(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(409);">N6LKeyBoard.UnityAlias(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(410);">N6LKeyBoard.isPressUnityAlias(str)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(405);">N6LKeyBoard.ToAlias(str, ret)</a><br>
+<a href="./testpoly_english.htm#helptop" onclick="DispHelp(406);">N6LKeyBoard.ToReal(str)</a><br>
+<br>
+<br>
+<br>
+<br>
+</font>
+</div>
+<div style="float :left; background-image:url(./img/grntrns.png);">
+<p id='help'>　</p>
+</div>
+<br>
+<br>
+</b>
+</font>
+<p style="clear:left;">
+</body>
+</html>

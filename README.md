@@ -10,18 +10,23 @@ The element order of vectors and matrices in this library is wxyz.
 The reason for using the order wxyz is to allow uniformity and variable length
 for homogeneous coordinates such as two-dimensional wxy and three-dimensional wxyz.
 
-files
-common.js File downloads and utility functions
-hsv.js HSV RGB mutual conversion
-keyboard.js Keyboard input
-masspoint.js Mass point
-matrix.js Matrix
-planet.js Kepler equation
-prime.js Prime numbers
-quaternion.js Quaternions
-rngkt.js Runge-Kutta method
-timer.js Timer manager javascript to run the main loop so it doesn't hold
-vector.js Vector
+ N6L - A Robust Math Library for 3D Graphics and Beyond
+N6L is a comprehensive JavaScript math library, originally developed for real-time 3D graphics in game development. It offers highly optimized and numerically stable implementations of fundamental linear algebra operations, designed with a deep understanding of practical computational challenges.
+
+Files
+Here's a breakdown of the modules included in this library:
+
+common.js: Provides essential file download and utility functions.
+hsv.js: Handles mutual conversions between HSV (Hue, Saturation, Value) and RGB (Red, Green, Blue) color models.
+keyboard.js: Manages keyboard input for interactive applications.
+masspoint.js: Implements functionalities related to mass points, likely for physics simulations.
+matrix.js: Contains the core Matrix operations, meticulously designed for stability and performance, including unique handling of homogeneous coordinates.
+planet.js: Features functions for Kepler's equation, useful for orbital mechanics or celestial simulations.
+prime.js: Includes utilities for prime number related calculations.
+quaternion.js: Provides robust Quaternion operations for managing rotations, designed to avoid issues like gimbal lock.
+rngkt.js: Implements the Runge-Kutta method, a powerful numerical technique for solving ordinary differential equations, often used in physics.
+timer.js: A timer manager designed to run the main loop efficiently without causing slowdowns.
+vector.js: Defines fundamental Vector operations for 2D, 3D, and N-dimensional calculations.
 
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

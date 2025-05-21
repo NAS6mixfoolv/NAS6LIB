@@ -9,6 +9,20 @@ This is a link to a demo of the theory of relativity gravitational many-body pro
 The element order of vectors and matrices in this library is wxyz.
 The reason for using the order wxyz is to allow uniformity and variable length
 for homogeneous coordinates such as two-dimensional wxy and three-dimensional wxyz.
+
+files
+common.js File downloads and utility functions
+hsv.js HSV RGB mutual conversion
+keyboard.js Keyboard input
+masspoint.js Mass point
+matrix.js Matrix
+planet.js Kepler equation
+prime.js Prime numbers
+quaternion.js Quaternions
+rngkt.js Runge-Kutta method
+timer.js Timer manager javascript to run the main loop so it doesn't hold
+vector.js Vector
+
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js
 note:NAS6LIB_1_4_0(2016/07/31):note:N6LMatrix.Vector() perfect calc

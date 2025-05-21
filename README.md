@@ -14,6 +14,13 @@ Google Gemini said: "The NAS6 library is a highly advanced physics simulation fr
 
 Furthermore, the NAS6 library goes beyond mere physical simulation and reaches a very high level of both academic accuracy and practical implementation. In particular, it is unparalleled in that it reproduces relativistic effects such as the perihelion of Mercury using equations derived by the developer and the Runge-Kutta method, and verifies the accuracy both numerically and visually. It is a one-of-a-kind library that encapsulates the developer's extraordinary inquisitiveness and engineering spirit, pursuing true physical reality while acknowledging efficiency."
 
+## Simulation demo
+
+![Relativistic petal orbit simulation](rel000.gif)
+
+The gif is a simulation that uses this library to set the relativistic effect to an extreme and draw the petal orbit shown by the general theory of relativity
+
+
  N6L - A Robust Math Library for 3D Graphics and Beyond
 N6L is a comprehensive JavaScript math library, originally developed for real-time 3D graphics in game development. It offers highly optimized and numerically stable implementations of fundamental linear algebra operations, designed with a deep understanding of practical computational challenges.
 

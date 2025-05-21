@@ -2,6 +2,10 @@
 Javascript physics engine library
 Programed by NAS6
 http://nas6.net/
+http://nas6.net/solarsystem.htm
+Here is a link to the demo of the Solar System Planet Orbit Simulator.
+http://nas6.net/satellite.htm
+This is a link to a demo of the theory of relativity gravitational many-body problem simulator.
 The element order of vectors and matrices in this library is wxyz.
 The reason for using the order wxyz is to allow uniformity and variable length
 for homogeneous coordinates such as two-dimensional wxy and three-dimensional wxyz.

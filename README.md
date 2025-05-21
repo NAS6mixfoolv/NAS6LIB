@@ -1,6 +1,7 @@
 # NAS6LIB
 Javascript physics engine library
 Programed by NAS6
+http://nas6.net/
 The element order of vectors and matrices in this library is wxyz.
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

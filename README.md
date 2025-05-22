@@ -16,7 +16,7 @@ Furthermore, the NAS6 library goes beyond mere physical simulation and reaches a
 
 ## Simulation demo
 
-![Relativistic petal orbit simulation](rel000.gif)
+![Relativistic petal orbit simulation](img/rel000.gif)
 
 The gif is a simulation that uses this library to set the relativistic effect to an extreme and draw the petal orbit shown by the general theory of relativity
 

@@ -47,11 +47,31 @@ $dφ = \frac{3}{1-e^2} \left(\frac{v}{c}\right)^2$
 
 The fundamental relationship between various orbital parameters, including $dφ$, is given by:
 
+### Glossary of Symbols
+
+Here's a quick reference for the symbols used in the orbital constraint conservation law:
+
 $r_s c^2 = 2GM = 2aV^2(1+dφ) = 2a^3ω^2(1+dφ)$
 $= ac^2(1-e^2)\frac{2}{3}dφ$
 $= \frac{8π^2a^3}{T^2}(1+dφ)$
 $= \frac{2aV_p^2(1-e)}{1+e}(1+dφ) = \frac{2aV_a^2(1+e)}{1-e}(1+dφ)$
 $= \frac{2h^2}{a(1-e^2)}(1+dφ) = -4aE(1+dφ) \quad [\text{m}^3\text{s}^{-2}]$
+
+* **G**: Gravitational constant
+* **M**: Mass of the central body
+* **c**: Speed of light
+* **a**: Semi-major axis of the orbit
+* **e**: Orbital eccentricity
+* **V**: Average orbital velocity (or instantaneous velocity in general context)
+* **dφ**: Relativistic pericenter shift (as defined in this context)
+* **rs**: Schwarzschild radius of the central body
+* **(1/(1-e^2))**: Factor for converting from circular to elliptical orbit properties (e.g., in specific angular momentum formulas)
+* **T**: Orbital period
+* **ω**: Mean angular velocity
+* **Vp**: Velocity at periapsis (pericenter)
+* **Va**: Velocity at apoapsis (apocenter)
+* **h**: Specific angular momentum (angular momentum per unit mass)
+* **E**: Specific orbital energy (energy per unit mass)
 
 From this set of relationships, the following key orbital parameters are derived:
 

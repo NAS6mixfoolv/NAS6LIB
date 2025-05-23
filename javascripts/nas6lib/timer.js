@@ -95,7 +95,7 @@ function TMUpdate(timerman) {
         }
       }
     }
-    setTimeout(function() { TMUpdate(timerman); }, this.interval);
+    setTimeout(function() { TMUpdate(timerman); }, timerman.interval);
   }
 }
 

@@ -39,22 +39,30 @@ rngkt.js: Implements the Runge-Kutta method, a powerful numerical technique for 
 timer.js: A timer manager designed to run the main loop efficiently without causing slowdowns.
 vector.js: Defines fundamental Vector operations for 2D, 3D, and N-dimensional calculations.
 
-This library also has the following orbital constraint conservation law:
-dφ=(3/(1-e^2))(v/c)^2
-rsc^2=2GM=2aV^2(1+dφ)=2a^3ω^2(1+dφ)
-=ac^2(1-e^2)dφ(2/3)=(8π^2a^3/T^2)(1+dφ)
-=(2aVp^2(1-e))(1+dφ)/(1+e)=(2aVa^2(1+e))(1+dφ)/(1-e)
-=(2h^2)(1+dφ)/(a(1- e^2))=-4aE(1+dφ)=[m^3s^-2]
-From this, it is derived
-rs=2GM/c^2
-V=√(GM/a(1+dφ))=aω/√(1+dφ)
-GM=a^3ω^2(1+dφ)
-T=√((4π^2a^3/GM)(1+dφ))
-h=√(GMa(1-e^2)/(1+dφ))
-E=-GM/4a(1+dφ)
-is fine, but
-dφ=3GM/ac^2(1-e^2)
-has the 2π gone and is now per radian.
+### Orbital Constraint Conservation Law
+
+This library incorporates the following orbital constraint conservation law, which includes a relativistic correction factor $dφ$:
+
+$dφ = \frac{3}{1-e^2} \left(\frac{v}{c}\right)^2$
+
+The fundamental relationship between various orbital parameters, including $dφ$, is given by:
+
+$r_s c^2 = 2GM = 2aV^2(1+dφ) = 2a^3ω^2(1+dφ)$
+$= ac^2(1-e^2)\frac{2}{3}dφ$
+$= \frac{8π^2a^3}{T^2}(1+dφ)$
+$= \frac{2aV_p^2(1-e)}{1+e}(1+dφ) = \frac{2aV_a^2(1+e)}{1-e}(1+dφ)$
+$= \frac{2h^2}{a(1-e^2)}(1+dφ) = -4aE(1+dφ) \quad [\text{m}^3\text{s}^{-2}]$
+
+From this set of relationships, the following key orbital parameters are derived:
+
+* **Schwarzschild Radius:** $r_s = \frac{2GM}{c^2}$
+* **Orbital Velocity:** $V = \sqrt{\frac{GM}{a(1+dφ)}} = \frac{aω}{\sqrt{1+dφ}}$
+* **Gravitational Parameter:** $GM = a^3ω^2(1+dφ)$
+* **Orbital Period:** $T = \sqrt{\frac{4π^2a^3}{GM}(1+dφ)}$
+* **Specific Angular Momentum:** $h = \sqrt{\frac{GMa(1-e^2)}{1+dφ}}$
+* **Specific Orbital Energy:** $E = -\frac{GM}{4a(1+dφ)}$
+
+**Note on $dφ$:** While $dφ = \frac{3GM}{ac^2(1-e^2)}$ can be derived from the above relations, it's important to note that this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.
 
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

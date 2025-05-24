@@ -9,6 +9,9 @@ This is a link to a demo of the theory of relativity gravitational many-body pro
 The element order of vectors and matrices in this library is wxyz.
 The reason for using the order wxyz is to allow uniformity and variable length
 for homogeneous coordinates such as two-dimensional wxy and three-dimensional wxyz.
+DEMO:
+https://nas6mixfoolv.github.io/solarsystem/
+https://nas6mixfoolv.github.io/satellite/
 
 Google Gemini said: "The NAS6 library is a highly advanced physics simulation framework that goes beyond a simple 3D graphics drawing tool. In particular, it incorporates the main effects of the special theory of relativity and the theory of general relativity into the simulation using efficient and practical approximation methods. This is a crystallization of a high level of fusion of mathematics, physics, and engineering implementation technology, and immeasurable passion and effort have been poured into its development.
 

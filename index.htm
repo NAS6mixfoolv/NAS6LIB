@@ -181,11 +181,432 @@ hgroup, menu, nav, section { display: block; }
 <b>
 <br>
 <br>
-<a href="./htm000.htm">back</a><br>
+<a href="http://nas6.net/htm000.htm">back</a><br>
 </b>
 <br>
 <br>
 <hr>
+<b>
+<br>
+<br>
+<h1>How to write NAS6LIB template</h1>
+This explains how homogeneous coordinates are defined in the order w, x, y, z, ... The order is different, but the functionality is the same...
+<p>・./testpoly.htm</p>
+<div style="background:#4080b0;">
+<pre>
+
+＜!DOCTYPE html＞
+＜html lang="ja"＞
+＜head＞
+＜title＞Polygon Test & NAS6LIB Help Document＜/title＞
+＜meta http-equiv="X-UA-Compatible" content="IE=edge"＞
+＜meta http-equiv="Content-Type" content="text/html; charset=UTF-8"＞
+＜meta http-equiv="Content-Style-Type" content="text/css"＞
+＜meta http-equiv="Content-Script-Type" content="text/javascript"＞
+
+＜script language="JavaScript" type="text/javascript" src="./javascripts/x3dom/jquery-2.1.4.min.js" ＞＜/script＞
+＜link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'＞
+＜script language="JavaScript" type='text/javascript' src='./javascripts/x3dom/x3dom.js'＞ ＜/script＞
+＜link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'＞
+
+
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/timer.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/vector.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/matrix.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/quaternion.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6/help.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6/testpoly.js"＞＜/script＞
+
+＜style＞
+article, aside, dialog, figure, footer, header,
+hgroup, menu, nav, section { display: block; }
+#x3dabs{
+    position: absolute;
+    float: left;
+    top: 76px;
+    left: 20px;
+    background:#8080b0;
+    border: 2px #000000 solid;
+}
+＜/style＞
+＜/head＞
+＜body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg"＞
+＜b＞
+＜h1＞Polygon Test & NAS6LIB Help Document＜/h1＞
+
+＜div style = 'width:500px; height:250px; border: 0px; overflow:hidden;'＞
+
+＜x3d id='x3dabs' width='500px' height='250px'＞
+    ＜scene＞
+        ＜Viewpoint id='viewp001' position='0 3 20' orientation='0 1 0 0' description='camera'＞＜/Viewpoint＞
+
+	＜directionalLight id="directional" direction='1 -1 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'＞＜/directionalLight＞ 
+	
+        ＜Transform center='0 0 0' translation='0 0 8' id='box0' DEF='box0'＞
+            ＜Transform rotation='0 1 0 0' id='box1' DEF='box1'＞
+            ＜shape＞
+                ＜appearance＞
+                    ＜ImageTexture  url="./img/koala.jpg"＞＜/ImageTexture＞
+                    ＜material diffuseColor='0.8 0.8 0.8'＞＜/material＞
+                ＜/appearance＞
+                ＜Box size = '5 5 5'＞＜/Box＞
+            ＜/shape＞
+            ＜/Transform＞
+        ＜/Transform＞
+    ＜/scene＞
+＜/x3d＞
+＜/div＞
+
+//　………　Omitted　…………
+＜/b＞
+＜/font＞
+＜/body＞
+＜/html＞
+
+</pre>
+</div>
+<br>
+<br>
+<p>・./javascripts/nas6/testpoly.js</p>
+<div style="background:#4080b0;">
+<pre>
+
+var TMan = new N6LTimerMan();  //timer manager
+jQuery(document).ready(function(){
+  TMan.add();
+  TMan.timer[0].setalerm(function() { GLoop(0); }, 50);  //set main loop
+});
+
+var bx = new N6LVector(new Array('1','0','0','8'), true);  //pos Box
+var bm = new N6LMatrix(4).UnitMat();  //mat Box
+
+//main loop
+function GLoop(id){
+
+//　………　Omitted　…………
+	
+  var MatWK = new N6LMatrix(4).UnitMat();
+  var v = new N6LVector(4, false);
+  //unit vector//単位ベクトル
+  var ax = new N6LVector(4, true).UnitVec(1);
+  var ay = new N6LVector(4, true).UnitVec(2);
+  var az = new N6LVector(4, true).UnitVec(3);
+
+  //rot mov obj
+  MatWK = MatWK.RotAxis(ay, 1.0 * Math.PI / 180.0);  //around y axis rotate 1 degree
+  bx = MatWK.Mul(bx);  //pos Box multiply matrix
+
+  //unit vector
+  ax = ax.UnitVec(1);
+  ay = ay.UnitVec(2);
+  az = az.UnitVec(3);
+  //rot obj
+  MatWK = new N6LMatrix(bm);  //mat Box
+  MatWK = MatWK.RotAxis(az, 3.0 * Math.PI / 180.0);  //around z axis rotate 3 degree
+  MatWK = MatWK.RotAxis(ay, 2.0 * Math.PI / 180.0);  //around y axis rotate 2 degree
+  bm = MatWK.RotAxis(ax, 1.0 * Math.PI / 180.0);     //around x axis rotate 1 degree
+
+  v = bm.Vector();  //rot vector
+
+  var angle = bm.EulerAngle(3, 2, 1);  //rotate order ZYX
+
+// ↑ First half: ↓ Second half
+	
+  //apply x3dom
+  var pos = bx.ToX3DOM(true);
+  var elm = document.getElementById('box0');
+  elm.setAttribute('translation', pos.toString());
+  var rot = v.ToX3DOM();
+  elm = document.getElementById('box1');
+  elm.setAttribute('rotation', rot.toString());
+
+  //for debug
+  elm = document.getElementById('debug');
+  elm.innerText = 
+  'EulerAngle(rotate per degree z(3)_y(2)_x(1))\n' + angle.x[0] + ' ' + Math.floor(angle.x[1] * 180.0 / Math.PI) + ' ' + Math.floor(angle.x[2] * 180.0 / Math.PI) + ' ' + Math.floor(angle.x[3] * 180.0 / Math.PI); 
+
+  TMan.timer[id].setalerm(function() { GLoop(id); }, 50);  //reset main loop
+}
+
+// ... the rest is omitted ...
+
+</pre>
+</div>
+<br>
+<br>
+<p>・How to write a header</p>
+<div style="background:#4080b0;">
+<pre>
+
+＜head＞
+＜title＞Please enter a title＜/title＞
+＜meta http-equiv="X-UA-Compatible" content="IE=edge"＞
+＜meta http-equiv="Content-Type" content="text/html; charset=UTF-8"＞
+＜meta http-equiv="Content-Style-Type" content="text/css"＞
+＜meta http-equiv="Content-Script-Type" content="text/javascript"＞
+
+＜script language="JavaScript" type="text/javascript" src="./javascripts/x3dom/jquery-2.1.4.min.js" ＞＜/script＞
+＜link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'＞
+＜script language="JavaScript" type='text/javascript' src='./javascripts/x3dom/x3dom.js'＞ ＜/script＞
+＜link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'＞
+
+
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/timer.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/vector.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/matrix.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/quaternion.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6/testpoly.js"＞＜/script＞
+
+＜style＞
+article, aside, dialog, figure, footer, header,
+hgroup, menu, nav, section { display: block; }
+#x3dabs{
+    position: absolute;
+    float: left;
+    top: 76px;
+    left: 20px;
+    background:#8080b0;
+    border: 2px #000000 solid;
+}
+＜/style＞
+＜/head＞
+
+</pre>
+</div>
+<br>
+<br>
+This is almost copy and paste<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+＜head＞
+＜title＞Please enter a title＜/title＞
+＜meta http-equiv="X-UA-Compatible" content="IE=edge"＞
+＜meta http-equiv="Content-Type" content="text/html; charset=UTF-8"＞
+＜meta http-equiv="Content-Style-Type" content="text/css"＞
+＜meta http-equiv="Content-Script-Type" content="text/javascript"＞
+
+＜script language="JavaScript" type="text/javascript" src="./javascripts/x3dom/jquery-2.1.4.min.js" ＞＜/script＞
+＜link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'＞
+＜script language="JavaScript" type='text/javascript' src='./javascripts/x3dom/x3dom.js'＞ ＜/script＞
+＜link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'＞
+
+</pre>
+</div>
+<br>
+It's almost a formula.<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/timer.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/vector.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/matrix.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/quaternion.js"＞＜/script＞
+＜script language="JavaScript" type="text/javascript" src="./javascripts/nas6/testpoly.js"＞＜/script＞
+
+</pre>
+</div>
+<br>
+Here you can register the necessary components such as the NAS6 library.<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+＜style＞
+article, aside, dialog, figure, footer, header,
+hgroup, menu, nav, section { display: block; }
+#x3dabs{
+    position: absolute;
+    float: left;
+    top: 76px;
+    left: 20px;
+    background:#8080b0;
+    border: 2px #000000 solid;
+}
+＜/style＞
+＜/head＞
+
+</pre>
+</div>
+<br>
+X3DOM window style sheet<br>
+<br>
+<br>
+<p>・How to write objects</p>
+<div style="background:#4080b0;">
+<pre>
+
+＜div style = 'width:500px; height:250px; border: 0px; overflow:hidden;'＞
+
+＜x3d id='x3dabs' width='500px' height='250px'＞
+    ＜scene＞
+        ＜Viewpoint id='viewp001' position='0 3 20' orientation='0 1 0 0' description='camera'＞＜/Viewpoint＞
+
+	＜directionalLight id="directional" direction='1 -1 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'＞＜/directionalLight＞ 
+	
+        ＜Transform center='0 0 0' translation='0 0 8' id='box0' DEF='box0'＞
+            ＜Transform rotation='0 1 0 0' id='box1' DEF='box1'＞
+            ＜shape＞
+                ＜appearance＞
+                    ＜ImageTexture  url="./img/koala.jpg"＞＜/ImageTexture＞
+                    ＜material diffuseColor='0.8 0.8 0.8'＞＜/material＞
+                ＜/appearance＞
+                ＜Box size = '5 5 5'＞＜/Box＞
+            ＜/shape＞
+            ＜/Transform＞
+        ＜/Transform＞
+    ＜/scene＞
+＜/x3d＞
+＜/div＞
+
+</pre>
+</div>
+<br>
+<br>
+The reason why ＜x3d＞ is enclosed in ＜div＞ is to match the layout.<br>
+<br>
+Since orientation and rotation are rotation vectors, use N6LMatrix to perform matrix calculations.<br>
+Convert this to a rotation vector using N6LMatrix.Vector(); and then insert it.<br>
+<br>
+There are various objects such as Box and Sphere.<br>
+For more information, see the original x3dom website.<br>
+<br>
+The reason why ＜shape＞ is enclosed twice in ＜transform＞ is<br>
+to translate the outer ＜transform＞ and rotate it in place using the inner ＜transform＞.<br>
+The part enclosed in ＜transform＞ is the description part of the object.<br>
+If you want to change the size of the box, change Box.size.<br>
+If you want to change the texture, change ImageTexture.url.<br>
+<br>
+<br>
+<br>
+<p>・Register the main loop</p>
+<div style="background:#4080b0;">
+<pre>
+
+var TMan = new N6LTimerMan();  //timer manager
+jQuery(document).ready(function(){
+  TMan.add();
+  TMan.timer[0].setalerm(function() { GLoop(0); }, 50);  //set main loop
+});
+
+</pre>
+</div>
+<br>
+<br>
+In the global scope<br>
+var TMan = new N6LTimerMan(); // Timer manager<br>
+Construct the timer manager<br>
+<br>
+When the page is reloaded, tweak<br>
+jQuery(document).ready(function(){});<br>
+To register the main loop when the page is reloaded, use<br>
+<br>
+<br>
+To construct the id 0 timer TMan.timer[0] in the timer manager, use TMan.add();<br>
+<br>
+TMan.timer[0].setalerm(function() { GLoop(0); }, 50); // Set the main loop<br>
+<br>
+Register the main loop with setalerm(); in function() { GLoop(0); }<br>
+50 means that the main loop will be called after 50 milliseconds<br>
+<br>
+<br>
+<p>・Implement the main loop</p>
+<div style="background:#4080b0;">
+<pre>
+
+var bx = new N6LVector(new Array('1','0','0','8'), true);  //pos Box
+var bm = new N6LMatrix(4).UnitMat();  //mat Box
+
+//main loop
+function GLoop(id){
+
+//　………　Omitted　…………
+
+  var MatWK = new N6LMatrix(4).UnitMat();
+  var v = new N6LVector(4, false);
+  //unit vector
+  var ax = new N6LVector(4, true).UnitVec(1);
+  var ay = new N6LVector(4, true).UnitVec(2);
+  var az = new N6LVector(4, true).UnitVec(3);
+
+  //rot mov obj
+  MatWK = MatWK.RotAxis(ay, 1.0 * Math.PI / 180.0);  //around y axis rotate 1 degree
+  bx = MatWK.Mul(bx);  //pos Box multiply matrix
+
+  //unit vector
+  ax = ax.UnitVec(1);
+  ay = ay.UnitVec(2);
+  az = az.UnitVec(3);
+  //rot obj
+  MatWK = new N6LMatrix(bm);  //mat Box
+  MatWK = MatWK.RotAxis(az, 3.0 * Math.PI / 180.0);  //around z axis rotate 3 degree
+  MatWK = MatWK.RotAxis(ay, 2.0 * Math.PI / 180.0);  //around y axis rotate 2 degree
+  bm = MatWK.RotAxis(ax, 1.0 * Math.PI / 180.0);     //around x axis rotate 1 degree
+
+  v = bm.Vector();  //rot vector
+
+  var angle = bm.EulerAngle(3, 2, 1);  //rotate order ZYX
+
+// ↑ First half: ↓ Second half
+
+  //apply x3dom
+  var pos = bx.ToX3DOM(true);
+  var elm = document.getElementById('box0');
+  elm.setAttribute('translation', pos.toString());
+  var rot = v.ToX3DOM();
+  elm = document.getElementById('box1');
+  elm.setAttribute('rotation', rot.toString());
+
+  //for debug
+  elm = document.getElementById('debug');
+  elm.innerText = 
+  'EulerAngle(rotate per degree z(3)_y(2)_x(1))\n' + angle.x[0] + ' ' + Math.floor(angle.x[1] * 180.0 / Math.PI) + ' ' + Math.floor(angle.x[2] * 180.0 / Math.PI) + ' ' + Math.floor(angle.x[3] * 180.0 / Math.PI); 
+
+  TMan.timer[id].setalerm(function() { GLoop(id); }, 50);  //reset main loop
+}
+
+</pre>
+</div>
+<br>
+<br>
+In the first half, use NAS6LIB to calculate the rotation matrix.<br>
+Since orientation and rotation are rotation vectors, use N6LMatrix to calculate the matrix.<br>
+Convert to a rotation vector using N6LMatrix.Vector() and then enter the result.<br>
+<br>
+In the second half, apply the value to x3dom.<br>
+Note that in homogeneous coordinates, NAS6LIB uses the order w, x, y, z..., while x3dom uses the order x, y, z, w....<br>
+Convert to SFVecXf using N6LVector.ToX3DOM(b). Setting b=true changes the degree of Vector from 4 to 3. <br>
+Convert from sf=SFVecXf using N6LVector.FromX3DOM(sf). <br>
+Convert to SFMatrix4f using N6LMatrix.ToX3DOM(). <br>
+Convert from sf=SFMatrix4f using N6LMatrix.FromX3DOM(sf). <br>
+<br>
+Get the element with document.getElementById();<br>
+Apply the value to x3dom with setAttribute('name to change', SFVecXf.toString());<br>
+<br>
+Finally, reset the main loop with TMan.timer[id].setalerm(function() { GLoop(id); }, 50); //reset main loop//Reset main loop<br>
+and you're done.<br>
+<br>
+This is basically how it's written<br>
+The rest is free to write tags and javascript<br>
+and you can do pretty much anything.<br>
+<br>
+<br>
+Potential bugs (places to overlook):<br>
+・Division by zero, negative root, undefined<br>
+・Value or absolute value over 1.0 (not normalized, outside the range of inverse trigonometric functions, etc.)<br>
+・objA = new Forgot to do a deep copy by writing objA = objB; instead of N6LType(objB);<br>
+・bHomo flag related (bHomo is a homogeneous coordinate matrix N6LMatrix, and N6LVector for each row is false<br>
+When trying to extract it as an axis, .SetHomo(true) must be used<br>
+After that, when using the original matrix, .SetHomo(false) must be used, etc.)<br>
+*Because SetHomo() was the source of bugs, it no longer changes this when it is executed, but instead returns the return value<br>
+*Safer Get/Set-Col/Row() functions have been provided for row and column manipulation<br>
+<br>
+<br>
+<b>
+<hr>
+<br>
 <b>
 <br>
 <br>

@@ -596,7 +596,7 @@ and you can do pretty much anything.<br>
 Potential bugs (places to overlook):<br>
 ・Division by zero, negative root, undefined<br>
 ・Value or absolute value over 1.0 (not normalized, outside the range of inverse trigonometric functions, etc.)<br>
-・objA = new Forgot to do a deep copy by writing objA = objB; instead of N6LType(objB);<br>
+・objA = new N6LType(objB); Forgot to do a deep copy by writing objA = objB; instead of new N6LType(objB);<br>
 ・bHomo flag related (bHomo is a homogeneous coordinate matrix N6LMatrix, and N6LVector for each row is false<br>
 When trying to extract it as an axis, .SetHomo(true) must be used<br>
 After that, when using the original matrix, .SetHomo(false) must be used, etc.)<br>

@@ -186,6 +186,13 @@ Get press information for the unified alias with KeyB.isPressUnityAlias(aliasID)
 Multiple keys can be treated as a single key in unity-related cases.
 Simultaneous pressing is also supported.
 
+#################################
+Future outlook:
+Not to mention the unimplemented feature extensions
+The prototype of NAS6LIB was a VC++ DirectX air combat game, which then passed through VB+VC#+XNA
+and was succeeded by the current javascriot in 2016
+It may return again and become VC#+wasm
+#################################
 
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

@@ -13,6 +13,60 @@ DEMO:
 https://nas6mixfoolv.github.io/solarsystem/
 https://nas6mixfoolv.github.io/satellite/
 
+NAS6LIB is a collection of JavaScript modules for working with physics simulations and geometric transformations.
+
+Main Modules and Features
+common.js: Provides essential file download and utility functions.
+hsv.js: Handles conversion between HSV and RGB color models.
+keyboard.js: Manages keyboard input for interactive applications.
+masspoint.js: Implements mass point functionality relevant to physics simulations.
+matrix.js: Contains core matrix operations designed for stability and performance. 
+It features a unique handling of homogeneous coordinates (leading the w parameter).
+planet.js: Provides functionality for Kepler's equations, useful for orbital mechanics and astronomical simulations.
+prime.js: Contains utilities for calculating prime numbers.
+quaternion.js: Provides robust quaternion operations that avoid issues such as gimbal lock.
+rngkt.js: Implements the Runge-Kutta method used for numerically solving ordinary differential equations.
+timer.js: A timer manager designed to run the main loop efficiently and prevent performance degradation.
+vector.js: defines basic vector operations for 2D, 3D, and N-dimensional calculations.
+
+Class List and Main Methods
+Below are the classes included in NAS6LIB and the main methods they provide.
+
+N6LTimer (timer.js): Time notification
+start(), stop(), reset(), copy(src), now(), setalerm(func(id),alm), etc.
+
+N6LTimerMan (timer.js): Time notification manager. A framework for implementing multi-threading with single-tasking JavaScript.
+add(), changeinterval(int), start(), stop(), etc.
+N6LVector (vector.js): N-dimensional or homogeneous vector
+Provides a wide range of vector operations, including Equal(rh), Add(rh), Sub(rh), Mul(rh), Div(rh), Dot(rh), Cross(rh), UnitVec(a), 
+NormalVec(a), Abs(), Rot2D(theta), RotAxis(axis, theta), Homogeneous(), ToHomo(), ToNormal(), etc.
+N6LMatrix (matrix.js): N-dimensional matrix
+Supports a variety of matrix operations, including Equal(rh), Add(rh), Sub(rh), Mul(rh), Div(rh), ZeroMat(), UnitMat(), TransposedMat(), 
+TranslatedMat(rh), ScaleMat(rh), InverseMat(dt, sw), DeterminMat(dt), Rot2D(theta), RotAxis(axis, theta), Homogeneous(), ToHomo(), 
+ToNormal(), Pos(), Scale(), Quaternion(), Vector(), FrustumMat(...), OrthoMat(...).
+N6LQuaternion (quaternion.js): Quaternions
+Add(rh), Sub(rh), Mul(rh), Div(rh), ConjugationQuat(), InverseQuat(), ZeroQuat(), UnitQuat(), NormalQuat(), Dot(rh), 
+RotAxisQuat(axis, theta), Matrix(), Lerp(q, t), Slerp(q, t), etc.
+N6LLnQuaternion (quaternion.js): Logarithmic quaternions. Can be used for more convenient interpolation.
+Add(rh), Sub(rh), Mul(rh), Div(rh), ZeroLnQuat(), RotAxisLnQuat(axis, theta), Lerp(q, t), Lerp2(d0, q, d), etc.
+N6LMassPoint (masspoint.js): Mass points.
+N6LPlanet (planet.js): Planetary orbit calculation based on Kepler's equations.
+N6LRngKt (rngkt.js): Theory of relativity using Runge-Kutta methods, etc.
+
+N6LKeyBoard (keyboard.js): Keyboard management
+
+Provides advanced alias management and simultaneous keypress support, including setfunc(func), setenable(b), indexof(str), addAlias(ary), 
+delAlias(str), addUnityAlias(ary), delUnityAlias(str), UnityAlias(str), isPressUnityAlias(str), ToAlias(str, ret), ToReal(str).
+
+N6LHsv (hsv.js): Color space conversion between HSV and RGB.
+
+N6LIsPrime (prime.js): Prime number testing.
+
+More information about NAS6LIB and keyboard.js, with links to each method, can be found in the documentation in the NAS6LIB GitHub repository.
+
+NAS6LIB GitHub repository: https://nas6mixfoolv.github.io/NAS6LIB/
+NAS6LIB related information: http://nas6.net/htm000.htm http://nas6.net/prg3d006.htm
+
 Google Gemini said: "The NAS6 library is a highly advanced physics simulation framework that goes beyond a simple 3D graphics drawing tool.
 In particular, it incorporates the main effects of the special theory of relativity and the theory of general relativity 
 into the simulation using efficient and practical approximation methods. 

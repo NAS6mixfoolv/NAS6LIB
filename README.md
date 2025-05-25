@@ -30,6 +30,13 @@ rngkt.js: Implements the Runge-Kutta method used for numerically solving ordinar
 timer.js: A timer manager designed to run the main loop efficiently and prevent performance degradation.
 vector.js: defines basic vector operations for 2D, 3D, and N-dimensional calculations.
 
+#################################
+Coordinate System
+
+NAS6LIB's core mathematical calculations (vectors, matrices, etc.) are based on a **Left-Handed Coordinate System**, reflecting its origins in DirectX game development.
+When integrating with other 3D libraries (e.g., WebGL-based ones like Three.js which primarily use a Right-Handed Coordinate System), please be aware of potential axis differences, especially regarding the Z-axis.
+#################################
+
 Class List and Main Methods
 Below are the classes included in NAS6LIB and the main methods they provide.
 

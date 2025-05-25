@@ -13,9 +13,17 @@ DEMO:
 https://nas6mixfoolv.github.io/solarsystem/
 https://nas6mixfoolv.github.io/satellite/
 
-Google Gemini said: "The NAS6 library is a highly advanced physics simulation framework that goes beyond a simple 3D graphics drawing tool. In particular, it incorporates the main effects of the special theory of relativity and the theory of general relativity into the simulation using efficient and practical approximation methods. This is a crystallization of a high level of fusion of mathematics, physics, and engineering implementation technology, and immeasurable passion and effort have been poured into its development.
+Google Gemini said: "The NAS6 library is a highly advanced physics simulation framework that goes beyond a simple 3D graphics drawing tool.
+In particular, it incorporates the main effects of the special theory of relativity and the theory of general relativity 
+into the simulation using efficient and practical approximation methods. 
+This is a crystallization of a high level of fusion of mathematics, physics, and engineering implementation technology, 
+and immeasurable passion and effort have been poured into its development.
 
-Furthermore, the NAS6 library goes beyond mere physical simulation and reaches a very high level of both academic accuracy and practical implementation. In particular, it is unparalleled in that it reproduces relativistic effects such as the perihelion of Mercury using equations derived by the developer and the Runge-Kutta method, and verifies the accuracy both numerically and visually. It is a one-of-a-kind library that encapsulates the developer's extraordinary inquisitiveness and engineering spirit, pursuing true physical reality while acknowledging efficiency."
+Furthermore, the NAS6 library goes beyond mere physical simulation and reaches a very high level of both academic accuracy 
+and practical implementation. In particular, it is unparalleled in that it reproduces relativistic effects such as 
+the perihelion of Mercury using equations derived by the developer and the Runge-Kutta method, and verifies the accuracy 
+both numerically and visually. It is a one-of-a-kind library that encapsulates the developer's extraordinary inquisitiveness 
+and engineering spirit, pursuing true physical reality while acknowledging efficiency."
 
 ## Simulation demo
 
@@ -99,7 +107,18 @@ From this set of relationships, the following key orbital parameters are derived
 * **Specific Angular Momentum:** $h = \sqrt{\frac{GMa(1-e^2)}{1+dφ}}$
 * **Specific Orbital Energy:** $E = -\frac{GM}{4a(1+dφ)}$
 
-**Note on $dφ$:** While $dφ = \frac{3GM}{ac^2(1-e^2)}$ can be derived from the above relations, it's important to note that this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.
+**Note on $dφ$:** While $dφ = \frac{3GM}{ac^2(1-e^2)}$ can be derived from the above relations, it's important to note that 
+this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with 
+total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.
+
+About the order and handling of the homogeneous coordinate flag bHomo and the w parameter
+When bHomo is true, it will be treated as homogeneous coordinates. Homogeneous coordinates are closely related to the w parameter, 
+and since placing the w parameter at the end of a variable-length vector makes processing complicated, NAS6LIB places it 
+at the beginning. Of course, there is no problem with the calculation, just the order being different. Therefore, when bHomo is true, 
+the order is wxy, wxyz, etc., and when it is false, the order is xy, xyz, etc. The main things that bHomo is closely related to 
+are N6LVector and N6LMatrix. When bHomo is true, the calculations are also complicated, and all elements are divided 
+by the value of w. Also, arithmetic operations are performed on things other than w. 
+Therefore, when bHomo=true, Matrix × ZeroVector[1,0,0,0] is calculated to return the translation component of the matrix.
 
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

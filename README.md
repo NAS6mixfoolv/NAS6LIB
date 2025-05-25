@@ -48,7 +48,7 @@ file:./javascripts/nas6lib/timer.js: class N6LTimerMan: Time Notification Manage
 file:./javascripts/nas6lib/vector.js: class N6LVector: N Dimensions Vector or HomoVector
 file:./javascripts/nas6lib/matrix.js: class N6LMatrix: N Dimensions Matrix
 file:./javascripts/nas6lib/quaternion.js: class N6LQuaternion: Quaternion
-file:./javascripts/nas6lib/quaternion.js: class N6LLNQuaternion: LnQuaternion
+file:./javascripts/nas6lib/quaternion.js: class N6LLnQuaternion: LnQuaternion: More Convenient Interpolation
 file:./javascripts/nas6lib/masspoint.js: class N6LMassPoint: MassPoint
 file:./javascripts/nas6lib/planet.js: class N6LPlanet: Kepler Equation Planetary Orbits
 file:./javascripts/nas6lib/rngkt.js: class N6LRngKt: Theory of Relativity Using Runge-Kutta Method

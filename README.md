@@ -42,6 +42,20 @@ rngkt.js: Implements the Runge-Kutta method, a powerful numerical technique for 
 timer.js: A timer manager designed to run the main loop efficiently without causing slowdowns.
 vector.js: Defines fundamental Vector operations for 2D, 3D, and N-dimensional calculations.
 
+CLASS　NAME: 
+file:./javascripts/nas6lib/timer.js: class N6LTimer: Time Notification
+file:./javascripts/nas6lib/timer.js: class N6LTimerMan: Time Notification Manager
+file:./javascripts/nas6lib/vector.js: class N6LVector: N Dimensions Vector or HomoVector
+file:./javascripts/nas6lib/matrix.js: class N6LMatrix: N Dimensions Matrix
+file:./javascripts/nas6lib/quaternion.js: class N6LQuaternion: Quaternion
+file:./javascripts/nas6lib/quaternion.js: class N6LLNQuaternion: LnQuaternion
+file:./javascripts/nas6lib/masspoint.js: class N6LMassPoint: MassPoint
+file:./javascripts/nas6lib/planet.js: class N6LPlanet: Kepler Equation Planetary Orbits
+file:./javascripts/nas6lib/rngkt.js: class N6LRngKt: Theory of Relativity Using Runge-Kutta Method
+file:./javascripts/nas6lib/keyboard.js: class N6LKeyBoard: KeyBoard
+file:./javascripts/nas6lib/hsv.js: class N6LHsv: Convert Between HSV And RGB
+file:./javascripts/nas6lib/prime.js: class N6LIsPrime: Prime Number Testing
+
 ### Orbital Constraint Conservation Law
 
 This library incorporates the following orbital constraint conservation law, which includes a relativistic correction factor $dφ$:
@@ -86,22 +100,6 @@ From this set of relationships, the following key orbital parameters are derived
 * **Specific Orbital Energy:** $E = -\frac{GM}{4a(1+dφ)}$
 
 **Note on $dφ$:** While $dφ = \frac{3GM}{ac^2(1-e^2)}$ can be derived from the above relations, it's important to note that this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.
-
-CLASS　NAME: 
-file:./javascripts/nas6lib/timer.js: class N6LTimer: Time Notification
-file:./javascripts/nas6lib/timer.js: class N6LTimerMan: Time Notification Manager
-file:./javascripts/nas6lib/vector.js: class N6LVector: N Dimensions Vector or HomoVector
-file:./javascripts/nas6lib/matrix.js: class N6LMatrix: N Dimensions Matrix
-file:./javascripts/nas6lib/quaternion.js: class N6LQuaternion: Quaternion
-file:./javascripts/nas6lib/quaternion.js: class N6LLNQuaternion: LnQuaternion
-file:./javascripts/nas6lib/masspoint.js: class N6LMassPoint: MassPoint
-file:./javascripts/nas6lib/planet.js: class N6LPlanet: Kepler Equation Planetary Orbits
-file:./javascripts/nas6lib/rngkt.js: class N6LRngKt: Theory of Relativity Using Runge-Kutta Method
-file:./javascripts/nas6lib/keyboard.js: class N6LKeyBoard: KeyBoard
-file:./javascripts/nas6lib/hsv.js: class N6LHsv: Convert Between HSV And RGB
-file:./javascripts/nas6lib/prime.js: class N6LIsPrime: Prime Number Testing
-
-
 
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

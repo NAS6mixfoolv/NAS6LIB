@@ -52,7 +52,8 @@ vector.js: Defines fundamental Vector operations for 2D, 3D, and N-dimensional c
 
 CLASS　NAME: 
 file:./javascripts/nas6lib/timer.js: class N6LTimer: Time Notification
-file:./javascripts/nas6lib/timer.js: class N6LTimerMan: Time Notification Manager
+file:./javascripts/nas6lib/timer.js: class N6LTimerMan: Time Notification Manager. 
+A Framework For Implementing Multi-Threading In Single-Tasking JavaScript.
 file:./javascripts/nas6lib/vector.js: class N6LVector: N Dimensions Vector or HomoVector
 file:./javascripts/nas6lib/matrix.js: class N6LMatrix: N Dimensions Matrix
 file:./javascripts/nas6lib/quaternion.js: class N6LQuaternion: Quaternion

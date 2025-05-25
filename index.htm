@@ -189,8 +189,12 @@ hgroup, menu, nav, section { display: block; }
 <b>
 <br>
 <br>
-<h1>How to write NAS6LIB template</h1>
+<h1>How to write NAS6LIB template with X3DOM</h1>
 This explains how homogeneous coordinates are defined in the order w, x, y, z, ... The order is different, but the functionality is the same...
+<a href="http://nas6.net/testpoly.htm">testpoly.htm</a><br>
+<br>
+<a href="http://nas6.net/testpoly.zip">testpoly.zip</a><br>
+<br>
 <p>・./testpoly.htm</p>
 <div style="background:#4080b0;">
 <pre>
@@ -604,7 +608,966 @@ After that, when using the original matrix, .SetHomo(false) must be used, etc.)<
 *Safer Get/Set-Col/Row() functions have been provided for row and column manipulation<br>
 <br>
 <br>
+</b>
+<hr>
+<br>
 <b>
+<h1>How to write NAS6LIB template with ThreeJS</h1>
+<br>
+<br>
+<br>
+This is an explanation of homogeneous coordinates defined in the order w, x, y, z, .... The order is different, but the functionality is the same...<br>
+<br>
+<br>
+How to use THREE.JS<br>
+<br>
+<a href="http://nas6.net/test3js.htm">THREE.JSTest.htm</a><br>
+<br>
+<a href="http://nas6.net/test3js.zip">THREE.JSTest.zip</a><br>
+<br>
+<a href="http://nas6.net/fps60.htm">60FPSTest.htm</a><br>
+<br>
+<a href="http://nas6.net/fps60.zip">60FPSTest.zip</a><br>
+<br>
+<img src="./test3js.jpg" style="border: 2px #000000 solid;"><br>
+<br>
+<p>・./test3js.htm</p>
+<div style="background:#4080b0;">
+<pre>
+
+＜!DOCTYPE html＞
+＜html lang="ja"＞
+＜head＞
+＜title＞THREEJSTEST＜/title＞
+  ＜meta charset="UTF-8" /＞
+  ＜script src="./javascripts/nas6lib/timer.js"＞＜/script＞
+  ＜script src="./javascripts/threejs/three.js"＞＜/script＞
+
+＜script＞
+
+window.addEventListener("DOMContentLoaded", init);
+var TMan = new N6LTimerMan();  //TimerManager
+
+function init() {
+  const width = 500;
+  const height = 250;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector("#cnv0")
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(width, height);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    45,
+    width / height,
+    1,
+    10000
+  );
+  camera.position.set(0, 0, 20);
+
+  // create box
+  const geometry = new THREE.BoxGeometry(5, 5, 5);
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load('./img/koala.jpg');
+  const textureF = loader.load('./img/koalaF.jpg');
+  // Add texture to material
+  const materials = [
+    new THREE.MeshStandardMaterial({map: textureF}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture})
+  ];
+  // create mesh
+  const box = new THREE.Mesh(geometry, materials);
+  box.position.set(0, 0, 8);
+  scene.add(box);
+
+  // DirectionalLight
+  const light = new THREE.DirectionalLight(0xffffff);
+  light.intensity = 2; // light.intensity twice
+  light.position.set(1, 1, 1);
+  // add scene
+  scene.add(light);
+
+  TMan.add();
+  TMan.timer[0].setalerm(function() { Loop(0); }, 50);  //set main loop
+
+
+  // main loop
+  function Loop(id) {
+
+    box.rotation.x += 1.0 * Math.PI / 180.0;//Rotate 1 degree around the x axis
+    box.rotation.y += 2.0 * Math.PI / 180.0;//Rotate 2 degree around the y axis
+    box.rotation.z += 3.0 * Math.PI / 180.0;//Rotate 3 degree around the z axis
+
+    // rendering
+    renderer.render(scene, camera);
+
+    TMan.timer[id].setalerm(function() { Loop(id); }, 50);  //set main loop
+  }
+
+＜!--
+/*
+  // First run
+  Loop();
+
+  // main loop
+  function Loop() {
+    requestAnimationFrame(Loop);
+
+    box.rotation.x += 1.0 * Math.PI / 180.0;//Rotate 1 degree around the x axis
+    box.rotation.y += 2.0 * Math.PI / 180.0;//Rotate 2 degree around the y axis
+    box.rotation.z += 3.0 * Math.PI / 180.0;//Rotate 3 degree around the z axis
+
+    renderer.render(scene, camera);
+  }
+*/
+//--＞
+
+}
+
+＜/script＞
+
+＜style＞
+article, aside, dialog, figure, footer, header,
+hgroup, menu, nav, section { display: block; }
+#cnv0{
+    position: absolute;
+    float: left;
+    top: 640px;
+    left: 20px;
+    background:#8080b0;
+    border: 2px #000000 solid;
+}
+＜/style＞
+
+＜/head＞
+
+＜body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg"＞
+＜font size="3"＞
+＜br＞
+＜br＞
+＜b＞
+＜h1＞THREEJSTEST＜/h1＞
+＜br＞
+＜div style = 'width:500px; height:250px; border: 0px; overflow:hidden;'＞
+  ＜canvas id="cnv0" name="cnv0" width="500" height="250"＞＜/canvas＞
+＜/div＞
+＜br＞
+＜br＞
+＜br＞
+＜/b＞
+＜/font＞
+＜br＞
+＜br＞
+＜hr＞
+＜br＞
+＜br＞
+＜a href="./index.htm"＞back＜/a＞＜br＞
+＜br＞
+＜br＞
+＜/body＞
+＜/html＞
+
+
+</pre>
+</div>
+<br>
+<br>
+<br>
+<br>
+<p>・How to write the header</p>
+<div style="background:#4080b0;">
+<pre>
+
+
+＜!DOCTYPE html＞
+＜html lang="ja"＞
+＜head＞
+＜title＞Please enter a title＜/title＞
+  ＜meta charset="UTF-8" /＞
+
+//　…………　Omitted　………
+＜/head＞
+
+</pre>
+</div>
+<br>
+<br>
+You can pretty much just copy and paste this<br><br>
+<br>
+<p>・Registering components</p>
+<div style="background:#4080b0;">
+<pre>
+
+  ＜script src="./javascripts/nas6lib/timer.js"＞＜/script＞
+  ＜script src="./javascripts/threejs/three.js"＞＜/script＞
+
+</pre>
+</div>
+<br>
+<br>
+Please register library components such as three.js.<br>
+<br>
+<br>
+<p>・Stylesheet</p>
+<div style="background:#4080b0;">
+<pre>
+
+＜style＞
+article, aside, dialog, figure, footer, header,
+hgroup, menu, nav, section { display: block; }
+#cnv0{
+    position: absolute;
+    float: left;
+    top: 640px;
+    left: 20px;
+    background:#8080b0;
+    border: 2px #000000 solid;
+}
+＜/style＞
+
+</pre>
+</div>
+<br>
+<br>
+Please adjust the style sheet as necessary.<br>
+<br>
+<br>
+<p>・Target Canvas</p>
+<div style="background:#4080b0;">
+<pre>
+
+＜div style = 'width:500px; height:250px; border: 0px; overflow:hidden;'＞
+  ＜canvas id="cnv0" name="cnv0" width="500" height="250"＞＜/canvas＞
+＜/div＞
+
+</pre>
+</div>
+<br>
+<br>
+The reason why the ＜canvas＞ is enclosed in a ＜div＞ is to adjust the layout.<br>
+Please write it within the ＜body＞ tag.<br>
+<br>
+<br>
+<p>・Script section</p>
+<div style="background:#4080b0;">
+<pre>
+
+
+＜script＞
+
+window.addEventListener("DOMContentLoaded", init);
+var TMan = new N6LTimerMan();  //Timer manager
+
+function init() {
+  const width = 500;
+  const height = 250;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector("#cnv0")
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(width, height);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    45,
+    width / height,
+    1,
+    10000
+  );
+  camera.position.set(0, 0, 20);
+
+  // create box
+  const geometry = new THREE.BoxGeometry(5, 5, 5);
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load('./img/koala.jpg');
+  const textureF = loader.load('./img/koalaF.jpg');
+  // Add texture to material
+  const materials = [
+    new THREE.MeshStandardMaterial({map: textureF}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture})
+  ];
+  // create mesh
+  const box = new THREE.Mesh(geometry, materials);
+  box.position.set(0, 0, 8);
+  scene.add(box);
+
+  // DirectionalLight
+  const light = new THREE.DirectionalLight(0xffffff);
+  light.intensity = 2; // Double the light intensity
+  light.position.set(1, 1, 1);
+  // add scene
+  scene.add(light);
+
+  TMan.add();
+  TMan.timer[0].setalerm(function() { Loop(0); }, 50);  //set main loop
+
+
+  //main loop 
+  function Loop(id) {
+
+    box.rotation.x += 1.0 * Math.PI / 180.0;//Rotate 1 degree around the x axis
+    box.rotation.y += 2.0 * Math.PI / 180.0;//Rotate 2 degree around the y axis
+    box.rotation.z += 3.0 * Math.PI / 180.0;//Rotate 3 degree around the z axis
+
+    // rendering
+    renderer.render(scene, camera);
+
+    TMan.timer[id].setalerm(function() { Loop(id); }, 50);  //set main loop
+  }
+
+＜!--
+/*
+  // first run
+  Loop();
+
+  function Loop() {
+    requestAnimationFrame(Loop);
+
+    box.rotation.x += 1.0 * Math.PI / 180.0;//Rotate 1 degree around the x axis
+    box.rotation.y += 2.0 * Math.PI / 180.0;//Rotate 2 degree around the y axis
+    box.rotation.z += 3.0 * Math.PI / 180.0;//Rotate 3 degree around the z axis
+
+    renderer.render(scene, camera);
+  }
+*/
+//--＞
+
+}
+
+＜/script＞
+
+</pre>
+</div>
+<br>
+<br>
+<br>
+N6LVector.To3JS(b)<br>
+N6LVector.From3JS(ary)<br>
+N6LMatrix.To3JS()<br>
+N6LMatrix.From3JS(ary)<br>
+<br>
+引数:ary:Array():b:4→3の時、true<br>
+<br>
+Added N6L←→THREE converter<br>
+<br>
+<br>
+Basically, I think you can make almost anything with this writing style<br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<a href="http://nas6.net/mttest.htm">Javascript multi-threaded testing using N6LTimerMan.htm</a><br>
+<br>
+<a href="http://nas6.net/mttest.zip">Javascript multi-threaded testing using N6LTimerMan.zip</a><br>
+<br>
+<img src="./mttest.jpg" style="border: 2px #000000 solid;"><br>
+<br>
+<br>
+Using N6LTimerMan, you can easily implement multi-threading in JavaScript. <br>
+<br>
+<p>・./mttest.htm (script part)</p>
+<div style="background:#4080b0;">
+<pre>
+
+window.addEventListener("DOMContentLoaded", init);
+var TMan = new N6LTimerMan();  //timer manager
+var pos = [ new N6LVector(4, true), new N6LVector(4, true), new N6LVector(4, true), new N6LVector(4, true)];
+var th = [0, 0, 0, 0];
+var dt = [50, 100, 150, 500];
+var spd = 5.0;
+var cnt = 0;
+var div = 72;
+var sph3;
+
+function init() {
+  const width = 500;
+  const height = 250;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector("#cnv0")
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(width, height);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    45,
+    width / height,
+    1,
+    10000
+  );
+  camera.position.set(0, 0, 20);
+
+  // create sphere
+  const sph0geometry = new THREE.SphereGeometry(1, 128, 128);
+  // Set the color of the material
+  const sph0material = new THREE.MeshBasicMaterial({ color: '#ff0000'});
+  // create mesh
+  const sph0 = new THREE.Mesh(sph0geometry, sph0material);
+  sph0.position.set(0, 6, 0);
+  pos[0] = new N6LVector([1, 0, 6, 0], true);
+  // create sphere
+  const sph1geometry = new THREE.SphereGeometry(1, 128, 128);
+  // Set the color of the material
+  const sph1material = new THREE.MeshBasicMaterial({ color: '#00ff00'});
+  // create mesh
+  const sph1 = new THREE.Mesh(sph1geometry, sph1material);
+  sph1.position.set(0, 2, 0);
+  pos[1] = new N6LVector([1, 0, 2, 0], true);
+  // create sphere
+  const sph2geometry = new THREE.SphereGeometry(1, 128, 128);
+  // Set the color of the material
+  const sph2material = new THREE.MeshBasicMaterial({ color: '#0000ff'});
+  // create mesh
+  const sph2 = new THREE.Mesh(sph2geometry, sph2material);
+  sph2.position.set(0, -2, 0);
+  pos[2] = new N6LVector([1, 0, -2, 0], true);
+  // create spher
+  const sph3geometry = new THREE.SphereGeometry(1, 128, 128);
+  // Set the color of the material
+  const sph3material = new THREE.MeshBasicMaterial({ color: '#808080'});
+  // create mesh
+  sph3 = new THREE.Mesh(sph3geometry, sph3material);
+  sph3.position.set(0, -6, 0);
+  pos[3] = new N6LVector([1, 0, -6, 0], true);
+  scene.add(sph0);
+  scene.add(sph1);
+  scene.add(sph2);
+  scene.add(sph3);
+
+  // DirectionalLight
+  const light = new THREE.DirectionalLight(0xffffff);
+  light.position.set(1, 1, 1);
+  // add scene
+  scene.add(light);
+
+  //add timer
+  TMan.add();
+  TMan.add();
+  TMan.add();
+  TMan.add();
+  TMan.add();
+  
+  //first run
+  Loop0(0);
+  Loop1(1);
+  Loop2(2);
+  Loop3(3);
+  RDLoop(4);
+
+
+  //Implementing multiple main loops
+  function RDLoop(id) {
+    
+    // rendering
+    renderer.render(scene, camera);
+    TMan.timer[id].setalerm(function() { RDLoop(id); }, 50);
+  }
+ 
+  function Loop0(id) {
+
+    th[id] += spd * Math.PI / 180.0;
+    sph0.position.set(5 * Math.sin(th[id]) + pos[id].x[1], 6, 0);
+
+    TMan.timer[id].setalerm(function() { Loop0(id); }, dt[id]);
+  }
+ 
+  function Loop1(id) {
+
+    th[id] += spd * Math.PI / 180.0;
+    sph1.position.set(5 * Math.sin(th[id]) + pos[id].x[1], 2, 0);
+
+    TMan.timer[id].setalerm(function() { Loop1(id); }, dt[id]);
+  }
+ 
+  function Loop2(id) {
+
+    th[id] += spd * Math.PI / 180.0;
+    sph2.position.set(5 * Math.sin(th[id]) + pos[id].x[1], -2, 0);
+
+    TMan.timer[id].setalerm(function() { Loop2(id); }, dt[id]);
+  }
+
+  function Loop3(id) {
+
+    th[id] += spd * Math.PI / 180.0;
+
+    var col1 = new N6LHsv(0, [255, 255, 0, 0]);
+    var col2 = new N6LHsv(0, [255, 255, 0, 0]);
+    var col = col1.HsvGrd(div, cnt, col2.ahsv, 1);
+    var str = col.Str();
+    cnt++;
+
+    sph3.material.color.set(str);
+    sph3.position.set(5 * Math.sin(th[id]) + pos[id].x[1], -6, 0);
+
+    var c = (Math.cos(th[id]) + 1.0) / 2.0;
+    dt[id] = 50  + c * 450; //Variable timer from 50 to 500 [ms]
+
+    TMan.timer[id].setalerm(function() { Loop3(id); }, dt[id]);
+  }
+
+}
+
+</pre>
+</div><br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+var TMan = new N6LTimerMan();  //timer manager
+var pos = [ new N6LVector(4, true), new N6LVector(4, true), new N6LVector(4, true)];
+var th = [0, 0, 0];
+var dt = [50, 100, 150, 500];
+var spd = 5.0;
+
+</pre>
+</div><br>
+<br>
+The timer manager and the ball's position (pos), angle (th), speed (spd), and multithread interval (dt) are declared.<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+var cnt = 0;
+var div = 72;
+var sph3;
+
+</pre>
+</div><br>
+<br>
+Used to change the color of the sphere.<br>
+<br>
+Create a 3D scene in init().<br>	
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+//add timer
+TMan.add();
+TMan.add();
+TMan.add();
+TMan.add();
+TMan.add();
+
+</pre>
+</div><br>
+<br>
+Create five timers.<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+//first run
+Loop0(0);
+Loop1(1);
+Loop2(2);
+Loop3(3);
+RDLoop(4);
+
+</pre>
+</div><br>
+<br>
+Each will be executed for the first time.<br>
+br>
+<div style="background:#4080b0;">
+<pre>
+
+function RDLoop(id) {
+    
+  // rendering
+  renderer.render(scene, camera);
+  TMan.timer[id].setalerm(function() { RDLoop(id); }, 50);
+}
+
+</pre>
+</div><br>
+<br>
+This is the rendering thread.<br>
+<br>
+Loop0(), Loop1(), Loop2(), and Loop3() are the threads for each ball's movement.<br>
+<br>
+Let's look at Loop0().<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+function Loop0(id) {
+
+  th[id] += spd * Math.PI / 180.0;
+  sph0.position.set(5 * Math.sin(th[id]) + pos[id].x[1], 6, 0);
+
+  TMan.timer[id].setalerm(function() { Loop0(id); }, dt[id]);
+}
+
+</pre>
+</div><br>
+<br>
+th[id] += spd * Math.PI / 180.0;<br>
+<br>
+Here, th[id] is added by the angle spd degrees.<br>
+<br>
+sph0.position.set(5 * Math.sin(th[id]) + pos[id].x[1], 6, 0);<br>
+<br>
+Here we apply the position calculated from the angle to the sphere<br>
+<br>
+TMan.timer[id].setalerm(function() { Loop0(id); }, dt[id]);<br>
+<br>
+Here, Loop0(id) is recursively called at intervals of dt[id].<br>
+<br>
+var dt = [50, 100, 150, 500];<br>
+This was declared like this, so <br>
+Loop0 will be called every 50ms, Loop1 every 100ms, and Loop2 every 150ms.<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+  function Loop3(id) {
+
+    th[id] += spd * Math.PI / 180.0;
+
+    var col1 = new N6LHsv(0, [255, 255, 0, 0]);
+    var col2 = new N6LHsv(0, [255, 255, 0, 0]);
+    var col = col1.HsvGrd(div, cnt, col2.ahsv, 1);
+    var str = col.Str();
+    cnt++;
+
+    sph3.material.color.set(str);
+    sph3.position.set(5 * Math.sin(th[id]) + pos[id].x[1], -6, 0);
+
+    var c = (Math.cos(th[id]) + 1.0) / 2.0;
+    dt[id] = 50  + c * 450; //50～500[ms]の可変タイマー
+
+    TMan.timer[id].setalerm(function() { Loop3(id); }, dt[id]);
+  }
+
+</pre>
+</div><br>
+<br>
+Loop3 creates an HSV gradient divided into div(72) around RGB from col1(ARGB:FFFF0000,AHSV:100,0,100,100) to col2(ARGB:FFFF0000,AHSV:100,0,100,100). Color is applied with sph3.material.color.set(str);. var c = (Math.cos(th[id]) + 1.0) / 2.0; dt[id] = 50 + c * 450; //50 to 500[ms] variable timer<br>
+The code is added, so it is a variable timer of 50 to 500[ms]<br>
+<br>
+And so, multithreading can be achieved very easily using N6LTimerMan<br>
+<br>
+Note that only one software timer is executed on the N6LTimerMan core<br>
+The timers managed by N6LTimerMan are distributed among the cores<br>
+so that resources are not strained as much as possible<br>
+Therefore, calling N6LTimer.add() many times does not have much effect. There is no problem.<br>
+Well, of course, timers with short intervals will put a load on the system.<br>
+<br>
+The core operation of N6LTimerMan is to repeatedly run the core timer check thread<br>
+with one of the fastest software timers in N6LTimerMan.<br>
+measure the time, and when the time set by setalerm() for each timer has elapsed,<br>
+call the registered function for each timer.<br>
+That's all it does.<br>
+<br>
+N6LTimerMan.changeinterval(INT); //Change timer check interval<br>
+You can set the core timer check interval with<br>	
+<br>
+<br>
+<hr>
+<br>
+<br>
+<h1>Skybox settings and basic FPS controls</h1>
+<br>
+<br>
+<a href="http://nas6.net/test3jsbasic.htm">THREE.JSBasic.htm</a><br>
+<br>
+<a href="http://nas6.net/test3jsbasic.zip">THREE.JSBasic.zip</a><br>
+<br>
+<img src="./threejsFPS.gif" style="border: 2px #000000 solid;"><br>
+<br>
+Basic FPS<br>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+
+window.addEventListener("DOMContentLoaded", init);
+var TMan = new N6LTimerMan();  //timer manager
+var boxies = [];
+var renderer;
+var camera;
+var scene;
+
+function init() {
+  const width = 500;
+  const height = 250;
+
+  renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector("#cnv0")
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(width, height);
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(
+    45,
+    width / height,
+    1,
+    10000
+  );
+  camera.position.set(0, 0, 20);
+
+  // create box
+  const geometry = new THREE.BoxGeometry(5, 5, 5);
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load('./img/koala.jpg');
+  const textureF = loader.load('./img/koalaF.jpg');
+  // Set the texture on the material
+  const materials = [
+    new THREE.MeshStandardMaterial({map: textureF}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture}),
+    new THREE.MeshStandardMaterial({map: texture})
+  ];
+  for(i = 0; i ＜ 9; i++) {
+    var box = new THREE.Mesh( geometry, materials );
+    box.position.set(((i % 3) - 1) * 500, 0, Math.floor(i / 3) * 500);
+    scene.add( box );
+    boxies.push( box );
+  }
+
+  path = "./img/skybox";
+  format = '.jpg';
+  urls = [
+    path + 'px' + format, path + 'nx' + format,
+    path + 'py' + format, path + 'ny' + format,
+    path + 'pz' + format, path + 'nz' + format
+  ];
+
+  tCube = new THREE.CubeTextureLoader().load( urls );
+  scene.background = tCube;
+
+
+  // DirectionalLight
+  const light = new THREE.DirectionalLight(0xffffff);
+  light.intensity = 2; //Double the light intensity
+  light.position.set(1, 1, 1);
+  // add scene
+  scene.add(light);
+
+  TMan.add();
+  TMan.timer[0].setalerm(function() { Loop(0); }, 50);  //set main loop
+
+
+  //main loop
+  function Loop(id) {
+    var i;
+    for(i = 0; i ＜ 9; i++) {
+        boxies[i].rotation.x += 1.0 * Math.PI / 180.0;//Rotate 1 degree around the x axis
+        boxies[i].rotation.y += 2.0 * Math.PI / 180.0;//Rotate 2 degree around the y axis
+        boxies[i].rotation.z += 3.0 * Math.PI / 180.0;//Rotate 3 degree around the z axis
+    }
+
+    moveobj();
+
+    // rendering
+    renderer.render(scene, camera);
+
+    TMan.timer[id].setalerm(function() { Loop(id); }, 50);  //set main loop
+  }
+
+}
+
+//Object position information
+//Position 4*4 matrix (continuous parameter)
+var A = false;
+
+//Speed ​​(continuation parameter)
+var V = 0.1;
+var a = 0;
+var pyr = new N6LVector([1, 0, 0, 0], true); 
+var la = new N6LVector(4, true).UnitVec(3); 
+var up = new N6LVector(4, true).UnitVec(2); 
+
+//After initializing as above, keep calling the function below
+
+//Acceleration a, (scalar quantity) (new parameter)
+//Pitch yaw roll (1, θp, θy, θr) (new parameter)
+function moveobj() {
+
+  if(!A) {
+    var Proj = camera.projectionMatrix;
+    A = new N6LVector([Proj.elements[15], Proj.elements[12], Proj.elements[13], Proj.elements[14]], true); 
+  }
+
+  var B = la.Mul(a);          //Camera translation row
+  var az = new N6LVector(la); //Camera Z-axis row
+  var ay = new N6LVector(up); //Camera Y-axis row
+  var ax = az.Cross(ay);      //Camera X-axis row
+  //Camera world matrix
+  var matWK = new N6LMatrix([B,ax,ay,az]);
+  matWK = matWK.NormalMat();
+
+  //Yaw pitch roll rotation
+  matWK = matWK.RotAxis(az, pyr.x[3] * -1.0);
+  matWK = matWK.RotAxis(ay, pyr.x[2] * -1.0);
+  matWK = matWK.RotAxis(ax, pyr.x[1] * -1.0);
+
+
+  //update
+  B = new N6LVector(matWK.x[0]);
+  B = B.SetHomo(true);
+  la = new N6LVector(matWK.x[3]);
+  la = la.SetHomo(true);
+  up = new N6LVector(matWK.x[2]);
+  up = up.SetHomo(true);
+  //C = camera position + camera Z axis + updated camera Z axis
+  A = A.Add(B);
+  var C = A.Add(la);
+  //reset
+  pyr = new N6LVector([1, 0, 0, 0], true); 
+
+  //set up
+  camera.position.set(A.x[1], A.x[2], A.x[3]);
+  camera.up.set(up.x[1], up.x[2], up.x[3]);
+  camera.lookAt(C.x[1], C.x[2], C.x[3]);
+}
+
+
+/*
+function moveobj() {
+
+  if(!A) {
+    var Proj = camera.projectionMatrix;
+    A = new N6LVector([Proj.elements[15], Proj.elements[12], Proj.elements[13], Proj.elements[14]], true); 
+  }
+
+  var B = la.Mul(a);          //Camera translation row
+  var az = new N6LVector(la); //Camera Z-axis row
+  var ay = new N6LVector(up); //Camera Y-axis row
+  var ax = az.Cross(ay);      //Camera X-axis row
+
+  B = B.RotAxis(az, pyr.x[3]);
+  B = B.RotAxis(ay, pyr.x[2]);
+  B = B.RotAxis(ax, pyr.x[1]);
+
+  la = la.RotAxis(az, pyr.x[3]);
+  la = la.RotAxis(ay, pyr.x[2]);
+  la = la.RotAxis(ax, pyr.x[1]);
+
+  up = up.RotAxis(az, pyr.x[3]);
+  up = up.RotAxis(ay, pyr.x[2]);
+  up = up.RotAxis(ax, pyr.x[1]);
+
+  A = A.Add(B);
+
+  var C = A.Add(la);
+
+
+  pyr = new N6LVector([1, 0, 0, 0], true); 
+
+  camera.position.set(A.x[1], A.x[2], A.x[3]);
+  camera.up.set(up.x[1], up.x[2], up.x[3]);        // set up
+  camera.lookAt(C.x[1], C.x[2], C.x[3]);
+
+}
+*/
+
+
+
+//input keyboard
+var KBLock7 = 0;
+var KBLock9 = 0;
+var KBIntvl = 5;
+function chkKeyBoard(){
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N1'))]) {//N1Key
+    pyr.x[3] -= 1 * (Math.PI / 180);
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N2'))]) {//N2Key
+    pyr.x[1] += 1 * (Math.PI / 180);
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N3'))]) {//N3Key
+    pyr.x[3] += 1 * (Math.PI / 180);
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N4'))]) {//N4Key
+    pyr.x[2] += 1 * (Math.PI / 180);
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N5'))]) {//N5Key
+    a = 0;
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N6'))]) {//N6Key
+    pyr.x[2] -= 1 * (Math.PI / 180);
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N7'))]) {//N7Key
+    if(KBIntvl ＜ KBLock7) KBLock7 = 0;
+    if(KBLock7 == 0) {
+      a -= 0.5;
+      if(a ＜ -50) a = -50;
+    }
+    KBLock7++;
+  }
+  else KBLock7 = 0;
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N8'))]) {//N8Key
+    pyr.x[1] -= 1 * (Math.PI / 180);
+  }
+  if(KeyB.keystate[KeyB.indexof(KeyB.ToReal('VK_N9'))]) {//N9Key
+    if(KBIntvl ＜ KBLock9) KBLock9 = 0;
+    if(KBLock9 == 0) {
+      a += 0.5;
+      if(50 ＜ a) a = 50;
+    }
+    KBLock9++;
+  }
+  else KBLock9 = 0;
+};
+
+
+</pre>
+</div><br>
+<br>
+Set up the skybox like this<br>
+The important thing is to set the file name clearly like<br>
+○○px,○○nx,○○py,○○ny,○○pz,○○nz,<br>
+<br>
+<br>
+path = "./img/skybox";<br>
+format = '.jpg';<br>
+urls = [<br>
+　path + 'px' + format, path + 'nx' + format,<br>
+　path + 'py' + format, path + 'ny' + format,<br>
+　path + 'pz' + format, path + 'nz' + format<br>
+];<br>
+<br>
+tCube = new THREE.CubeTextureLoader().load( urls );<br>
+scene.background = tCube;<br>
+<br>
+In the FPS part, <br>
+<br>
+function moveobj(), <br>
+<br>
+Camera position vector A, <br>
+LookAt vector la, <br>
+up vector up, <br>
+are stored globally, <br>
+var az = new N6LVector(la); <br>
+var ay = new N6LVector(up); <br>
+var ax = az.Cross(ay); <br>
+Find the local (camera) axis, <br>
+and rotate roll, yaw, and pitch on that axis, <br>
+You can calculate all at once with Matrix or individually with Vector, <br>
+Updated camera position upLookAt vector, <br>
+camera.position.set(A.x[1], A.x[2], A.x[3]); <br>
+camera.up.set(up.x[1], up.x[2], up.x[3]); <br>
+camera.lookAt(C.x[1], C.x[2], C.x[3]);<br>
+You can do this by setting<br>
+<br>
+<br>
+</b>
 <hr>
 <br>
 <b>

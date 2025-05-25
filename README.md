@@ -190,7 +190,7 @@ Simultaneous pressing is also supported.
 Future outlook: Not to mention the unimplemented feature extensions
 
 The prototype of NAS6LIB was a VC++ DirectX air combat game, which then passed through VB+VC#+XNA and was succeeded by the current javascriot in 2016.
-The original development started about **25 years ago**　since 2000.
+The original development started about **25 years ago**, starting around 2000.
 It may return again and become VC#+wasm.
 #################################
 

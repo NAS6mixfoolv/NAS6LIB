@@ -61,7 +61,7 @@ file:./javascripts/nas6lib/quaternion.js: class N6LLnQuaternion: LnQuaternion: M
 file:./javascripts/nas6lib/masspoint.js: class N6LMassPoint: MassPoint
 file:./javascripts/nas6lib/planet.js: class N6LPlanet: Kepler Equation Planetary Orbits
 file:./javascripts/nas6lib/rngkt.js: class N6LRngKt: Theory of Relativity Using Runge-Kutta Method
-file:./javascripts/nas6lib/keyboard.js: class N6LKeyBoard: KeyBoard
+file:./javascripts/nas6lib/keyboard.js: class N6LKeyBoard: KeyBoard. Custom Keyboard Management Class
 file:./javascripts/nas6lib/hsv.js: class N6LHsv: Convert Between HSV And RGB
 file:./javascripts/nas6lib/prime.js: class N6LIsPrime: Prime Number Testing
 
@@ -120,6 +120,18 @@ the order is wxy, wxyz, etc., and when it is false, the order is xy, xyz, etc. T
 are N6LVector and N6LMatrix. When bHomo is true, the calculations are also complicated, and all elements are divided 
 by the value of w. Also, arithmetic operations are performed on things other than w. 
 Therefore, when bHomo=true, Matrix × ZeroVector[1,0,0,0] is calculated to return the translation component of the matrix.
+
+Custom Keyboard Management Class
+You can convert between real name IDs and alias IDs using KeyB.ToReal(str) and KeyB.ToAlias(str, ary) {the list of aliases is returned 
+in the array ary}.You can determine whether a key has been pressed on the keyboard using if(KeyB.keystate[KeyB.indexof(KeyB.ToReal(str))]).
+Add and define an alias using KeyB.addAlias([original IDstr, alternative IDstr]). Delete the alias link together with KeyB.delAlias(str).
+Add and define a unified alias using KeyB.addUnityAlias([unified IDstr, alternative IDstr, ...]). Delete the unified alias 
+with KeyB.delUnityAlias(str).
+Unify aliases with KeyB.UnityAlias(aliasID).
+Get press information for the unified alias with KeyB.isPressUnityAlias(aliasID).
+Multiple keys can be treated as a single key in unity-related cases.
+Simultaneous pressing is also supported.
+
 
 note:NAS6LIB_1_2_0(2016/06/26):note:renewal
 note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js

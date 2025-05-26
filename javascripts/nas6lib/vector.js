@@ -2,7 +2,8 @@
 //vector.js
 
 //デバッグ時true
-DEBUG_MODE = false;
+var N6L_DEBUG_MODE = false;
+
 
 //vector//ベクトル
 //construction ex//構築例
@@ -97,7 +98,7 @@ class N6LVector {
         var token = str.split(',');
         var ret = new N6LVector(Number(token[1]), Boolean(token[0]));
         if(token.length < ret.x.length + 2){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Parse: Invalid str. Returning N6LVector([1,0,0,0], true).");
           }
           return new N6LVector([1,0,0,0], true);
@@ -107,6 +108,7 @@ class N6LVector {
         return ret;
     };
 
+
     ToX3DOM(b) {
         var wk = new N6LVector(this);
         if(wk.bHomo) {
@@ -115,7 +117,7 @@ class N6LVector {
                 switch(wk.x.length) {
                 case 3: return new x3dom.fields.SFVec2f(wk.x[1], wk.x[2]);
                 case 4: return new x3dom.fields.SFVec3f(wk.x[1], wk.x[2], wk.x[3]);
-                default:if(DEBUG_MODE){
+                default:if(N6L_DEBUG_MODE){
                           console.warn("N6LVector.ToX3DOM: Invalid vector dimensions. Returning this.");
                         }
                         return this;
@@ -127,7 +129,7 @@ class N6LVector {
         switch(wk.x.length) {
         case 2: return new x3dom.fields.SFVec2f(wk.x[0], wk.x[1]);
         case 3: return new x3dom.fields.SFVec3f(wk.x[0], wk.x[1], wk.x[2]);
-        default:if(DEBUG_MODE){
+        default:if(N6L_DEBUG_MODE){
                   console.warn("N6LVector.ToX3DOM: Invalid vector dimensions. Returning this.");
                 }
                 return this;
@@ -141,7 +143,7 @@ class N6LVector {
         case 2: return new N6LVector([Number(token.x[0]), Number(token.x[1])], false);
         case 3: return new N6LVector([Number(token.x[0]), Number(token.x[1]), Number(token.x[2])], false);
         case 4: return new N6LVector([Number(token.x[3]), Number(token.x[0]), Number(token.x[1]), Number(token.x[2])], true);
-        default:if(DEBUG_MODE){
+        default:if(N6L_DEBUG_MODE){
                   console.warn("N6LVector.FromX3DOM: Invalid vector dimensions. Returning this.");
                 }
                 return this;
@@ -156,7 +158,7 @@ class N6LVector {
                 switch(wk.x.length) {
                 case 3: return new THREE.Vector2(wk.x[1], wk.x[2]);
                 case 4: return new THREE.Vector3(wk.x[1], wk.x[2], wk.x[3]);
-                default:if(DEBUG_MODE){
+                default:if(N6L_DEBUG_MODE){
                   console.warn("N6LVector.To3JS: Invalid vector dimensions. Returning this.");
                 }
                 return this;
@@ -168,7 +170,7 @@ class N6LVector {
         switch(wk.x.length) {
         case 2: return new THREE.Vector2(wk.x[0], wk.x[1]);
         case 3: return new THREE.Vector3(wk.x[0], wk.x[1], wk.x[2]);
-        default:if(DEBUG_MODE){
+        default:if(N6L_DEBUG_MODE){
           console.warn("N6LVector.To3JS: Invalid vector dimensions. Returning this.");
         }
         return this;
@@ -180,7 +182,7 @@ class N6LVector {
         case 2: return new N6LVector([Number(ary[0]), Number(ary[1])], false);
         case 3: return new N6LVector([Number(ary[0]), Number(ary[1]), Number(ary[2])], false);
         case 4: return new N6LVector([Number(ary[3]), Number(ary[0]), Number(ary[1]), Number(ary[2])], true);
-        default:if(DEBUG_MODE){
+        default:if(N6L_DEBUG_MODE){
           console.warn("N6LVector.From3JS: Invalid vector dimensions. Returning N6LVector([1,0,0,0],true).");
         }
         return new N6LVector([1,0,0,0],true);
@@ -228,7 +230,7 @@ class N6LVector {
         if(rh && rh.typename == "N6LVector"){
             ret = new N6LVector(this);
             if(this.x.length != rh.x.length){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Sub(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
               return this;
@@ -268,7 +270,7 @@ class N6LVector {
         var ret = 0.0;
         if(rh && rh.typename == "N6LVector"){
             if(this.x.length != rh.x.length){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Mul(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
               return this;
@@ -289,7 +291,7 @@ class N6LVector {
         else if(rh && rh.typename == "N6LMatrix"){
             ret = new N6LVector(this);
             if((this.x.length != rh.x.length) || (this.x.length != rh.x[0].x.length)){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Mul(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
               return this;
@@ -346,7 +348,7 @@ class N6LVector {
         else if(rh && rh.typename == "N6LMatrix"){
             ret = new N6LVector(this);
             if((this.x.length != rh.x.length) || (this.x.length != rh.x[0].x.length)){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Mul(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
               return this;
@@ -405,7 +407,7 @@ class N6LVector {
     //dot//内積
     Dot(rh) {
         if(!rh || rh.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Dot(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -426,7 +428,7 @@ class N6LVector {
     //cross//外積
     Cross(rh) {
         if(!rh || rh.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Cross(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -461,7 +463,7 @@ class N6LVector {
     //is parallel//平行かどうか
     isParallel(rh) {
         if(!rh || rh.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.isParallel(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -496,7 +498,7 @@ class N6LVector {
     //look at matrix//注視
     LookAtMat2(rh) {
         if(!rh){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.LookAtMat2(rh): Invalid rh. Returning this.");
           }
           return this;
@@ -506,7 +508,7 @@ class N6LVector {
         if(rh.typename == "N6LMatrix") lookat = rh.Pos().Mul(-1); //注視目標セット
         else if(rh.typename == "N6LVector") lookat = new N6LVector(rh).Mul(-1); //注視目標セット
         else {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.LookAtMat2(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -534,7 +536,7 @@ class N6LVector {
     //RotationArc(ArcBall)//球面回転(アークボール)
     RotArcQuat(rh) {
         if(!rh || rh.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotArcQuat(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -618,7 +620,7 @@ class N6LVector {
     //angle//なす角
     Theta(rh) {
         if(!rh || rh.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Theta(rh): Invalid rh.typename. Returning 0.");
           }
           return 0;
@@ -637,7 +639,7 @@ class N6LVector {
     //angle//なす角
     ThetaN(rh) {
         if(!rh || rh.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Theta(rh): Invalid rh.typename. Returning 0.");
           }
           return 0;
@@ -650,7 +652,7 @@ class N6LVector {
     //rotate//回転
     Rot2D(theta) {
         if((!this.bHomo && this.x.length != 2) || (this.bHomo && this.x.length != 3)){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Rot2D(theta): Invalid vector dimensions.(this). Returning this.");
           }
           return this;
@@ -663,13 +665,13 @@ class N6LVector {
     //rotate axis//軸に対する回転
     RotAxis(axis, theta) {
         if(!axis || axis.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxis(axis,theta): Invalid axis.typename Returning this.");
           }
           return this;
         }
         if((this.x.length != 3 && this.x.length != 4) || this.x.length != axis.x.length){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxis(axis,theta): Invalid vector dimensions.(this,axis). Returning this.");
           }
           return this;
@@ -697,13 +699,13 @@ class N6LVector {
     //rotate axis calc quarterion//軸に対する回転
     RotAxisQuat(axis, theta) {
         if(!axis || axis.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisQuat(axis,theta): Invalid axis.typename Returning this.");
           }
           return this;
         }
         if((this.x.length != 3 && this.x.length != 4) || (this.x.length != axis.x.length)){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisQuat(axis,theta): Invalid vector dimensions.(this,axis). Returning this.");
           }
           return this;
@@ -722,13 +724,13 @@ class N6LVector {
     //rotate axis calc quarterion & rotvec//軸に対する回転
     RotAxisVec(rotvec) {
         if(!rotvec || rotvec.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisVec(rotvec): Invalid rotvec.typename Returning this.");
           }
           return this;
         }
         if((this.x.length != 3 && this.x.length != 4) || (this.x.length != rotvec.x.length)){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisVec(rotvec): Invalid vector dimensions.(this,rotvec). Returning this.");
           }
           return this;
@@ -747,13 +749,13 @@ class N6LVector {
     //project axis//軸に対する射影
     ProjectAxis(axis) {
         if(!axis || axis.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.ProjectAxis(axis): Invalid axis.typename Returning this.");
           }
           return this;
         }
         if(this.x.length != axis.x.length){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.ProjectAxis(axis): Invalid vector dimensions.(this,axis). Returning this.");
           }
           return this;
@@ -766,7 +768,7 @@ class N6LVector {
     //all param is N6LVector//点と直線の距離
     DistanceDotLine(p, a, b) {
         if(!p || p.typename != "N6LVector" || !a || a.typename != "N6LVector" || !b || b.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.DistanceDotLine(p,a,b): Invalid p,a,b.typename Returning 0.");
           }
           return 0;
@@ -782,7 +784,7 @@ class N6LVector {
     //all param is N6LVector // reta & retb is Array//直線と直線の距離と最接近位置
     DistancePointLineLine(reta, retb, a0, a1, b0, b1) {
         if(!a0 || a0.typename != "N6LVector" || !a1 || a1.typename != "N6LVector" || !b0 || b0.typename != "N6LVector" || !b1 || b1.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.DistancePointLineLine(reta, retb, a0, a1, b0, b1): Invalid a0,a1,b0,b1.typename Returning 0.");
           }
           return 0;
@@ -871,13 +873,13 @@ class N6LVector {
     Matrix() {
         var eps = 1e-6;
         if(this.x.length != 4){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Matrix(): Invalid vector dimensions.(this) Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
         }
         if(this.EpsEqual(this.ZeroVec(), eps, true)){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Matrix(): Invalid zero vector. Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -904,7 +906,7 @@ class N6LVector {
     PosVecGetTQ(out) {
         var eps = 1e-6;
         if(this.x.length != 8){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.PosVecGetTQ(out): Invalid vector dimensions. Output ZeroVec ZeroQuat.");
           }
           out[0] = new N6LVector(4, true).ZeroVec();
@@ -919,7 +921,7 @@ class N6LVector {
     //set position vector to translated and quaternion //姿勢ベクトルに四元数と平行移動をセット
     PosVecSetTQ(t,q) {
         if(t.x.length != 4 || q.q.x.length != 4){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.PosVecSetTQ(t,q): Invalid vector dimensions.(t,q) Returning N6LVector([1,0,0,0,0,0,0,0], true).");
           }
           return new N6LVector([1,0,0,0,0,0,0,0], true);
@@ -932,13 +934,13 @@ class N6LVector {
     PosVecMatrix() {
         var eps = 1e-6;
         if(this.x.length != 8){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.PosVecMatrix(): Invalid vector dimensions. Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
         }
         if(this.EpsEqual(this.ZeroVec(), eps, true)){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.PosVecMatrix(): Invalid zero vector. Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -953,13 +955,13 @@ class N6LVector {
     PosVecMul(rh) {
         var eps = 1e-6;
         if(this.x.length != 8 || rh.x.length != 8){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.PosVecMul(): Invalid vector dimensions. Returning N6LVector([1,0,0,0,0,0,0,0], true).");
           }
           return new N6LVector([1,0,0,0,0,0,0,0], true);
         }
         if(this.EpsEqual(this.ZeroVec(), eps, true) || rh.EpsEqual(rh.ZeroVec(), eps, true)){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LVector.PosVecMatrix(): Invalid zero posvector. Returning N6LVector([1,0,0,0,0,0,0,0], true).");
           }
           return new N6LVector([1,0,0,0,0,0,0,0], true);
@@ -1048,7 +1050,6 @@ class N6LVector {
     InvFrustumInfVec(base, range, v, z) {
         return this.InvFrustumInfVec0(base, range, v, z).Mul(range);
     };
-
 
 }
 

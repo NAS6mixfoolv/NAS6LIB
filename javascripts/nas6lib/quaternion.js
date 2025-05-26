@@ -143,7 +143,7 @@ class N6LQuaternion {
 
     Div(rh) {
         if(typeof(rh) != "number") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.Div(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -217,7 +217,7 @@ class N6LQuaternion {
     //dot//内積
     Dot(rh) {
         if(!rh || rh.typename != "N6LQuaternion"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.Dot(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -231,7 +231,7 @@ class N6LQuaternion {
     //rotate axis//軸に対する回転
     RotAxisQuat(axis, theta) {
         if(!axis || axis.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.RotAxisQuat(axis, theta): Invalid axis.typename. Returning this.");
           }
           return this;
@@ -239,7 +239,7 @@ class N6LQuaternion {
         var IntWK = 0;
         var QuatWK = new N6LQuaternion();
         if(axis.x.length != 3 && axis.x.length != 4) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.RotAxisQuat(axis, theta): Invalid axis dimensions. Returning this.");
           }
           return this;
@@ -254,7 +254,7 @@ class N6LQuaternion {
     //rotate axis calc quaternion & rotvec//軸に対する回転
     RotAxisVec(rotvec) {
         if(!rotvec || rotvec.typename != "N6LVector") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.RotAxisVec(rotvec): Invalid rotvec.typename. Returning this.");
           }
           return this;
@@ -283,7 +283,8 @@ class N6LQuaternion {
             if(!axis[0].EpsEqual(new N6LVector(4, true).ZeroVec(), undefined, true)) return;
             axis[0] = new N6LVector([1, m.x[3].x[2], m.x[1].x[3], m.x[2].x[1]], true).NormalVec().Repair();
             if(axis[0].EpsEqual(new N6LVector(4, true).ZeroVec(), undefined, true)){
-                axis[0] = new N6LVector([1, Math.sqrt(Math.abs(m.x[1].x[1])), Math.sqrt(Math.abs(m.x[2].x[2])), Math.sqrt(Math.abs(m.x[3].x[3]))], true).NormalVec().Repair();
+//                axis[0] = new N6LVector([1, Math.sqrt(Math.abs(m.x[1].x[1])), Math.sqrt(Math.abs(m.x[2].x[2])), Math.sqrt(Math.abs(m.x[3].x[3]))], true).NormalVec().Repair();
+                axis[0] = new N6LVector([1, 0, 1, 0], true).NormalVec().Repair();
             }
             return;
         }
@@ -306,7 +307,7 @@ class N6LQuaternion {
     //lerp//線形補完
     Lerp(q, t) {
         if(!q || q.typename != "N6LQuaternion") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.Lerp(q, t): Invalid q.typename. Returning this.");
           }
           return this;
@@ -320,7 +321,7 @@ class N6LQuaternion {
     //slerp//球面線形補完
     Slerp(q, t) {
         if(!q || q.typename != "N6LQuaternion") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.Lerp(q, t): Invalid q.typename. Returning this.");
           }
           return this;
@@ -362,7 +363,7 @@ class N6LQuaternion {
     //slerp//球面線形補完
     Slerp2(q, t) {
         if(!q || q.typename != "N6LQuaternion") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.Lerp(q, t): Invalid q.typename. Returning this.");
           }
           return this;
@@ -479,7 +480,7 @@ class N6LLnQuaternion {
             for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] + rh.q.x[IntWK];
             return QuatWK;
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LLnQuaternion.Add(rh): Invalid rh.typename. Returning this.");
         }
         return this;
@@ -492,7 +493,7 @@ class N6LLnQuaternion {
             for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] - rh.q.x[IntWK];
             return QuatWK;
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LLnQuaternion.Sub(rh): Invalid rh.typename. Returning this.");
         }
         return this;
@@ -500,7 +501,7 @@ class N6LLnQuaternion {
 
     Mul(rh) {
         if(typeof(rh) != "number") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LLnQuaternion.Mul(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -513,7 +514,7 @@ class N6LLnQuaternion {
 
     Div(rh) {
         if(typeof(rh) != "number") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LLnQuaternion.Div(rh): Invalid rh.typename. Returning this.");
           }
           return this;
@@ -564,13 +565,13 @@ class N6LLnQuaternion {
     //rotate axis//軸に対する回転
     RotAxisLnQuat(axis, theta) {
         if(!axis || axis.typename != "N6LVector") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LLnQuaternion.RotAxisLnQuat(axis, theta): Invalid axis.typename. Returning this.");
           }
           return this;
         }
         if(axis.x.length != 3 && axis.x.length != 4) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LLnQuaternion.RotAxisLnQuat(axis, theta): Invalid vector dimension. Returning this.");
           }
           return this;
@@ -601,7 +602,7 @@ class N6LLnQuaternion {
     //lerp//線形補完
     Lerp(q, t) {
         if(!q || q.typename != "N6LLnQuaternion" || typeof(t) != "number") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LLnQuaternion.Lerp(q, t): Invalid q t typename. Returning this.");
           }
           return this;
@@ -618,7 +619,7 @@ class N6LLnQuaternion {
     //lerp//線形補完
     Lerp2(d0, q, d) {
         if(!Array.isArray(q) || !Array.isArray(d)) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LLnQuaternion.Lerp2(d0, q, d): q d not array. Returning this.");
           }
           return this;

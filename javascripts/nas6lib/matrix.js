@@ -1,7 +1,5 @@
 ﻿//Programed by NAS6
 //matrix.js
-var SwDefInverseMat = 1;
-
 
 //matrix//行列
 //construction ex.//構築例
@@ -121,7 +119,7 @@ class N6LMatrix {
         var token2 = token[0].split(',');
         var ret = new N6LMatrix(Number(token2[1]), Boolean(token2[0]));
         if(token.length < ret.x.length + 1){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.Parse: Invalid str. Returning N6LMatrix(4).UnitMat().SetHomo(true)");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -133,7 +131,7 @@ class N6LMatrix {
 
     ToX3DOM() {
         if(!this.bHomo || this.x.length != 4){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.ToX3DOM: Invalid str. Returning x3dom.fields.SFMatrix4f(1, 0, 0, 0,    0, 1, 0, 0,    0, 0, 1, 0,    0, 0, 0, 1);");
           }
           return new x3dom.fields.SFMatrix4f(
@@ -153,7 +151,7 @@ class N6LMatrix {
         var str = sf.toString().replace(/\n/g , "");
         var token = str.split(' ');
         if(token.length != 16){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.FromX3DOM(sf): Invalid matrix dimensions(sf). Returning N6LMatrix(4).UnitMat().SetHomo(true)");
           }
           return new N6LMatrix(3).UnitMat().SetHomo(true);
@@ -162,13 +160,13 @@ class N6LMatrix {
             [Number(token[15]), Number(token[12]), Number(token[13]), Number(token[14])],
             [Number(token[3]), Number(token[0]), Number(token[1]), Number(token[2])],
             [Number(token[7]), Number(token[4]), Number(token[5]), Number(token[6])],
-            [Number(token[11]), Number(token[8]), Number(token[9]), Number(token[10])]]);
+            [Number(token[11]), Number(token[8]), Number(token[9]), Number(token[10])]]).TransposedMat();
 
     };
 
     To3JS() {
         if(!this.bHomo || this.x.length != 4){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.To3JS(): Invalid matrix(this). Returning THREE.Matrix4().set(1, 0, 0, 0,    0, 1, 0, 0,    0, 0, 1, 0,    0, 0, 0, 1)");
           }
           return new THREE.Matrix4().set(
@@ -187,7 +185,7 @@ class N6LMatrix {
 
     From3JS(ary) {
         if(ary.length != 16){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.From3JS(ary): Invalid matrix dimensions(ary). Returning N6LMatrix(4).UnitMat().SetHomo(true)");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -237,7 +235,7 @@ class N6LMatrix {
             ret = new N6LMatrix(this);
             var me = new N6LMatrix(this);
             if((this.x.length != rh.x.length) || (this.x.length != this.x[0].x.length)){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.Add(rh): Invalid matrix dimensions(this,rh). Returning this.");
               }
               return this;
@@ -284,7 +282,7 @@ class N6LMatrix {
             ret = new N6LMatrix(this);
             var me = new N6LMatrix(this);
             if((this.x.length != rh.x.length) || (this.x.length != this.x[0].x.length)){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.Sub(rh): Invalid matrix dimensions(this,rh). Returning this.");
               }
               return this;
@@ -330,7 +328,7 @@ class N6LMatrix {
             ret = new N6LMatrix(this);
             var me = new N6LMatrix(this);
             if((this.x.length != rh.x.length) || (this.x.length != this.x[0].x.length)){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.Mul(rh): Invalid matrix dimensions(this,rh). Returning this.");
               }
               return this;
@@ -354,7 +352,7 @@ class N6LMatrix {
         else if(rh && rh.typename == "N6LVector"){
             ret = new N6LVector(rh.x.length);
             if(this.x.length != rh.x.length){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.Mul(rh): Invalid matrix dimensions(this,rh). Returning this.");
               }
               return this;
@@ -405,7 +403,7 @@ class N6LMatrix {
             ret = new N6LMatrix(this);
             var me = new N6LMatrix(this);
             if((this.x.length != rh.x.length) || (this.x.length != this.x[0].x.length)){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.Div(rh): Invalid matrix dimensions(this,rh). Returning this.");
               }
               return this;
@@ -429,7 +427,7 @@ class N6LMatrix {
         else if(rh && rh.typename == "N6LVector"){
             ret = new N6LVector(rh.x.length);
             if(this.x.length != rh.x.length){
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.Div(rh): Invalid matrix dimensions(this,rh). Returning this.");
               }
               return this;
@@ -576,7 +574,7 @@ class N6LMatrix {
             if(this.bHomo){
                 ret = ret.Homogeneous();
                 if((rh.bHomo && this.x.length != rh.x.length) && (!rh.bHomo && this.x.length - 1 != rh.x.length)){
-                  if(DEBUG_MODE){
+                  if(N6L_DEBUG_MODE){
                     console.warn("N6LMatrix.TranslatedMat(rh): Invalid matrix vector dimensions(this,rh). Returning this.");
                   }
                   return this;
@@ -591,14 +589,14 @@ class N6LMatrix {
                 }
             }
             else {
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.TranslatedMat(rh): Error: this.bHomo == false. Returning this.");
               }
               return this;
             }
             return ret;
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LMatrix.TranslatedMat(rh): Invalid rh.typename. Returning this.");
         }
         return this;
@@ -611,7 +609,7 @@ class N6LMatrix {
         if(rh && rh.typename == "N6LVector"){
             if(this.bHomo){
                 if((rh.bHomo && this.x.length != rh.x.length) && (!rh.bHomo && this.x.length - 1 != rh.x.length)){
-                  if(DEBUG_MODE){
+                  if(N6L_DEBUG_MODE){
                     console.warn("N6LMatrix.ScaleMat(rh): Invalid matrix vector dimensions. Returning this.");
                   }
                   return this;
@@ -627,7 +625,7 @@ class N6LMatrix {
             }
             else{
                 if((rh.bHomo && this.x.length != rh.x.length - 1) && (!rh.bHomo && this.x.length != rh.x.length)){
-                  if(DEBUG_MODE){
+                  if(N6L_DEBUG_MODE){
                     console.warn("N6LMatrix.ScaleMat(rh): Invalid matrix vector dimensions. Returning this.");
                   }
                   return this;
@@ -652,7 +650,7 @@ class N6LMatrix {
             }
             return this.Mul(ret);
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LMatrix.ScaleMat(rh): Invalid this.typename. Returning this.");
         }
         return this;
@@ -668,7 +666,7 @@ class N6LMatrix {
             if(translate.bHomo) {if(translate.typename == "N6LVector") t = new N6LVector(translate);}
             else if(translate.typename == "N6LVector") t = new N6LVector(translate).ToHomo();
             else {
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.AffineMat(scale, rotate, translate): Invalid any. Returning this.");
               }
               return this;
@@ -676,7 +674,7 @@ class N6LMatrix {
             if(scale.bHomo) {if(scale.typename == "N6LVector") s = new N6LVector(scale);}
             else if(typeof(scale) == "number") s = scale;
             else {
-              if(DEBUG_MODE){
+              if(N6L_DEBUG_MODE){
                 console.warn("N6LMatrix.AffineMat(scale, rotate, translate): Invalid any. Returning this.");
               }
               return this;
@@ -688,7 +686,7 @@ class N6LMatrix {
                 else if(rotate.typename == "N6LQuaternion") r = new N6LQuaternion(rotate);
                 else if(rotate.typename == "N6LMatrix") ret = ret.Mul(new N6LMatrix(rotate)); 
                 else {
-                  if(DEBUG_MODE){
+                  if(N6L_DEBUG_MODE){
                     console.warn("N6LMatrix.AffineMat(scale, rotate, translate): Invalid any. Returning this.");
                   }
                   return this;
@@ -699,7 +697,7 @@ class N6LMatrix {
                 else if(rotate.typename == "N6LQuaternion") r = new N6LQuaternion(rotate).ToHomo();
                 else if(rotate.typename == "N6LMatrix") ret = ret.Mul(new N6LMatrix(rotate).ToHomo()); 
                 else {
-                  if(DEBUG_MODE){
+                  if(N6L_DEBUG_MODE){
                     console.warn("N6LMatrix.AffineMat(scale, rotate, translate): Invalid any. Returning this.");
                   }
                   return this;
@@ -708,7 +706,7 @@ class N6LMatrix {
             if(rotate.typename == "N6LVector" || rotate.typename == "N6LQuaternion") ret = ret.Mul(r.Matrix());
             return this.Mul(ret).SetHomo(true);
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LMatrix.AffineMat(scale, rotate, translate): Invalid any. Returning this.");
         }
         return this;
@@ -788,7 +786,7 @@ class N6LMatrix {
     //look at matrix//注視
     LookAtMat2(rh) {
         if(!rh){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.LookAtMat2(rh): rh == null. Returning this.");
           }
           return this;
@@ -799,7 +797,7 @@ class N6LMatrix {
         if(rh.typename == "N6LMatrix") lookat = rh.Pos().Mul(-1); //注視目標セット
         else if(rh.typename == "N6LVector") lookat = new N6LVector(rh).Mul(-1); //注視目標セット
         else {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.LookAtMat2(rh): Invalid rh.typename Returning this.");
           }
           return this;
@@ -830,7 +828,7 @@ class N6LMatrix {
     //inside call LU decomposition inverse matrix  // iex is Array//LU分解逆行列呼び出し関数
     SubLUD(mx, m, n, iex) {
         if(!mx || mx.typename != "N6LMatrix") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.SubLUD(mx, m, n, iex): Invalid mx.typename Returning this.");
           }
           return this;
@@ -886,13 +884,13 @@ class N6LMatrix {
     LUDMat(l, u, dt) {
         //dt = new Array();
         if(!l[0] || l[0].typename != "N6LMatrix") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.LUDMat(l, u, dt): Invalid l.typename Returning this.");
           }
           return this;
         }
         if(!u[0] || u[0].typename != "N6LMatrix") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.LUDMat(l, u, dt): Invalid u.typename Returning this.");
           }
           return this;
@@ -1018,7 +1016,7 @@ class N6LMatrix {
         case 2 : return this.InverseMat00(dt);
         case 3 : return this.InverseMat01(dt);
         case 4 : return this.DeterminMatInvMat(dt);
-        default: if(DEBUG_MODE){
+        default: if(N6L_DEBUG_MODE){
                    console.warn("N6LMatrix.InverseMat(dt, sw): Invalid sw. Returning this.");
                  }
                  return this;
@@ -1274,7 +1272,7 @@ class N6LMatrix {
         var eigen = [new N6LMatrix(this.x.length).SetHomo(this.bHomo)];
         var A = [new N6LMatrix(this)];
         if(this.EigenVec(ct, eps, A, det, eigen) != 0){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.DiagonalMat(ct, eps): this.EigenVec(ct, eps, A, det, eigen) == 0. Returning this.");
           }
           return this;
@@ -1296,7 +1294,7 @@ class N6LMatrix {
         var eigen = [new N6LMatrix(this.x.length).SetHomo(this.bHomo)];
         var A = [new N6LMatrix(this)];
         if(this.EigenVec(ct, eps, A, det, eigen) != 0) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.Diagonal(ct, eps): this.EigenVec(ct, eps, A, det, eigen) == 0. Returning this.");
           }
           return this;
@@ -1319,7 +1317,7 @@ class N6LMatrix {
             mwk = mwk.Mul(d);
             return mwk.Repair(); 
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LMatrix.Rot2D(theta): Invalid matrix dimension(this).. Returning N6LMatrix(2).UnitMat().SetHomo(false).");
         }
         return new N6LMatrix(2).UnitMat().SetHomo(false);
@@ -1328,7 +1326,7 @@ class N6LMatrix {
     //rotate axis//軸に対する回転
     RotAxis(axis, theta) {
         if(!axis || axis.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.RotAxis(axis, theta): Invalid axis.typename. Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -1336,7 +1334,7 @@ class N6LMatrix {
         var ret = new N6LMatrix();
         if(!((this.x.length == 3 && this.x[0].x.length == 3 && this.x.length == axis.x.length) ||
              (this.x.length == 4 && this.x[0].x.length == 4 && this.x.length == axis.x.length))) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.RotAxis(axis, theta): Invalid matrix vector dimensions(this,axis). Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -1363,7 +1361,7 @@ class N6LMatrix {
     //rotate axis calc quaternion//軸に対する回転
     RotAxisQuat(axis, theta) {
         if(!axis || axis.typename != "N6LVector") {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.RotAxisQuat(axis, theta): Invalid axis.typename. Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -1371,7 +1369,7 @@ class N6LMatrix {
         var ret = new N6LMatrix();
         if(!((this.x.length == 3 && this.x[0].x.length == 3 && this.x.length == axis.x.length) ||
              (this.x.length == 4 && this.x[0].x.length == 4 && this.x.length == axis.x.length))) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.RotAxisQuat(axis, theta): Invalid matrix vector dimensions(this,axis). Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -1385,7 +1383,7 @@ class N6LMatrix {
     //rotate axis calc quaternion & rotvec//軸に対する回転
     RotAxisVec(rotvec) {
         if(!rotvec || rotvec.typename != "N6LVector"){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.RotAxisVec(rotvec): Invalid rotvec.typename. Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -1393,7 +1391,7 @@ class N6LMatrix {
         var ret = new N6LMatrix();
         if(!((this.x.length == 3 && this.x[0].x.length == 3 && rotvec.x.length == 4) ||
              (this.x.length == 4 && this.x[0].x.length == 4 && rotvec.x.length == 4))) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.RotAxisVec(rotvec): Invalid matrix vector dimensions(this,rotvec). Returning N6LMatrix(4).UnitMat().SetHomo(true).");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
@@ -1447,7 +1445,7 @@ class N6LMatrix {
     //get position//座標取得
     Pos() {
         if(this.x.length != this.x[0].x.length){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.Pos(): Invalid matrix row != col. Returning N6LVector(this.x.length, true).ZeroVec().");
           }
           return new N6LVector(this.x.length, true).ZeroVec();
@@ -1459,7 +1457,7 @@ class N6LMatrix {
     //get scale//倍率取得
     Scale() {
         if(this.x.length != this.x[0].x.length){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.Scale(): Invalid matrix row != col. Returning N6LVector(this.x.length, true).ZeroVec().");
           }
           return new N6LVector(this.x.length, true).ZeroVec();
@@ -1542,7 +1540,7 @@ class N6LMatrix {
     //get quaternion//四元数取得
     Quaternion() {
         if(this.x.length != 3 && this.x.length != 4) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.Quaternion(): Invalid matrix dimensions(this). Returning N6LQuaternion().ZeroQuat().");
           }
           return new N6LQuaternion().ZeroQuat();
@@ -1558,7 +1556,7 @@ class N6LMatrix {
     Vector() {
         var eps = 1e-6;
         if(this.x.length != 3 && this.x.length != 4) {
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.Vector(): Invalid matrix dimensions(this). Returning N6LVector(4).UnitVec().SetHomo(true).");
           }
           return new N6LVector(4).UnitVec().SetHomo(true);
@@ -1763,7 +1761,7 @@ class N6LMatrix {
     EulerAngle(first, second, third, eps, recalc) {
         if(!eps) eps = 1.0e-7;
         if(this.x.length != 3 && this.x.length != 4){
-          if(DEBUG_MODE){
+          if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.EulerAngle(first, second, third, eps, recalc): Invalid matrix dimensions(this). Returning N6LVector(4).UnitVec().SetHomo(true).");
           }
           return new N6LVector(4).UnitVec().SetHomo(true);
@@ -1866,7 +1864,7 @@ class N6LMatrix {
                         } 
                     } 
                     break;
-            default:if(DEBUG_MODE){
+            default:if(N6L_DEBUG_MODE){
                       console.warn("N6LMatrix.EulerAngle(first, second, third, eps, recalc): Any. Returning N6LVector(4).UnitVec().SetHomo(true).");
                     }
                     return new N6LVector(4).UnitVec().SetHomo(true);
@@ -1923,7 +1921,7 @@ class N6LMatrix {
             }
             return ret;
         }
-        if(DEBUG_MODE){
+        if(N6L_DEBUG_MODE){
           console.warn("N6LMatrix.EulerAngle(first, second, third, eps, recalc): Any. Returning N6LVector(4).UnitVec().SetHomo(true).");
         }
         return new N6LVector(4).UnitVec().SetHomo(true);

@@ -1614,7 +1614,10 @@ it is important to understand the characteristics of each library and adjust the
 <br>
 Debugging strategy: When problems are complicated and intertwined, it is effective to first check the simplest "no rotation" state, and then verify the behavior with a simple test case such as a single-axis rotation.<br>
 <br>
-Consider practical solutions: When mathematical transformations are complicated and difficult to solve, approaches that solve visual problems more directly, such as adjusting textures, can also be effective.<br>
+Consider practical Solution:<br>
+Adjusting N6LMatrix.FromX3DOM(): The transposition problem was solved by applying a transposition to the return value.<br>
+Flip the skybox image left and right and adjust placement: Since matrix transformation did not entirely solve the problem, the image used for the skybox was flipped left and right (mirrored) using an image editing software.<br>
+At the same time, the placement of the images for the **front and back faces** (corresponding to the Z-axis direction) in X3DOM's Background node was also adjusted. This combination finally achieved the correct display.<br>
 <br>
 ##############################<br>
 <br>

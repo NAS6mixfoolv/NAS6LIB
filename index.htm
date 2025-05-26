@@ -1587,6 +1587,37 @@ especially the rotation transformations of N6LVector, N6LMatrix, and N6LQuaterni
 ############################################<br>
 <br>
 <br>
+Known issues ##############################<br>
+<br>
+Overview<br>
+<br>
+When converting 3D models between NAS6LIB and X3DOM, problems with left-right inversion of texture images and transposition of view matrices occurred, especially in skyboxes. View matrix transposition problem Even after solving the transposition problem, the numerical calculations were performed correctly inside NAS6LIB, but when drawn in X3DOM, it appeared as a mirror image. Since it worked without problems in Three.js, it was found that the cause was the unique interpretation of the coordinate system in X3DOM, and it was solved by adjusting the texture and positioning of the skybox.<br>
+<br>
+Problem<br>
+<br>
+Left-right inversion and transposition phenomenon: When a matrix calculated in NAS6LIB was applied to X3DOM, the texture image, especially of the skybox, was displayed with left-right inversion. The phenomenon of transposition of the view matrix was also confirmed.<br>
+Coordinate system differences between libraries: NAS6LIB is a left-handed coordinate system, but X3DOM is based on a right-handed system, so the conversion was complicated.<br>
+Comparison with Three.js: Since no problems occurred with the same conversion logic in Three.js, it was found that this was a special problem caused by the interpretation of the coordinate system in X3DOM.<br>
+<br>
+Solution<br>
+<br>
+Adjusting N6LMatrix.FromX3DOM(): The transposition problem was solved by applying a transposition to the return value.<br>
+<br>
+Flip the skybox image left and right: Since matrix transformation did not solve the problem, the image used for the skybox was flipped left and right (mirrored) using an image editing software.<br>
+<br>
+At the same time, the order of the placement of each face in the Background node of X3DOM was flipped along the Z axis, and the display was finally correct.<br>
+<br>
+Learned<br>
+<br>
+Library-specific coordinate system interpretation: Since each 3D library has its own coordinate system definition and rendering pipeline, when linking different libraries,<br>
+it is important to understand the characteristics of each library and adjust the placement of textures and objects as necessary to avoid visual differences, not just numerical accuracy.<br>
+<br>
+Debugging strategy: When problems are complicated and intertwined, it is effective to first check the simplest "no rotation" state, and then verify the behavior with a simple test case such as a single-axis rotation.<br>
+<br>
+Consider practical solutions: When mathematical transformations are complicated and difficult to solve, approaches that solve visual problems more directly, such as adjusting textures, can also be effective.<br>
+<br>
+##############################<br>
+<br>
 </b>
 <hr>
 <br>

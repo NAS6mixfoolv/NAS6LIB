@@ -1,5 +1,6 @@
 ﻿//Programed by NAS6
 //matrix.js
+var SwDefInverseMat = 1;
 
 //matrix//行列
 //construction ex.//構築例

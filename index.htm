@@ -1571,43 +1571,86 @@ You can do this by setting<br>
 <hr>
 <br>
 <b>
-################# Operation verification #################<br>
+##############################<br>
+<h1>3D rotation test with X3DOM and ThreeJS</h1>
 <br>
-<a href="http://nas6.net/rot.htm">3D rotation test with X3DOM and ThreeJS</a><br>
+<br>
+<a href="./rottest.htm">3D rotation test with X3DOM</a><br>
+<br>
+<a href="./rottest3js.htm">3D rotation test with ThreeJS</a><br>
+<br>
+##############################<br>
+<br>
+<hr>
+<b>
 <br>
 <br>
 These samples are multifaceted numerical verifications of NAS6LIB's numerical calculations,<br>
 especially the rotation transformations of N6LVector, N6LMatrix, and N6LQuaternion.<br>
-<br>
-############################################<br>
+これらのサンプルは、NAS6LIB の数値計算、特に N6LVector、N6LMatrix、N6LQuaternion の回転変換の多面的な数値検証です。<br>
 <br>
 <br>
 Known issues ##############################<br>
+既知の問題 ##############################<br>
 <br>
 Overview<br>
+概要<br>
 <br>
-When converting 3D models between NAS6LIB and X3DOM, problems with left-right inversion of texture images and transposition of view matrices occurred, especially in skyboxes. View matrix transposition problem Even after solving the transposition problem, the numerical calculations were performed correctly inside NAS6LIB, but when drawn in X3DOM, it appeared as a mirror image. Since it worked without problems in Three.js, it was found that the cause was the unique interpretation of the coordinate system in X3DOM, and it was solved by adjusting the texture and positioning of the skybox.<br>
+When converting 3D models between NAS6LIB X3DOM and ThreeJS, problems with left-right inversion of texture images<br> 
+and transposition of view matrices occurred, especially in skyboxes.<br>
+View matrix transposition problem Even after solving the transposition problem,<br>
+the numerical calculations were performed correctly inside NAS6LIB, but when drawn in X3DOM,<br>
+it appeared as a mirror image. Since the problem worked fine in Three.js, it turned out that the cause was<br> 
+a peculiar interpretation of the coordinate system in X3DOM,<br>
+which was resolved by adjusting the position of the texture and skybox.<br>
+Or rather, the reason there were no problems with ThreeJS may be because I hardly left any numerical calculations to it.<br>
+NAS6LIB と X3DOM, ThreeJS 間で 3D モデルを変換する際に、特にスカイボックスにおいて、テクスチャ画像の左右反転とビュー行列の転置に関する問題が発生しました。<br>
+ビュー行列の転置問題 転置問題を解決した後も、NAS6LIB 内では数値計算は正しく実行されていましたが、X3DOM で描画すると鏡像になっていました。 <br>
+Three.js で問題では問題がなかったため、原因は X3DOM における座標系の解釈が独特であることが判明し、テクスチャとスカイボックスの位置を調整することで解決しました。<br>
+というよりも私がThreeJSに数値計算をほとんど任せなかったのがThreeJSで問題がなかった原因かもしれません<br>
 <br>
 Problem<br>
+問題<br>
 <br>
-Left-right inversion and transposition phenomenon: When a matrix calculated in NAS6LIB was applied to X3DOM, the texture image, especially of the skybox, was displayed with left-right inversion. The phenomenon of transposition of the view matrix was also confirmed.<br>
-Coordinate system differences between libraries: NAS6LIB is a left-handed coordinate system, but X3DOM is based on a right-handed system, so the conversion was complicated.<br>
-Comparison with Three.js: Since no problems occurred with the same conversion logic in Three.js, it was found that this was a special problem caused by the interpretation of the coordinate system in X3DOM.<br>
+Left-right inversion and transposition phenomenon: When a matrix calculated in NAS6LIB was applied to X3DOM, the texture image, especially of the skybox,<br> 
+was displayed with left-right inversion. The phenomenon of transposition of the view matrix was also confirmed.<br>
+Coordinate system differences between libraries: NAS6LIB is a left-handed coordinate system, but X3DOM is based on a right-handed system,<br> 
+so the conversion was complicated.<br>
+Comparison with Three.js: Since no problems occurred with the same conversion logic in Three.js, 
+it was found that this was a special problem caused by the interpretation of the coordinate system in X3DOM.<br>
+左右反転と転置現象：NAS6LIB で計算された行列を X3DOM に適用すると、特にスカイボックスのテクスチャ画像が左右反転して表示されました。<br>
+ビューマトリックスの転置現象も確認されました。<br>
+ライブラリ間の座標系の違い：NAS6LIBは左手座標系ですが、X3DOMは右手座標系をベースとしているため、変換が複雑でした。<br>
+Three.jsとの比較：Three.jsでは同様の変換ロジックで問題が発生しなかったため、これはX3DOMにおける座標系の解釈に起因する特殊な問題であることがわかりました。<br>
 <br>
 Solution<br>
+解決策<br>
 <br>
 Adjusting N6LMatrix.FromX3DOM(): The transposition problem was solved by applying a transposition to the return value.<br>
-Flip the skybox image left and right and adjust placement: Since matrix transformation did not entirely solve the problem, the image used for the skybox was flipped left and right (mirrored) using an image editing software.<br>
-At the same time, the placement of the images for the **front and back faces** (corresponding to the Z-axis direction) in X3DOM's Background node was also adjusted. This combination finally achieved the correct display.<br>
+Flip the skybox image left and right and adjust placement: Since matrix transformation did not entirely solve the problem, <br>
+the image used for the skybox was flipped left and right (mirrored) using an image editing software.<br>
+At the same time, the placement of the images for the **front and back faces** (corresponding to the Z-axis direction)<br> 
+in X3DOM's Background node was also adjusted. This combination finally achieved the correct display.<br>
+N6LMatrix.FromX3DOM()の調整：戻り値に転置を適用することで、転置の問題を解決しました。<br>
+スカイボックス画像を左右反転し、配置を調整：マトリックス変換だけでは問題が完全に解決しなかったため、画像編集ソフトを用いてスカイボックスに使用した画像を左右反転（ミラーリング）しました。<br>
+同時に、**前面と背面**（Z軸方向に対応）の画像の配置を調整しました。 X3DOMのBackgroundノードも同様でした。この組み合わせにより、最終的に正しく調整された表示が実現しました。<br>
 <br>
 Learned<br>
+学んだこと<br>
 <br>
-Library-specific coordinate system interpretation: Since each 3D library has its own coordinate system definition and rendering pipeline, when linking different libraries,<br>
-it is important to understand the characteristics of each library and adjust the placement of textures and objects as necessary to avoid visual differences, not just numerical accuracy.<br>
+Library-specific coordinate system interpretation: Since each 3D library has its own coordinate system definition and rendering pipeline,<br> 
+when linking different libraries,it is important to understand the characteristics of each library and adjus<br>t 
+the placement of textures and objects as necessary to avoid visual differences, not just numerical accuracy.<br>
+ライブラリ固有の座標系の解釈：各3Dライブラリは独自の座標系定義とレンダリングパイプラインを持っているため、異なるライブラリをリンクする際には、<br>
+各ライブラリの特性を理解し、必要に応じてテクスチャやオブジェクトの配置を調整し、数値的な精度だけでなく視覚的な差異を回避することが重要です。<br>
 <br>
-Debugging strategy: When problems are complicated and intertwined, it is effective to first check the simplest "no rotation" state, and then verify the behavior with a simple test case such as a single-axis rotation.<br>
+Debugging strategy: When problems are complicated and intertwined, it is effective to first check the simplest "no rotation" state, <br>
+and then verify the behavior with a simple test case such as a single-axis rotation.<br>
+デバッグ戦略：問題が複雑に絡み合っている場合は、まず最も単純な「回転なし」の状態を確認し、次に単軸回転などの単純なテストケースで動作を確認するのが効果的です。<br>
 <br>
-Consider practical solutions: When mathematical transformations are complicated and difficult to solve, approaches that solve visual problems more directly, such as adjusting textures, can also be effective.<br>
+Consider practical solutions: When mathematical transformations are complicated and difficult to solve, approaches <br>
+that solve visual problems more directly, such as adjusting textures, can also be effective.<br>
+実用的な解決策を検討する：数学的な変換が複雑で解決が難しい場合は、テクスチャの調整など、視覚的な問題をより直接的に解決するアプローチも効果的です。<br>
 <br>
 ##############################<br>
 <br>

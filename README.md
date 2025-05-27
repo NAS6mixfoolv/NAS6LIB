@@ -334,6 +334,7 @@ note:NAS6LIB_1_6_0(2016/08/14):note:add Get/Set-Col/Row(), MoveMat(), LookAtMat2
 note:NAS6LIB_1_7_0(2021/07/27):note:add ./nas6lib/hsv.js
 note:NAS6LIB_1_8_0(2021/09/28):note:corrected to class description
 note:NAS6LIB_1_9_0(2024/03/22):note:refine ToSchwartz()
-note:NAS6LIB_1_9_1(2024/03/25):note:add GetEccentricity()
-version:NAS6LIB_1_9_2(2024/04/09):note:add comment
+note:NAS6LIB_1_9_1(2024/03/25):note:add GetEccentricity()note:NAS6LIB_1_9_2(2024/04/09):note:add comment
+note:NAS6LIB_2_0_0(2025/05/25):note:improved error handling
+version:NAS6LIB_2_0_1(2025/05/26):note:Adaptation to the X3DOM environment
 licence:GPL

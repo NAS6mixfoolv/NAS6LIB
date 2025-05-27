@@ -145,6 +145,15 @@ $= \frac{8π^2a^3}{T^2}(1+dφ)$
 $= \frac{2aV_p^2(1-e)}{1+e}(1+dφ) = \frac{2aV_a^2(1+e)}{1-e}(1+dφ)$
 $= \frac{2h^2}{a(1-e^2)}(1+dφ) = -4aE(1+dφ) \quad [\text{m}^3\text{s}^{-2}]$
 
+Maybe it's like this...
+* **(1/(1-e^2))**: Factor for converting from circular to elliptical orbit properties (e.g., in specific angular momentum formulas)
+
+$r_s c^2 = 2GM = \frac{2aV^2}{1-e^2}(1+dφ) = \frac{2a^3ω^2}{1-e^2}(1+dφ)$
+$= ac^2\frac{2}{3}dφ$
+$= \frac{8π^2a^3}{T^2(1-e^2)}(1+dφ)$
+$= \frac{2aV_p^2(1-e)}{(1+e)(1-e^2)}(1+dφ) = \frac{2aV_a^2(1+e)}{(1-e)(1-e^2)}(1+dφ)$
+$= \frac{2h^2}{a(1-e^2)^2}(1+dφ) = \frac{-4aE}{1-e^2}(1+dφ) \quad [\text{m}^3\text{s}^{-2}]$
+
 * **G**: Gravitational constant
 * **M**: Mass of the central body
 * **c**: Speed of light
@@ -153,7 +162,6 @@ $= \frac{2h^2}{a(1-e^2)}(1+dφ) = -4aE(1+dφ) \quad [\text{m}^3\text{s}^{-2}]$
 * **V**: Average orbital velocity (or instantaneous velocity in general context)
 * **dφ**: Relativistic pericenter shift (as defined in this context)
 * **rs**: Schwarzschild radius of the central body
-* **(1/(1-e^2))**: Factor for converting from circular to elliptical orbit properties (e.g., in specific angular momentum formulas)
 * **T**: Orbital period
 * **ω**: Mean angular velocity
 * **Vp**: Velocity at periapsis (pericenter)

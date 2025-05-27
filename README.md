@@ -182,6 +182,120 @@ From this set of relationships, the following key orbital parameters are derived
 this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with 
 total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.
 
+Schwarzschild radius of the sun rs=2953[m]<br>
+Speed ​​of light c=299792458[m/s]<br>
+2πdφ=2π*(3.0/(1-e^2))(v/c)^2<br>
+Verify by substituting the constants of planets in the solar system for rsc^2=ac^2(1-e^2)dφ/3π,rsc^2=2aV^2<br>
+<table border="1">
+<tr>
+<th>Planet name</th>
+<th>Major axis of orbit a[m]</th>
+<th>Mean orbital velocity V[m/s]</th>
+<th>Eccentricity e</th>
+<th>(1-e^2)</th>
+<th>3.0/(1-e^2)</th>
+<th>(v/c)^2</th>
+<th>2πdφ</th> 
+<th>rs=a(1-e^2)2πdφ/3π)</th> 
+<th>rs=2a(V/c)^2</th> 
+</tr> 
+<tr> 
+<td>Mercury</td> 
+<td>57909656770</td> 
+<td>47872.5</td> 
+<td>0.2056</td> 
+<td>0.95772864</td> 
+<td>3.1324112851</td> 
+<td>2.5499449799789e-8</td> 
+<td>5.018679455692e-7</td> 
+<td>2953.328771</td>
+<td>2953.328771</td> 
+</tr> 
+<tr> 
+<td>Venus</td> 
+<td>108208930000</td> 
+<td>35021.4</td> 
+<td>0.0068</td> 
+<td>0.99995376</td> 
+<td>3.0001387264147</td> 
+<td>1.36466357799887e-8</td> 
+<td>2.57244919280835553e-7</td> 
+<td>2953.3757117</td> 
+<td>2953.37571</td> 
+</tr> <tr> 
+<td>Earth</td> 
+<td>149597870700</td> 
+<td>29780</td> 
+<td>0.0167</td> 
+<td>0.99972111</td> 
+<td>3.0008369</td> 
+<td>9.86751921971e-9</td> 
+<td>1.86050242679988148e-7</td> 
+<td>2952.31972537</td> 
+<td>2952.31972872</td> 
+</tr> 
+<tr> 
+<td>Mars</td> 
+<td>227936640000</td>
+<td>24130.9</td> 
+<td>0.0934</td> 
+<td>0.99127644</td> 
+<td>3.02640099</td> 
+<td>6.4789650016638728e-9</td> 
+<td>1.232003588093984e-7</td> 
+<td>2953.5870257</td> 
+<td>2953.5870263</td> 
+</tr> 
+<tr> 
+<td>Jupiter</td> 
+<td>778412010000</td> 
+<td>13069.7</td> 
+<td>0.0485</td>
+<td>0.99764775</td> 
+<td>3.007073388</td> 
+<td>1.900596092587527e-9</td> 
+<td>3.5909861298224e-8</td> 
+<td>2958.893648887</td> 
+<td>2958.893649</td> 
+</tr> 
+<tr> 
+<td>Saturn</td> 
+<td>1426725400000</td> 
+<td>9672.4</td> 
+<td>0.0555</td> 
+<td>0.99691975</td> 
+<td>3.0092693</td> 
+<td>1.040943340003783e-9</td> 
+<td>1.9681944998115e-8</td> 
+<td>2970.28060454459</td> 
+<td>2970.2806</td> 
+</tr> 
+<tr> 
+<td>Uranus</td> 
+<td>2870990000000</td> 
+<td>6800</td> 
+<td>0.0463</td> 
+<td>0.99785631</td> 
+<td>3.0064448858</td>
+ <td>5.14489385919193163e-10</td> 
+<td>9.7187303959641e-9</td> 
+<td>2954.1877641236</td> 
+<td>2954.18776416</td> 
+</tr> 
+<tr> 
+<td>Neptune</td> 
+<td>4495060000000</td> 
+<td>5500</td> 
+<td>0.009</td> 
+<td>0.999919</td> 
+<td>3.00024301968</td>
+<td>3.36576641956219576e-10</td> 
+<td>6.3448341659952e-9</td> 
+<td>3025.8644</td> 
+<td>3025.8644</td> 
+</tr>
+</table>
+
 About the order and handling of the homogeneous coordinate flag bHomo and the w parameter
 When bHomo is true, it will be treated as homogeneous coordinates. Homogeneous coordinates are closely related to the w parameter, 
 and since placing the w parameter at the end of a variable-length vector makes processing complicated, NAS6LIB places it 

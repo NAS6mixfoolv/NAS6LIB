@@ -2,6 +2,7 @@
 Javascript physics engine library
 Programed by NAS6 http://nas6.net/
 Here is a link to the demo of the Solar System Planet Orbit Simulator.
+http://nas6.net/solarsystem.htm
 http://nas6.net/satellite.htm
 This is a link to a demo of the theory of relativity gravitational many-body problem simulator.
 The element order of vectors and matrices in this library is wxyz.

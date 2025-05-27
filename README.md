@@ -1,20 +1,41 @@
 # NAS6LIB
 Javascript physics engine library
-Programed by NAS6
-http://nas6.net/
-http://nas6.net/solarsystem.htm
+Programed by NAS6 http://nas6.net/
 Here is a link to the demo of the Solar System Planet Orbit Simulator.
 http://nas6.net/satellite.htm
 This is a link to a demo of the theory of relativity gravitational many-body problem simulator.
 The element order of vectors and matrices in this library is wxyz.
 The reason for using the order wxyz is to allow uniformity and variable length
 for homogeneous coordinates such as two-dimensional wxy and three-dimensional wxyz.
-DEMO:
-https://nas6mixfoolv.github.io/NAS6LIB/
-https://nas6mixfoolv.github.io/solarsystem/
-https://nas6mixfoolv.github.io/satellite/
 
 NAS6LIB is a collection of JavaScript modules for working with physics simulations and geometric transformations.
+
+# Quick Start
+
+## 1. Load the library
+
+html
+
+add timer.js etc.
+<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script>
+<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script>
+add masspoint.js etc.
+
+
+## 2. Minimum sample (2D vector addition)
+
+javascript
+var v1 = new N6LVector([1, 2]);
+var v2 = new N6LVector([3, 4]);
+var v3 = v1.Add(v2);
+console.log(v3.x); // Result: [4, 6]
+
+## 3. View the official demo
+- [Sample demo page]
+- (https://nas6mixfoolv.github.io/NAS6LIB/)
+- (https://nas6mixfoolv.github.io/solarsystem/)
+- (https://nas6mixfoolv.github.io/satellite/)
+
 
 Main Modules and Features
 common.js: Provides essential file download and utility functions.

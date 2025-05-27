@@ -154,6 +154,8 @@ $= \frac{8π^2a^3}{T^2(1-e^2)}(1+dφ)$
 $= \frac{2aV_p^2(1-e)}{(1+e)(1-e^2)}(1+dφ) = \frac{2aV_a^2(1+e)}{(1-e)(1-e^2)}(1+dφ)$
 $= \frac{2h^2}{a(1-e^2)^2}(1+dφ) = \frac{-4aE}{1-e^2}(1+dφ) \quad [\text{m}^3\text{s}^{-2}]$
 
+But maybe I'm overthinking this...
+
 * **G**: Gravitational constant
 * **M**: Mass of the central body
 * **c**: Speed of light

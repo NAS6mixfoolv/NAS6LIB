@@ -283,8 +283,9 @@ class N6LQuaternion {
             if(!axis[0].EpsEqual(new N6LVector(4, true).ZeroVec(), undefined, true)) return;
             axis[0] = new N6LVector([1, m.x[3].x[2], m.x[1].x[3], m.x[2].x[1]], true).NormalVec().Repair();
             if(axis[0].EpsEqual(new N6LVector(4, true).ZeroVec(), undefined, true)){
-//                axis[0] = new N6LVector([1, Math.sqrt(Math.abs(m.x[1].x[1])), Math.sqrt(Math.abs(m.x[2].x[2])), Math.sqrt(Math.abs(m.x[3].x[3]))], true).NormalVec().Repair();
-                axis[0] = new N6LVector([1, 0, 1, 0], true).NormalVec().Repair();
+                //This is the more appropriate value//見なし値としてこちらのほうが妥当
+                axis[0] = new N6LVector([1, Math.sqrt(Math.abs(m.x[1].x[1])), Math.sqrt(Math.abs(m.x[2].x[2])), Math.sqrt(Math.abs(m.x[3].x[3]))], true).NormalVec().Repair();
+//                axis[0] = new N6LVector([1, 0, 1, 0], true).NormalVec().Repair();
             }
             return;
         }

@@ -899,7 +899,7 @@ class N6LVector {
             [0,     (c1*rv.x[0]*rv.x[1]+s*rv.x[2]),    (c+c1*rv.x[1]*rv.x[1]),            (c1*rv.x[1]*rv.x[2]-s*rv.x[0])],
             [0,     (c1*rv.x[2]*rv.x[0]-s*rv.x[1]),    (c1*rv.x[1]*rv.x[2]+s*rv.x[0]),    (c+c1*rv.x[2]*rv.x[2])        ]]);
         if(ret.EpsEqual(ret.ZeroMat())) ret = ret.UnitMat();
-        return ret.NormalMat().Repair();
+        return ret.SetCol(0, new N6LVector([1,1,1,1])).NormalMat().Repair();
     };
 
     //get position vector to translated and quaternion //姿勢ベクトルから四元数と平行移動

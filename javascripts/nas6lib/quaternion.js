@@ -302,7 +302,7 @@ class N6LQuaternion {
             [0, 2.0*q.q.x[2]*q.q.x[1]+2.0*q.q.x[0]*q.q.x[3],        1.0-2.0*q.q.x[1]*q.q.x[1]-2.0*q.q.x[3]*q.q.x[3],    2.0*q.q.x[2]*q.q.x[3]-2.0*q.q.x[0]*q.q.x[1]    ],
             [0, 2.0*q.q.x[3]*q.q.x[1]-2.0*q.q.x[0]*q.q.x[2],        2.0*q.q.x[3]*q.q.x[2]+2.0*q.q.x[0]*q.q.x[1],        1.0-2.0*q.q.x[1]*q.q.x[1]-2.0*q.q.x[2]*q.q.x[2]]]);
         if(MatWK.EpsEqual(MatWK.ZeroMat())) MatWK = MatWK.UnitMat();
-        return MatWK.NormalMat().Repair();
+        return MatWK.SetCol(0,new N6LVector([1,1,1,1])).NormalMat().Repair();
     };
 
     //lerp//線形補完

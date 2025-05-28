@@ -18,10 +18,8 @@ NAS6LIB is a collection of JavaScript modules for working with physics simulatio
 html  
   
 and more.  
-<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script>  
-
-
-<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script>  
+<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script><br>
+<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script><br>  
 and more.  
   
 ## 2. Minimum sample (2D vector addition)  

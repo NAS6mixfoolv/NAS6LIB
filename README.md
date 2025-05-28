@@ -19,6 +19,8 @@ html
   
 and more.  
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script>  
+
+
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script>  
 and more.  
   

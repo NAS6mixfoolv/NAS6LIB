@@ -200,7 +200,7 @@ From this set of relationships, the following key orbital parameters are derived
 * **Gravitational Parameter:** $GM = a^3ω^2(1+dφ)$  
 * **Orbital Period:** $T = \sqrt{\frac{4π^2a^3}{GM}(1+dφ)}$  
 * **Specific Angular Momentum:** $h = \sqrt{\frac{GMa(1-e^2)}{1+dφ}}$  
-* **Specific Orbital Energy:** $E = -\frac{GM}{4a(1+dφ)}$  
+* **Specific Orbital Energy:** $E = -\frac{GM}{2a(1+dφ)}$  
   
 **Note on $dφ$:** While $dφ = \frac{3GM}{ac^2(1-e^2)}$ can be derived from the above relations, it's important to note that  
 this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with  

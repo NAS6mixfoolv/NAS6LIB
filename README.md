@@ -206,23 +206,26 @@ From this set of relationships, the following key orbital parameters are derived
 this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with  
 total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.  
   
-Schwarzschild radius of the sun rs=2953[m]<br>
-Speed ​​of light c=299792458[m/s]<br>
-2πdφ=2π*(3.0/(1-e^2))(v/c)^2<br>
-Verify by substituting the constants of planets in the solar system for rsc^2=ac^2(1-e^2)dφ/3π,rsc^2=2aV^2<br>
+The Sun's Schwarzschild radius $r_s = 2953\,[m]$<br>  
+Speed of light $c = 299792458\,[m/s]$<br>  
+The relativistic precession term is $2\pi d\phi = 2\pi \cdot \frac{3.0}{(1-e^2)}\left(\frac{v}{c}\right)^2$<br>  
+  
+We verify the relationships $r_s c^2 = ac^2(1-e^2)d\phi/3\pi$ and $r_s c^2 = 2aV^2$ by substituting constants for the planets  
+in the solar system.  
+  
 <table border="1">
 <tr>
-<th>Planet name</th>
-<th>Major axis of orbit a[m]</th>
-<th>Mean orbital velocity V[m/s]</th>
+<th>Planet Name</th>
+<th>Semi-major Axis a[m]</th>
+<th>Mean Orbital Velocity V[m/s]</th>
 <th>Eccentricity e</th>
 <th>(1-e^2)</th>
 <th>3.0/(1-e^2)</th>
 <th>(v/c)^2</th>
-<th>2πdφ</th> 
-<th>rs=a(1-e^2)2πdφ/3π)</th> 
-<th>rs=2a(V/c)^2</th> 
-</tr> 
+<th>2πdφ</th>
+<th>rs=a(1-e^2)2πdφ/3π)[m]</th>
+<th>rs=2a(V/c)^2[m]</th>
+</tr>
 <tr> 
 <td>Mercury</td> 
 <td>57909656770</td> 

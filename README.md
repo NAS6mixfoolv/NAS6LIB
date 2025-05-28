@@ -162,34 +162,18 @@ The fundamental relationship between various orbital parameters, including $dφ$
 Here's a quick reference for the symbols used in the orbital constraint conservation law:
 
 The following set of equations demonstrates various ways to derive the value of $r_s c^2 = 2GM$, where $r_s$ is the Schwarzschild radius, $G$ is the gravitational constant, and $M$ is the mass of the central body. All expressions are dimensionally equivalent to $[m^3s^{-2}]$:
-$$
 r_s c^2 = 2GM = 2aV^2(1+d\phi) = 2a^3\omega^2(1+d\phi)
-$$
-$$
 = ac^2(1-e^2)d\phi(2/3) = \frac{8\pi^2a^3}{T^2}(1+d\phi)
-$$
-$$
 = \frac{2aV_p^2(1-e)}{1+e}(1+d\phi) = \frac{2aV_a^2(1+e)}{1-e}(1+d\phi)
-$$
-$$
 = \frac{2h^2}{a(1-e^2)}(1+d\phi) = -4aE(1+d\phi)
-$$
 
 These equations (above) are used to determine $r_s c^2$.
 
 The following set of equations, however, more explicitly represents **$r_s$ (Schwarzschild radius)** as the common physical quantity, ensuring dimensional consistency across all terms, which are all equivalent to length $[m]$:
-$$
 r_s = \frac{2GM}{c^2} = 2a\left(\frac{V}{c}\right)^2(1+d\phi) = 2a^3\left(\frac{\omega}{c}\right)^2(1+d\phi)
-$$
-$$
 = a(1-e^2)d\phi(2/3) = \frac{8\pi^2a^3}{c^2T^2}(1+d\phi)
-$$
-$$
 = \frac{2aV_p^2(1-e)}{c^2(1+e)}(1+d\phi) = \frac{2aV_a^2(1+e)}{c^2(1-e)}(1+d\phi)
-$$
-$$
 = \frac{2h^2}{c^2a(1-e^2)}(1+d\phi) = -\frac{4aE}{c^2}(1+d\phi)
-$$
 
 * **G**: Gravitational constant
 * **M**: Mass of the central body

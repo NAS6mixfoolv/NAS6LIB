@@ -206,6 +206,9 @@ From this set of relationships, the following key orbital parameters are derived
 this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with  
 total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.  
   
+The Schwarzschild radius of the central celestial body is a special value and a strong factor that determines the orbit and shape of the planet, so it has a strong influence  
+on physical formulas, etc., and it is thought that there are countless other solutions other than the derivation method given here.  
+  
 The Sun's Schwarzschild radius $r_s = 2953\,[m]$<br>  
 Speed of light $c = 299792458\,[m/s]$<br>  
 The relativistic precession term is $2\pi d\phi = 2\pi \cdot \frac{3.0}{(1-e^2)}\left(\frac{v}{c}\right)^2$<br>  

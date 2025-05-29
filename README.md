@@ -223,8 +223,8 @@ in the solar system.
 <th>3.0/(1-e^2)</th>
 <th>(v/c)^2</th>
 <th>2πdφ</th>
-<th>rs=a(1-e^2)2πdφ/3π)[m]</th>
-<th>rs=2a(V/c)^2[m]</th>
+<th>$rs=a(1-e^2)\frac{2πdφ}{3π}$[m]</th>
+<th>$rs=2a(\frac{V}{c})^2$[m]</th>
 </tr>
 <tr> 
 <td>Mercury</td> 

@@ -206,8 +206,10 @@ From this set of relationships, the following key orbital parameters are derived
 this specific form for $dφ$ is expressed **per radian** of orbital angle, as the $2π$ factor (typically associated with  
 total precession per orbit) is not present. This definition of $dφ$ is consistent within the context of this library's calculations.  
   
-The Schwarzschild radius of a central celestial body is a crucial physical quantity that significantly influences its gravity and a planet's orbit. Consequently,  
-it strongly impacts the description of related physical phenomena and computational models. This concept holds the potential for diverse theoretical approaches and interpretations.  
+In the context of the $d\phi$ calculations and their impact on orbital mechanics within this project, understanding the **Schwarzschild radius** of a central celestial body  
+becomes crucial. It is a **key physical quantity** that significantly influences its gravity and a planet's **orbit**. Consequently, it strongly impacts the **description of  
+related physical phenomena** and **computational models**. This concept also holds the potential for **diverse theoretical approaches and interpretations**  
+beyond the scope directly addressed here.
   
 The Sun's Schwarzschild radius $r_s = 2953\,[m]$<br>  
 Speed of light $c = 299792458\,[m/s]$<br>  

@@ -17,7 +17,7 @@ NAS6LIB is a collection of JavaScript modules for working with physics simulatio
   
 html  
   
-and more. 
+and more.
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script><br>
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script><br>  
 and more.  

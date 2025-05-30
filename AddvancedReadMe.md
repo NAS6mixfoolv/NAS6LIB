@@ -10,6 +10,7 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
   
 * **`common.js`**: Provides essential file download and general utility functions.  
 * **`hsv.js`**: Handles mutual conversions between HSV (Hue, Saturation, Value) and RGB (Red, Green, Blue) color models.  
+    * **Class**: `N6LHsv`: AHSV and ARGB convert Class  
 * **`keyboard.js`**: Manages **keyboard input** for interactive applications.  
     * **Class**: `N6LKeyBoard`: Custom Keyboard Management Class  
 * **`masspoint.js`**: Implements functionalities related to **mass points**, typically for physics simulations.  

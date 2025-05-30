@@ -23,8 +23,7 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
       `Matrix × ZeroVector([1,0,0,0],bHomo=true)` returns the translation component of the matrix.  
 * **`planet.js`**: Features functions for **Kepler's equation**, useful for orbital mechanics or celestial simulations.  
     * **Class**: `N6LPlanet`: Kepler Equation Planetary Orbits  
-* **`prime.js`**: Includes utilities for **prime number related calculations**.  
-    Prime Number Testing  
+* **`prime.js`**: Includes utilities for **prime number related calculations**. Prime Number Testing    
 * **`quaternion.js`**: Provides robust **Quaternion operations** for managing rotations, designed to avoid issues like gimbal lock.  
     * **Class**: `N6LQuaternion`: Quaternion  
     * **Class**: `N6LLnQuaternion`: Logarithmic Quaternions for more convenient interpolation.  

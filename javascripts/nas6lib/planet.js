@@ -49,6 +49,7 @@ class N6LPlanet {
     this.m_ono = 1;
 
 
+
     if(rh != undefined && rh.typename == "N6LPlanet") {
       this.typename = rh.typename;
       this.m_earth = rh.m_earth;
@@ -82,6 +83,7 @@ class N6LPlanet {
       this.CNST_DR = rh.CNST_DR;
       this.CNST_TAU = rh.CNST_TAU;
       this.m_ono = rh.m_ono;
+
       this.m_hs = new Array();
       var i;
       for(i = 0; i < rh.m_hs.length; i++) this.m_hs[i] = rh.m_hs[i];
@@ -206,7 +208,6 @@ class N6LPlanet {
         this.m_mv = amv;               //velocity rate//速度倍率
 
         this.m_ono = 0;
-
         //orbital position from kepler//ケプラー方程式から座標を求める
         var xx = new Array(new N6LVector(3));
         var f = this.kepler(nday, xx);
@@ -911,6 +912,7 @@ class N6LPlanet {
     
     };
 
+
     //type double absolute//double絶対値
     fabs(x) {
         var ret = x;
@@ -920,7 +922,7 @@ class N6LPlanet {
 
     //ascendant//アセンダント計算
     asc(dat1) {
-        var dat1 = new Date(1974, 12 - 1, 31, 0, 0, 0);
+        //var dat1 = new Date(1974, 12 - 1, 31, 0, 0, 0);
         var msecPerMinute = 1000 * 60;
         var msecPerHour = msecPerMinute * 60;
         var msecPerDay = msecPerHour * 24;

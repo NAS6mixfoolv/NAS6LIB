@@ -114,12 +114,22 @@ var N6LVector = function(rh, bh) { }
     * var veca = new N6LVector(new Array(1, 1, 0, 0), true);  
     * var veca = new N6LVector([1, 1, 0, 0], true);  
     * var vecb = new N6LVector(veca); //deep copy  
+  
+* **N6LVector.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LVector:compare this  
+  * **Returns**    ：please looking sourse file  
    
 * **N6LVector.Equal(rh)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LVector:compare this  
   * **Returns**    ：true:false:  
    
+* **N6LVector.EpsComp(rh, eps, bbb)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LVector:compare this:eps:error:real:bbb:true:Ignore homogeneous elements  
+  * **Returns**    ：please looking sourse file  
+  
 * **N6LVector.EpsEqual(rh, eps)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LVector:compare this:eps:error:real  
@@ -389,12 +399,12 @@ b0:N6LVector,Straight b endpoints:b1:N6LVector,Straight b endpoints:
   
 ### N6LMatrix
   
-* **N6LMatrix：construction  
+* **N6LMatrix：construction**  
   * **member**：  
-    * **N6LMatrix.x[]:N6LVector   
-    * **N6LMatrix.x[0]:N6LVector:w N6LMatrix.x[1]:N6LVector:x    
-    * **N6LMatrix.x[2]:N6LVector:y N6LMatrix.x[3]:N6LVector:z　etc...   
-    * **N6LMatrix.bHomo:if  Homogeneous  
+    * N6LMatrix.x[]:N6LVector   
+    * N6LMatrix.x[0]:N6LVector:w N6LMatrix.x[1]:N6LVector:x    
+    * N6LMatrix.x[2]:N6LVector:y N6LMatrix.x[3]:N6LVector:z　etc...   
+    * N6LMatrix.bHomo:if  Homogeneous  
 var N6LMatrix = function(rh, m , n) { }  
 * **format**：  
   * **4 rows and 4 columns**  
@@ -413,11 +423,21 @@ var N6LMatrix = function(rh, m , n) { }
 If you want to make a fourth-order or more conventional coordinate N6LMatrix.SetHomo(false)**  
 Please continue to build declaration  
    
+* **N6LMatrix.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LMatrix:compare this  
+  * **Returns**    ：please looking sourse file  
+
 * **N6LMatrix.Equal(rh)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LMatrix:compare this  
   * **Returns**    ：true:false:  
-   
+
+   * **N6LMatrix.EpsComp(rh, eps, bbb)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LMatrix:compare this:eps:error:real:bbb:true:Ignore homogeneous elements  
+  * **Returns**    ：please looking sourse file  
+
 * **N6LMatrix.EpsEqual(rh, eps)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LMatrix:compare this:eps:error:real  
@@ -566,6 +586,14 @@ note：Prevents it by the ± 1.0 less than the value of each of the elements whe
   * **Description**：lookat  
   * **Parameters**：this:N6LVector:eye, rh:N6LVector,N6LMatrix:lookat  
   * **Returns**    ：lookat:N6LMatrix  
+  
+* **If you want to use internal call functions, please see the source file.**
+    //inside call LU decomposition inverse matrix  // iex is Array
+    SubLUD(mx, m, n, iex)
+    //LU decomposition inverse matrix // all param is Array
+    LUDMat(l, u, dt)
+    //simultaneous linear equations solver // dt is Array
+    SimEQ(m, n, dt)
    
 * **N6LMatrix.InverseMat(dt, sw)**  
   * **Description**：(Using the simultaneous linear equation solving) the inverse matrix  
@@ -575,14 +603,12 @@ note：Prevents it by the ± 1.0 less than the value of each of the elements whe
   * **Parameters**：dt:Array(Output Parameter)Determinant,
   An array where the determinant of the matrix will be stored at dt[0].  
   This parameter is used to return multiple values (inverse matrix and determinant).  
-
   * **Returns**    ：inverse matrix:N6LMatrix  
    
 * **N6LMatrix.InverseMat00(dt)**  
   * **Description**：(Using the simultaneous linear equation solving) the inverse matrix  
   * **Parameters**：dt:Array(Output Parameter)Determinant,  
   An array where the determinant of the matrix will be stored at dt[0].  
-
   * **Returns**    ：inverse matrix:N6LMatrix  
    
 * **N6LMatrix.InverseMat01(dt)**  
@@ -602,7 +628,11 @@ note：Prevents it by the ± 1.0 less than the value of each of the elements whe
   * **Parameters**：dt:Array(Output Parameter)Determinant,  
   An array where the determinant of the matrix will be stored at dt[0].  
   * **Returns**    ：Determin:real  
-   
+
+* **If you want to use internal call functions, please see the source file.**
+    //type double absolute//double型絶対値
+    fabs(x) 
+  
 * **N6LMatrix.Jacobi(n, ct, eps, A, A1, A2, X1, X2)**  
   * **Description**：Eigenvalues and eigenvectors of a real symmetric matrix (Jacobi)**  
   * **Parameters**：n : Order：ct : The maximum number of repetitions：eps : Convergence criteria：  
@@ -702,6 +732,10 @@ Simply, it is intended only for convenient use
   * **Description**：trace  
   * **Parameters**：－－－  
   * **Returns**    ：trace:real  
+  
+* **If you want to use internal call functions, please see the source file.**
+    QSIGN(x)  
+    QT(b)  
    
 * **N6LMatrix.Quaternion()**  
   * **Description**：Quaternion acquisition of the rotation matrix  
@@ -748,11 +782,11 @@ It has a second axis in the recalculation to the first axis
 ### N6LQuaternion
   
    
-* **N6LQuaternion：construction  
+* **N6LQuaternion：construction**  
   * **member**：  
-    * **N6LQuaternion.q:N6LVector   
-    * **N6LQuaternion.q.x[0]:w N6LQuaternion.q.x[1]:x    
-    * **N6LQuaternion.q.x[2]:y N6LQuaternion.q.x[3]:z   
+    * N6LQuaternion.q:N6LVector   
+    * N6LQuaternion.q.x[0]:w N6LQuaternion.q.x[1]:x    
+    * N6LQuaternion.q.x[2]:y N6LQuaternion.q.x[3]:z   
 var N6LQuaternion = function(w, x, y, z) { }  
 * **format**：  
   * var quta = new N6LQuaternion(1, 0, 0, 0);  
@@ -763,11 +797,21 @@ var N6LQuaternion = function(w, x, y, z) { }
   * var quta = new N6LQuaternion([1, 0, 0, 0]);  
   * var qutb = new N6LQuaternion(quta); //deep copy  
    
+* **N6LQuaternion.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LQuaternion:compare this  
+  * **Returns**    ：please looking sourse file  
+  
 * **N6LQuaternion.Equal(rh)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LQuaternion:compare this  
   * **Returns**    ：true:false:  
    
+* **N6LQuaternion.EpsComp(rh, eps)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LQuaternion:compare this:eps:error:real  
+  * **Returns**    ：please looking sourse file  
+  
 * **N6LQuaternion.EpsEqual(rh, eps)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LQuaternion:compare this:eps:error:real  
@@ -900,10 +944,10 @@ with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substitu
 ### N6LLnQuaternion  
   
    
-* **N6LLnQuaternion：construction  
+* **N6LLnQuaternion：construction**  
   * **member**：  
-    * **N6LLnQuaternion.q:N6LVector   
-    * **N6LLnQuaternion.q.x[0]:x N6LLnQuaternion.q.x[1]:y N6LLnQuaternion.q.x[2]:z   
+    * N6LLnQuaternion.q:N6LVector   
+    * N6LLnQuaternion.q.x[0]:x N6LLnQuaternion.q.x[1]:y N6LLnQuaternion.q.x[2]:z   
 var N6LLnQuaternion = function(x, y, z) { }  
 **format**：  
   * var quta = new N6LLnQuaternion(0, 0, 0);  
@@ -912,11 +956,21 @@ var N6LLnQuaternion = function(x, y, z) { }
   * var quta = new N6LLnQuaternion([0, 0, 0]);  
   * var qutb = new N6LLnQuaternion(quta); //deep copy  
    
+* **N6LLnQuaternion.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LLnQuaternion:compare this:eps:error:real  
+  * **Returns**    ：please looking sourse file  
+  
 * **N6LLnQuaternion.Equal(rh)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LLnQuaternion:compare this  
   * **Returns**    ：true:false:  
    
+* **N6LLnQuaternion.EpsComp(rh, eps)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LLnQuaternion:compare this:eps:error:real  
+  * **Returns**    ：please looking sourse file  
+  
 * **N6LLnQuaternion.EpsEqual(rh, eps)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LLnQuaternion:compare this:eps:error:real  
@@ -1004,7 +1058,7 @@ with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substitu
 ### N6LKeyBoard
   
    
-* **N6LKeyBoard：construction  
+* **N6LKeyBoard：construction**  
   * **Description**：As ＜body onload="initKeyBoard(tman, function() { func(); });"＞ in HTMLfile  
 tman : timer manager and func keyboard check method is tied.  
 **ex.**　：  
@@ -1072,5 +1126,203 @@ function func(){
   * **Parameters**：str:string:alias name ID  
   * **Returns**    ：real name ID:string  
   
+### N6LMassPoint  
   
+   
+* **N6LMassPoint：construction**  
+  * **member**：  
+    * N6LMassPoint.mass:Real:Mass point mass  
+    * N6LMassPoint.e:Real:orbital eccentricity  
+    * N6LMassPoint.r:Real:mass point radius  
+    * N6LMassPoint.x:N6LVector:mass point position  
+    * N6LMassPoint.v:N6LVector:Mass point velocity  
+    * N6LMassPoint.va:For internal calculations:Absolute speed value  
+    * N6LMassPoint.x0:N6LVector:For internal calculations  
+    * N6LMassPoint.x1:N6LVector:For internal calculations  
+    * N6LMassPoint.v1:N6LVector:For internal calculations  
+    * N6LMassPoint.v2:N6LVector:For internal calculations  
+    * N6LMassPoint.vn:N6LVector:For internal calculations:Velocity normal  
+    * N6LMassPoint.w:N6LVector:For internal calculations  
+    * N6LMassPoint.w1:N6LVector:For internal calculations  
+    * N6LMassPoint.a:N6LVector():Mass point acceleration  
+  
+var N6LMassPoint = function(px, pv, pm, pr, pe) {  }
+**format**：  
+  * var mp = [];    
+  * mp[i] = new N6LMassPoint(new N6LVector([0, 0, 0]), new N6LVector([0, 0, 0]), 1, 1, 0);  
+  * mpA[i] = new N6LMassPoint(mp[i]);  
+  * ...  
+  * **Construction of three-dimensional vector handling**    
+  * mpA[i] = new N6LMassPoint(3);  
+  
+* **N6LMassPoint.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LMassPoint:compare this:eps:error:real  
+  * **Returns**    ：please looking sourse file  
+  
+* **N6LMassPoint.Equal(rh)**  
+  * **Description**：if equal  
+  * **Parameters**：rh:N6LMassPoint:compare this  
+  * **Returns**    ：true:false:  
+   
+* **N6LMassPoint.EpsComp(rh, eps)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LMassPoint:compare this:eps:error:real  
+  * **Returns**    ：please looking sourse file  
+  
+* **N6LMassPoint.EpsEqual(rh, eps)**  
+  * **Description**：if equal  
+  * **Parameters**：rh:N6LMassPoint:compare this:eps:error:real  
+  * **Returns**    ：true:false:  
+  
+### N6LMassPoint  
+  
+   
+* **N6LPlanet：construction**  
+  * **member**：  
+    * N6LPlanet.m_earth:N6LPlanet:Reference to Earth
+    * N6LPlanet.m_pno:int:planet no.
+    * N6LPlanet.m_pname:string:planet name
+    * N6LPlanet.m_dat0:Date:datetime
+    * N6LPlanet.m_nday:nday:How many days since January 1, 1996?
+    * N6LPlanet.m_a:semi-major axis
+    * N6LPlanet.m_e:eccentricity
+    * N6LPlanet.m_l0:epoch
+    * N6LPlanet.m_nperday:mean motion
+    * N6LPlanet.m_ra:perihelion
+    * N6LPlanet.m_rb:aphelion
+    * N6LPlanet.m_t:orbital period
+    * N6LPlanet.m_s:longitude of the ascending node
+    * N6LPlanet.m_i:orbital inclination
+    * N6LPlanet.m_w:perihelion celestial longitude
+    * N6LPlanet.m_mv:velocity rate
+    * N6LPlanet.m_m:mass
+    * N6LPlanet.m_r:radius
+    * N6LPlanet.x0:N6LVector:position
+    * N6LPlanet.v0:N6LVector:velocity
+    * N6LPlanet.ex:N6LVector:geocentric coordinates
+    * N6LPlanet.m_el:celestial longitude
+    * N6LPlanet.m_d:aberration
+    * N6LPlanet.m_asc:ascendant
+    * N6LPlanet.m_hs:Array:house
+    * N6LPlanet.m_rev:bool:reverse
+    * N6LPlanet.CNST_G = 0.00000000006673
+    * N6LPlanet.CNST_C = 299792458.0
+    * N6LPlanet.CNST_AU = 149597870700.0
+    * N6LPlanet.CNST_DR = 0.017453292519943
+    * N6LPlanet.CNST_TAU = 499.004782
+    * N6LPlanet.m_ono:int:Planet number of the central object
+  
+**construction**
+* **Create(pno, pname, nday, dat0, aa, ae, al0, anperday, ara, arb, at, aas, ai, aw, am, ar, amv)**
+  * **Description**：General N6LPlanet construction
+  * **Parameters**：pno//planet no.:pname//planet name:nday//How many days since January 1, 1996?
+      dat0//datetime:aa//semi-major axis:ae//eccentricity:al0//epoch:anperday//mean motion
+      ara//perihelion:arb//aphelion:at//orbital period:aas//longitude of the ascending node
+      ai//orbital inclination:aw//perihelion celestial longitude:am//mass
+      ar//radius:amv//velocity rate
+  * **Returns**    ：－－－  
+
+* **CreateEarth(pno, pname, nday, dat0, aa, ae, al0, anperday, ara, arb, at, aas, ai, aw, am, ar)**
+  * **Description**：Earth N6LPlanet construction
+  * **Parameters**：pno//planet no.:pname//planet name:nday//How many days since January 1, 1996?
+      dat0//datetime:aa//semi-major axis:ae//eccentricity:al0//epoch:anperday//mean motion
+      ara//perihelion:arb//aphelion:at//orbital period:aas//longitude of the ascending node
+      ai//orbital inclination:aw//perihelion celestial longitude:am//mass
+      ar//radius:amv//velocity rate
+  * **Returns**    ：－－－  
+
+* **CreatePlanet(pno, pname, nday, dat0, aa, ae, al0, anperday, ara, arb, at, aas, ai, aw, am, ar, earth)**
+  * **Description**：Planets seen from Earth N6LPlanet construction
+  * **Parameters**：pno//planet no.:pname//planet name:nday//How many days since January 1, 1996?
+      dat0//datetime:aa//semi-major axis:ae//eccentricity:al0//epoch:anperday//mean motion
+      ara//perihelion:arb//aphelion:at//orbital period:aas//longitude of the ascending node
+      ai//orbital inclination:aw//perihelion celestial longitude:am//mass
+      ar//radius:amv//velocity rate:earth:N6LPlanet:Reference to Earth
+  * **Returns**    ：－－－  
+
+* **CreateMoon(pno, pname, nday, dat0, add, earth, bbb)**
+  * **Description**：Moon seen from Earth N6LPlanet construction
+  * **Parameters**：pno//planet no.:pname//planet name:nday//How many days since January 1, 1996?
+      dat0//datetime:add//longitude:earth:N6LPlanet:Reference to Earth:bbb//not use
+  * **Returns**    ：－－－  
+
+* **CreateConfig(pno, pname, nday, dat0, ax, earth)**
+  * **Description**：Moon seen from Earth N6LPlanet construction
+  * **Parameters**：pno//planet no.:pname//planet name:nday//How many days since January 1, 1996?
+      dat0//datetime:ax//celestial longitude:earth:N6LPlanet:Reference to Earth:bbb//not use
+  * **Returns**    ：－－－  
+
+* **CreateEtc(pno, pname, nday, dat0, sw, earth)**
+  * **Description**：Moon seen from Earth N6LPlanet construction
+  * **Parameters**：pno//planet no.:pname//planet name:nday//How many days since January 1, 1996?
+      dat0//datetime:sw//switch:earth:N6LPlanet:Reference to Earth:bbb//not use
+sw:0:Lilith:1:dragon head:2:dragon tail
+   3:no include asc include N6LPlanet(i,0).m_hs(0)
+   4:no include mc include N6LPlanet(i,0).m_hs(9)
+  * **Returns**    ：－－－  
+
+
+        if(sw == 0) { //Lilith//リリス
+            var dat = new Date(1996, 7, 1);
+            this.m_nperday = (0.975) * (131.1 - 120.53) / (92.0);
+            this.m_el = (120.53 + m_nperday * nday) % 360.0;
+            if(this.m_el < 0.0) this.m_el += 360.0;
+            this.ex.x[0] = this.m_el;
+        }
+        else if(sw == 1) { //dragon head//ドラゴンヘッド
+            var dat = new Date(1996, 7, 1);
+            this.m_nperday = (187.56 - 192.48) / (92.0);
+            this.m_el = (192.48 + m_nperday * nday) % 360.0;
+            if(this.m_el < 0.0) this.m_el += 360.0;
+            this.ex.x[0] = this.m_el;
+            this.m_rev = true;
+        }
+        else if(sw == 2) { //dragon tail//ドラゴンテイル
+            var dat = new Date(1996, 7, 1);
+            this.m_nperday = (187.56 - 192.48) / (92.0);
+            this.m_el = (192.48 + m_nperday * nday + 180.0) % 360.0;
+            if(this.m_el < 0.0) this.m_el += 360.0;
+            this.ex.x[0] = this.m_el;
+            this.m_rev = true;
+        }
+        else if(sw == 3) { //no include asc include N6LPlanet(i,0).m_hs(0)//asc何も入らないN6LPlanet(i,0).m_hs(0)に入ってる
+            this.m_el = 0.0;
+            if(this.m_el < 0.0) this.m_el += 360.0;
+            this.ex.x[0] = this.m_el;
+        }
+        else if(sw == 4) { //no include mc include N6LPlanet(i,0).m_hs(9)//mc何も入らないN6LPlanet(i,0).m_hs(9)に入ってる
+            this.m_el = 0.0;
+            if(this.m_el < 0.0) this.m_el += 360.0;
+            this.ex.x[0] = this.m_el;
+        }
+
+    CreateConfig(pno, pname, nday, dat0, ax, earth) {
+    CreateEtc(pno, pname, nday, dat0, sw, earth) {
+
+
+
+
+
+
+
+* **N6LPlanet.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LPlanet:compare this  
+  * **Returns**    ：please looking sourse file  
+  
+* **N6LPlanet.Equal(rh)**  
+  * **Description**：if equal  
+  * **Parameters**：rh:N6LPlanet:compare this  
+  * **Returns**    ：true:false:  
+   
+* **N6LPlanet.EpsComp(rh, eps)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LPlanet:compare this:eps:error:real  
+  * **Returns**    ：please looking sourse file  
+  
+* **N6LPlanet.EpsEqual(rh, eps)**  
+  * **Description**：if equal  
+  * **Parameters**：rh:N6LPlanet:compare this:eps:error:real  
+  * **Returns**    ：true:false:  
   

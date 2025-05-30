@@ -1,6 +1,6 @@
 ### N6LTimerMan
   
-* N6LTimerMan：construction  
+* **N6LTimerMan：construction**  
 * * **member**：  
   * *N6LTimerMan.interval:interval timer check  
   * *N6LTimerMan.enable:  
@@ -15,54 +15,54 @@
 var tman = new N6LTimerMan();  
 Note: even if some make a timer, setTimeout () is one of centralized management to N6LTimerMan  
   
-* N6LTimerMan.add()  
+* **N6LTimerMan.add()**  
   * **Description**：add timer
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.changeinterval(int)  
+* **N6LTimerMan.changeinterval(int)**  
   * **Description**：change interval  
   * **Parameters**：int：msec  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.start()  
+* **N6LTimerMan.start()**  
   * **Description**：start  
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.stop()  
+* **N6LTimerMan.stop()**  
   * **Description**：stop  
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
 
 ### N6LTimerMan.timer[id]  
    
-* N6LTimerMan.timer[id].start()  
+* **N6LTimerMan.timer[id].start()**  
   * **Description**：start  
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.timer[id].stop()  
+* **N6LTimerMan.timer[id].stop()**  
   * **Description**：stop  
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.timer[id].reset()  
+* **N6LTimerMan.timer[id].reset()**  
   * **Description**：reset(Start time update)  
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.timer[id].copy(src)  
+* **N6LTimerMan.timer[id].copy(src)**  
   * **Description**：copy  
   * **Parameters**：src：  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.timer[id].now()  
+* **N6LTimerMan.timer[id].now()**  
   * **Description**：past time  
   * **Parameters**：－－－  
   * **Returns**    ：－－－  
    
-* N6LTimerMan.timer[id].setalerm(func(id),alm)  
+* **N6LTimerMan.timer[id].setalerm(func(id),alm)**  
   * **Description**：set alerm  
   * **Parameters**：func(id)：Method that is called when it is time  
 alm：msec  
@@ -97,7 +97,7 @@ Call time, N6LTimerMan.interval = 25 (default value) is more than is preferred
 
 ### N6LVector  
    
-* N6LVector：construction  
+* **N6LVector：construction**  
   * **member**：  
     * N6LVector.x[]:Real   
     * N6LVector.x[0]:w N6LVector.x[1]:x N6LVector.x[2]:y N6LVector.x[3]:z　etc...   
@@ -115,12 +115,12 @@ var N6LVector = function(rh, bh) { }
     * var veca = new N6LVector([1, 1, 0, 0], true);  
     * var vecb = new N6LVector(veca); //deep copy  
    
-* N6LVector.Equal(rh)  
+* **N6LVector.Equal(rh)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LVector:compare this  
   * **Returns**    ：true:false:  
    
-* N6LVector.EpsEqual(rh, eps)  
+* **N6LVector.EpsEqual(rh, eps)**  
   * **Description**：if equal  
   * **Parameters**：rh:N6LVector:compare this:eps:error:real  
   * **Returns**    ：true:false:  

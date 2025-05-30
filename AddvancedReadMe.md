@@ -150,7 +150,7 @@ The Sun's Schwarzschild radius $r_s = 2953\,[m]$
 Speed of light $c = 299792458\,[m/s]$  
 The relativistic precession term is $2\pi d\phi = 2\pi \cdot \frac{3.0}{(1-e^2)}\left(\frac{v}{c}\right)^2$  
   
-We verify the relationships $r_s c^2 = ac^2(1-e^2)d\phi/3\pi$ and $r_s c^2 = 2aV^2$ by substituting constants  
+We verify the relationships $r_s c^2 = ac^2(1-e^2)\frac{d\phi}{3\pi}$ and $r_s c^2 = 2aV^2$ by substituting constants  
 for the planets in the solar system.  
   
 | Planet Name | Semi-major Axis a[m] | Mean Orbital Velocity V[m/s] | Eccentricity e | (1-e^2) | 3.0/(1-e^2) | (v/c)^2 | 2πdφ | $rs=a(1-e^2)\frac{2πdφ}{3π}$[m] | $rs=2a(\frac{V}{c})^2$[m] |

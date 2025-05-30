@@ -1,8 +1,8 @@
 ### N6LTimerMan
   
 * N6LTimerMan：construction  
-* * **member**：  
-* * *N6LTimerMan.interval:interval timer check  
+  * **member**：  
+    *N6LTimerMan.interval:interval timer check  
 * * *N6LTimerMan.enable:  
 * * *N6LTimerMan.timer[]:timers  
 * * * **member（N6LTimerMan.timer[id]）**：  

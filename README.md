@@ -77,6 +77,7 @@ For more in-depth information, including a detailed class list with main methods
 mechanics formulas, and specific usage examples for modules like keyboard.js, please refer to the advanced documentation:  
   
 Advanced NAS6LIB Documentation  
+[AddvancedReadMe](AddvancedReadMe.md)  
   
 Future Outlook  
 The prototype of NAS6LIB originated from a VC++ DirectX air combat game, evolving through VB+VC#+XNA before  

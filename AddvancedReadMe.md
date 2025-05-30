@@ -58,13 +58,14 @@ relativistic effects such as the perihelion of Mercury using equations derived b
 and verifies the accuracy both numerically and visually. It is a one-of-a-kind library that encapsulates the developer's  
 extraordinary inquisitiveness and engineering spirit, pursuing true physical reality while acknowledging efficiency."  
   
-### Verification of Relativistic Perihelion Precession (Mercury)  
+  ### Verification of Relativistic Perihelion Precession (Mercury)  
   
 NAS6LIB's implementation of relativistic effects has been validated through simulations of Mercury's orbital precession.  
-Using a previous version developed in VB, the average perihelion precession per orbit was calculated over  
-a long period (415 orbits, equivalent to 100 years). **Notably, this extensive long-term simulation on  
-a legacy PC took approximately 2-3 days to complete**, a testament to the meticulous dedication behind  
-this library's development.  
+Using a previous version developed in VB, the average perihelion precession per orbit was calculated over a long period  
+(415 orbits, equivalent to 100 years). **Notably, this extensive long-term simulation on a legacy PC took approximately  
+2-3 days to complete.** This remarkable efficiency for its time was significantly aided by the use of  
+a **variable time step (dt)** in the numerical integration, allowing for optimized computation without sacrificing accuracy  
+during critical orbital phases. This fact is a testament to the meticulous dedication behind this library's development.  
   
 The calculated value closely matches the observed/theoretical value:  
   

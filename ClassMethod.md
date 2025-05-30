@@ -1,10 +1,59 @@
+### Global Utility Functions
+* **function Rand(min, max)**
+  * **Description**：(Math.random() * (max - min) + min)
+  * **Parameters**：min,max  
+  * **Returns**    ：(Math.random() * (max - min) + min)  
+
+* **function RandSqr(min, max)**
+  * **Description**：RandSqr
+  * **Parameters**：min,max  
+  * **Returns**    ：
+  var r = Math.random();
+  return (r * r * (max - min) + min)
+  
+* **function RandSqr2(min, max)**
+  * **Description**：RandSqr
+  * **Parameters**：min,max  
+  * **Returns**    ：
+  var r1 = Math.random();
+  var r2 = Math.random();
+  return (r1 * r2 * (max - min) + min)
+  
+* **function readCSV(filename,analyzefunc,donefunc)**
+  * **Description**：read CSV
+  * **Parameters**：filename,analyzefunc,donefunc  
+  * **Returns**    ：
+
+* **function analyzeCSV(res)**
+  * **Description**：analyze CSV
+  * **Parameters**：res:Array  
+  * **Returns**    ：Array
+**ex**：
+readCSV('filename', 'analyzeCSV', 'donefunc');
+
+* **function N6LIsPrime(id, num)**
+  * **Description**：IsPrime
+  * **Parameters**：id:TManId:num  
+  * **Returns**    ：num:Is Prime:-1:not Prime:0:Calculating
+
+* **function N6LIsPrimeMNRD(id, num)**
+  * **Description**：IsPrime
+  * **Parameters**：id:TManId:num  
+  * **Returns**    ：num:Is Prime:-1:not Prime:0:Calculating
+
+### NAS6LIB Class Summary
+
+### TypeName Member
+* **N6LXXX.typename** = "N6LXXX"
+  * **Description**：Identifying the type by string
+
 ### N6LTimerMan
   
 * **N6LTimerMan：construction**  
 * * **member**：  
-  * *N6LTimerMan.interval:interval timer check  
-  * *N6LTimerMan.enable:  
-  * *N6LTimerMan.timer[]:timers  
+    *N6LTimerMan.interval:interval timer check  
+    *N6LTimerMan.enable:  
+    *N6LTimerMan.timer[]:timers  
     * **member（N6LTimerMan.timer[id]）**：  
       *N6LTimerMan.timer[id].ID:  
       *N6LTimerMan.timer[id].enable:  
@@ -1175,7 +1224,7 @@ var N6LMassPoint = function(px, pv, pm, pr, pe) {  }
   * **Parameters**：rh:N6LMassPoint:compare this:eps:error:real  
   * **Returns**    ：true:false:  
   
-### N6LMassPoint  
+### N6LPlanet  
   
    
 * **N6LPlanet：construction**  
@@ -1310,5 +1359,145 @@ sw:0:Lilith:1:dragon head:2:dragon tail
   * **Parameters**：aasc:ascendant
   * **Returns**    ：－－－
   
+### N6LRngKt  
+  
+   
+* **N6LRngKt：construction**  
+  * **member**：  
+    * N6LRngKt.CNST_G = 0.00000000006673:For internal calculations
+    * N6LRngKt.CNST_C = 299792458.0:For internal calculations
+    * N6LRngKt.CNST_AU = 149597870700.0:For internal calculations
+    * N6LRngKt.dms:For internal calculations
+    * N6LRngKt.n:For internal calculations
+    * N6LRngKt.mp:For internal calculations
+    * N6LRngKt.dt:For internal calculations
+    * N6LRngKt.rdx:For internal calculations
+    * N6LRngKt.dx:For internal calculations
+    * N6LRngKt.nrm:For internal calculations
+    * N6LRngKt.pow:For internal calculations
+    * N6LRngKt.ik:For internal calculations
+    * N6LRngKt.im:For internal calculations
+    * N6LRngKt.r:For internal calculations
+    * N6LRngKt.aa:For internal calculations
+    * N6LRngKt.al:For internal calculations
+    * N6LRngKt.ap:For internal calculations
+    * N6LRngKt.b:For internal calculations
+    * N6LRngKt.c:For internal calculations
+    * N6LRngKt.d:For internal calculations
+    * N6LRngKt.coef = [1.0, 2.0, 2.0, 1.0]:For internal calculations
+    * N6LRngKt.swa//force relation distance
+    * N6LRngKt.swb//force proportionality velocity
+    * N6LRngKt.swc//force proportionality square velocity
+    * N6LRngKt.swd//force certain
+
+* **N6LRngKt.Init(pmp, pdt, cc, cg)**  
+  * **Description**：init  
+  * **Parameters**：pmp:N6LMassPoint[]:pdt:Micro Time:cc:light speed:cg:universal gravitational constant
+  * **Returns**    ：－－－
+
+* **N6LRngKt.UpdateFrame()**  
+  * **Description**：Runge-Kutta method for all mass points (called at each update)  
+  * **Parameters**：－－－
+  * **Returns**    ：－－－
+
+* **N6LRngKt.UpdateFrame2()**  
+  * **Description**：Runge-Kutta method with the central object (called at each update)
+  * **Parameters**：－－－
+  * **Returns**    ：－－－
+
+* **If you want to use internal call functions, please see the source file.**
+    VelocityAccl2D(v, a, dt)
+    VelocityAccl3D(v, a, dt)
+    VelocityAdd2D(v0, v1)
+    VelocityAdd3D(v0, v1)
+    GetSRadius(mass, cc, cg)
+    GetEccentricity(p1, v1, p2)
+    ToSchwartz(v, e)
+    ToNAS6()
+    GetA(r, m, mr, v, e)
+    accel()
+    accel２()
+             
+### N6LHsv  
+  
+   
+* **N6LHsv：construction**  
+  * **member**：  
+    * N6LHsv.argb = [0.0, 0.0, 0.0, 0.0];
+    * N6LHsv.ahsv = [0.0, 0.0, 0.0, 0.0];
+
+**construction ex**
+* This
+  * var col = new N6LHsv(hsv);
+* RGB
+  * var col = new N6LHsv(0, 255, 255, 255, 255);
+* HSV
+  *var col = new N6LHsv(1, 100, 0, 100, 100);
+
+* **N6LHsv.Comp(rh)**
+  * **Description**：comparison  
+  * **Parameters**：rh:N6LHsv:compare this  
+  * **Returns**    ：please looking sourse file  
+  
+* **N6LHsv.Equal(rh)**  
+  * **Description**：if equal  
+  * **Parameters**：rh:N6LHsv:compare this  
+  * **Returns**    ：true:false:  
+   
+* **N6LHsv.Stra()**  
+  * **Description**：To RGBA String  
+  * **Parameters**：－－－  
+  * **Returns**    ：string  
+
+* **N6LHsv.Str()**  
+  * **Description**：To RGB String  
+  * **Parameters**：－－－  
+  * **Returns**    ：string  
+
+* **N6LHsv.Parsea(str)**  
+  * **Description**：From RGBA String  
+  * **Parameters**：string  
+  * **Returns**    ：N6LHsv  
+
+* **N6LHsv.Parse(str)**  
+  * **Description**：From RGB String  
+  * **Parameters**：string  
+  * **Returns**    ：N6LHsv  
+
+* **N6LHsv.ToHsv(rh)**  
+  * **Description**：From ARGB Array To AHSV Array
+  * **Parameters**：Array  
+  * **Returns**    ：Array  
+
+* **N6LHsv.ToRgb(rh)**  
+  * **Description**：From AHSV Array To ARGB Array 
+  * **Parameters**：Array  
+  * **Returns**    ：Array  
+
+* **N6LHsv.Add(rh, bh)**  
+  * **Description**：add 
+  * **Parameters**：rh:bh  
+  * **Returns**    ：N6LHsv  
+
+* **N6LHsv.Sub(rh, bh)**  
+  * **Description**：sub 
+  * **Parameters**：rh:bh  
+  * **Returns**    ：N6LHsv  
+
+* **N6LHsv.RgbGrd(div, cnt, rgb)**  
+  * **Description**：ARGB Gradient
+  * **Parameters**：div：Number of divisions:cnt:count:rgb:The final ARGB array  
+  * **Returns**    ：N6LHsv  
+
+* **N6LHsv.HsvGrd(div, cnt, hsv, sw)**  
+  * **Description**：AHSV Gradient
+  * **Parameters**：div：Number of divisions:cnt:count:hsv:The final AHSV array:sw:Gradient Direction  
+  * **Returns**    ：N6LHsv  
+
+
+
+
+
+
 
  

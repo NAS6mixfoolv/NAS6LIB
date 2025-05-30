@@ -32,6 +32,9 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
 * **`vector.js`**: Defines fundamental **Vector operations** for 2D, 3D, and N-dimensional calculations.
     * **Class**: `N6LVector`: N Dimensions Vector or Homogeneous Vector
 
+## Class Method Summary
+
+
 ---
 
 ## Relativistic Physics and Advanced Mathematical Core

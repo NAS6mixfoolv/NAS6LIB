@@ -98,22 +98,22 @@ Call time, N6LTimerMan.interval = 25 (default value) is more than is preferred
 ### N6LVector  
    
 * N6LVector：construction  
-member：  
-N6LVector.x[]:Real   
-N6LVector.x[0]:w N6LVector.x[1]:x N6LVector.x[2]:y N6LVector.x[3]:z　etc...   
-N6LVector.bHomo:if Homogeneous  
+  * **member**：  
+    * N6LVector.x[]:Real   
+    * N6LVector.x[0]:w N6LVector.x[1]:x N6LVector.x[2]:y N6LVector.x[3]:z　etc...   
+    * N6LVector.bHomo:if Homogeneous  
 var N6LVector = function(rh, bh) { }  
-format：  
-Fourth-order vector  
-var veca = new N6LVector(4);  
-Homo fourth-order vector  
-var veca = new N6LVector(4, true);  
-Third-order vector  
-var veca = new N6LVector(new Array(1, 2, 3));  
-x-axis unit homo fourth-order vector  
-var veca = new N6LVector(new Array(1, 1, 0, 0), true);  
-var veca = new N6LVector([1, 1, 0, 0], true);  
-var vecb = new N6LVector(veca); //deep copy  
+* **format**：  
+  * Fourth-order vector  
+    * var veca = new N6LVector(4);  
+  * Homo fourth-order vector  
+    * var veca = new N6LVector(4, true);  
+  * Third-order vector  
+    * var veca = new N6LVector(new Array(1, 2, 3));  
+  * x-axis unit homo fourth-order vector  
+    * var veca = new N6LVector(new Array(1, 1, 0, 0), true);  
+    * var veca = new N6LVector([1, 1, 0, 0], true);  
+    * var vecb = new N6LVector(veca); //deep copy  
    
 * N6LVector.Equal(rh)  
   * **Description**：if equal  
@@ -390,26 +390,26 @@ b0:N6LVector,Straight b endpoints:b1:N6LVector,Straight b endpoints:
 ### N6LMatrix
   
 * N6LMatrix：construction  
-member：  
-N6LMatrix.x[]:N6LVector   
-N6LMatrix.x[0]:N6LVector:w N6LMatrix.x[1]:N6LVector:x    
-N6LMatrix.x[2]:N6LVector:y N6LMatrix.x[3]:N6LVector:z　etc...   
-N6LMatrix.bHomo:if  Homogeneous  
+  * **member**：  
+    * N6LMatrix.x[]:N6LVector   
+    * N6LMatrix.x[0]:N6LVector:w N6LMatrix.x[1]:N6LVector:x    
+    * N6LMatrix.x[2]:N6LVector:y N6LMatrix.x[3]:N6LVector:z　etc...   
+    * N6LMatrix.bHomo:if  Homogeneous  
 var N6LMatrix = function(rh, m , n) { }  
-format：  
-4 rows and 4 columns  
-var mata = new N6LMatrix(4);  
-4 rows and 8 columns  
-var mata = new N6LMatrix(4, 8);  
-4 rows and 4 columns unit matrix  
-var mata = new N6LMatrix(  
-new Array(1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1), 4, 4);  
-var mata = new N6LMatrix(new Array(new N6LVector(new Array(1, 0, 0, 0)),  
-　new N6LVector(new Array(0, 1, 0, 0)), new N6LVector(new Array(0, 0, 1, 0)),  
-　new N6LVector(new Array(0, 0, 0, 1)) ));  
-var mata = new N6LMatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] );  
-var matb = new N6LMatrix(mata); //deep copy  
-note:Fourth-order or more is considered to be a homogeneous coordinates  
+* **format**：  
+  * **4 rows and 4 columns**  
+    * var mata = new N6LMatrix(4);  
+  * **4 rows and 8 columns**  
+    * var mata = new N6LMatrix(4, 8);  
+  * **4 rows and 4 columns unit matrix**  
+    * var mata = new N6LMatrix(  
+        new Array(1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1), 4, 4);  
+    * var mata = new N6LMatrix(new Array(new N6LVector(new Array(1, 0, 0, 0)),  
+    　  new N6LVector(new Array(0, 1, 0, 0)), new N6LVector(new Array(0, 0, 1, 0)),  
+　      new N6LVector(new Array(0, 0, 0, 1)) ));  
+    * var mata = new N6LMatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] );  
+    * var matb = new N6LMatrix(mata); //deep copy  
+**note**:Fourth-order or more is considered to be a homogeneous coordinates  
 If you want to make a fourth-order or more conventional coordinate N6LMatrix.SetHomo(false)  
 Please continue to build declaration  
    
@@ -749,19 +749,19 @@ It has a second axis in the recalculation to the first axis
   
    
 * N6LQuaternion：construction  
-member：  
-N6LQuaternion.q:N6LVector   
-N6LQuaternion.q.x[0]:w N6LQuaternion.q.x[1]:x    
-N6LQuaternion.q.x[2]:y N6LQuaternion.q.x[3]:z   
+  * **member**：  
+    * N6LQuaternion.q:N6LVector   
+    * N6LQuaternion.q.x[0]:w N6LQuaternion.q.x[1]:x    
+    * N6LQuaternion.q.x[2]:y N6LQuaternion.q.x[3]:z   
 var N6LQuaternion = function(w, x, y, z) { }  
-format：  
-var quta = new N6LQuaternion(1, 0, 0, 0);  
-var quta = new N6LQuaternion(1, new Array(0, 0, 0));  
-var quta = new N6LQuaternion(new Array(1, 0, 0, 0));  
-var quta = new N6LQuaternion(new N6LVector([1, 0, 0, 0]));  
-var quta = new N6LQuaternion(1, new N6LVector([1, 2, 3, 4], true));  
-var quta = new N6LQuaternion([1, 0, 0, 0]);  
-var qutb = new N6LQuaternion(quta); //deep copy  
+* **format**：  
+  * var quta = new N6LQuaternion(1, 0, 0, 0);  
+  * var quta = new N6LQuaternion(1, new Array(0, 0, 0));  
+  * var quta = new N6LQuaternion(new Array(1, 0, 0, 0));  
+  * var quta = new N6LQuaternion(new N6LVector([1, 0, 0, 0]));  
+  * var quta = new N6LQuaternion(1, new N6LVector([1, 2, 3, 4], true));  
+  * var quta = new N6LQuaternion([1, 0, 0, 0]);  
+  * var qutb = new N6LQuaternion(quta); //deep copy  
    
 * N6LQuaternion.Equal(rh)  
   * **Description**：if equal  
@@ -901,16 +901,16 @@ with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substitu
   
    
 * N6LLnQuaternion：construction  
-member：  
-N6LLnQuaternion.q:N6LVector   
-N6LLnQuaternion.q.x[0]:x N6LLnQuaternion.q.x[1]:y N6LLnQuaternion.q.x[2]:z   
+  * **member**：  
+    * N6LLnQuaternion.q:N6LVector   
+    * N6LLnQuaternion.q.x[0]:x N6LLnQuaternion.q.x[1]:y N6LLnQuaternion.q.x[2]:z   
 var N6LLnQuaternion = function(x, y, z) { }  
-format：  
-var quta = new N6LLnQuaternion(0, 0, 0);  
-var quta = new N6LLnQuaternion(new Array(0, 0, 0));  
-var quta = new N6LLnQuaternion(new N6LVector([0, 0, 0]));  
-var quta = new N6LLnQuaternion([0, 0, 0]);  
-var qutb = new N6LLnQuaternion(quta); //deep copy  
+**format**：  
+  * var quta = new N6LLnQuaternion(0, 0, 0);  
+  * var quta = new N6LLnQuaternion(new Array(0, 0, 0));  
+  * var quta = new N6LLnQuaternion(new N6LVector([0, 0, 0]));  
+  * var quta = new N6LLnQuaternion([0, 0, 0]);  
+  * var qutb = new N6LLnQuaternion(quta); //deep copy  
    
 * N6LLnQuaternion.Equal(rh)  
   * **Description**：if equal  
@@ -1007,7 +1007,7 @@ with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substitu
 * N6LKeyBoard：construction  
   * **Description**：As ＜body onload="initKeyBoard(tman, function() { func(); });"＞ in HTMLfile  
 tman : timer manager and func keyboard check method is tied.  
-ex.　：  
+**ex.**　：  
 function func(){  
 　if(KeyB.keystate[KeyB.indexof(KeyB.ToRealID("VK_N1"))]) {//numpad 1 KeyDown  
 ．．．skip．．．  
@@ -1016,7 +1016,7 @@ function func(){
 ．．．skip．．．  
   }  
 ．．．skip．．．}  
-  case 401: 
+   
 * N6LKeyBoard.setfunc(func)  
   * **Description**：keyboard check method is tied  
   * **Parameters**：func:method  

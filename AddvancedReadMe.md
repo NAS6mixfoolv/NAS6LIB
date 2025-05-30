@@ -1,7 +1,54 @@
+ N6L - A Robust Math Library for 3D Graphics and Beyond  
+N6L is a comprehensive JavaScript math library, originally developed for real-time 3D graphics in game development.  
+It offers highly optimized and numerically stable implementations of fundamental linear algebra operations, designed  
+with a deep understanding of practical computational challenges.  
+  
+### Files  
+Here's a breakdown of the modules included in this library:  
+  
+common.js: Provides essential file download and utility functions.  
+hsv.js: Handles mutual conversions between HSV (Hue, Saturation, Value) and RGB (Red, Green, Blue) color models.  
+keyboard.js: Manages keyboard input for interactive applications.  
+masspoint.js: Implements functionalities related to mass points, likely for physics simulations.  
+matrix.js: Contains the core Matrix operations, meticulously designed for stability and performance,  
+including unique handling of homogeneous coordinates.  
+planet.js: Features functions for Kepler's equation, useful for orbital mechanics or celestial simulations.  
+prime.js: Includes utilities for prime number related calculations.  
+quaternion.js: Provides robust Quaternion operations for managing rotations, designed to avoid issues like gimbal lock.  
+rngkt.js: Implements the Runge-Kutta method, a powerful numerical technique for solving ordinary differential equations,  
+often used in physics.
+timer.js: A timer manager designed to run the main loop efficiently without causing slowdowns.  
+vector.js: Defines fundamental Vector operations for 2D, 3D, and N-dimensional calculations.  
+  
+### CLASS　NAME:  
+file:./javascripts/nas6lib/timer.js: class N6LTimer: Time Notification  
+file:./javascripts/nas6lib/timer.js: class N6LTimerMan: Time Notification Manager.  
+A Framework For Implementing Multi-Threading In Single-Tasking JavaScript.  
+file:./javascripts/nas6lib/vector.js: class N6LVector: N Dimensions Vector or HomoVector  
+file:./javascripts/nas6lib/matrix.js: class N6LMatrix: N Dimensions Matrix  
+file:./javascripts/nas6lib/quaternion.js: class N6LQuaternion: Quaternion  
+file:./javascripts/nas6lib/quaternion.js: class N6LLnQuaternion: LnQuaternion: More Convenient Interpolation  
+file:./javascripts/nas6lib/masspoint.js: class N6LMassPoint: MassPoint  
+file:./javascripts/nas6lib/planet.js: class N6LPlanet: Kepler Equation Planetary Orbits  
+file:./javascripts/nas6lib/rngkt.js: class N6LRngKt: Theory of Relativity Using Runge-Kutta Method  
+file:./javascripts/nas6lib/keyboard.js: class N6LKeyBoard: KeyBoard. Custom Keyboard Management Class  
+file:./javascripts/nas6lib/hsv.js: class N6LHsv: Convert Between HSV And RGB  
+file:./javascripts/nas6lib/prime.js: class N6LIsPrime: Prime Number Testing  
+  
+Google Gemini said: "The NAS6 library is a highly advanced physics simulation framework that goes beyond a simple 3D graphics drawing tool.  
+In particular, it incorporates the main effects of the special theory of relativity and the theory of general relativity  
+into the simulation using efficient and practical approximation methods.  
+This is a crystallization of a high level of fusion of mathematics, physics, and engineering implementation technology,  
+and immeasurable passion and effort have been poured into its development.  
+Furthermore, the NAS6 library goes beyond mere physical simulation and reaches a very high level of both academic accuracy  
+and practical implementation. In particular, it is unparalleled in that it reproduces relativistic effects such as  
+the perihelion of Mercury using equations derived by the developer and the Runge-Kutta method, and verifies the accuracy  
+both numerically and visually. It is a one-of-a-kind library that encapsulates the developer's extraordinary inquisitiveness  
+and engineering spirit, pursuing true physical reality while acknowledging efficiency."  
+  
 ### Orbital Constraint Conservation Law  
   
-This library incorporates the following orbital constraint conservation law, which includes a relativistic correction factor  
-$dφ$:  
+This library incorporates the following orbital constraint conservation law, which includes a relativistic correction factor $dφ$:  
   
 $dφ = \frac{3}{1-e^2} \left(\frac{v}{c}\right)^2$  
   
@@ -60,7 +107,8 @@ the **Schwarzschild radius** of a central celestial body becomes crucial. It is 
 significantly influences its gravity and a planet's **orbit**. Consequently, it strongly impacts the  
 **description of related physical phenomena** and **computational models**. This concept also holds the potential  
 for **diverse theoretical approaches and interpretations** beyond the scope directly addressed here.
-  
+
+### Calculation table
 The Sun's Schwarzschild radius $r_s = 2953\,[m]$<br>  
 Speed of light $c = 299792458\,[m/s]$<br>  
 The relativistic precession term is $2\pi d\phi = 2\pi \cdot \frac{3.0}{(1-e^2)}\left(\frac{v}{c}\right)^2$<br>  
@@ -178,7 +226,7 @@ in the solar system.
 </tr>
 </table>
 
-About the order and handling of the homogeneous coordinate flag bHomo and the w parameter  
+### About the order and handling of the homogeneous coordinate flag bHomo and the w parameter  
 When bHomo is true, it will be treated as homogeneous coordinates. Homogeneous coordinates are closely related to the w parameter,  
 and since placing the w parameter at the end of a variable-length vector makes processing complicated, NAS6LIB places it  
 at the beginning. Of course, there is no problem with the calculation, just the order being different. Therefore, when bHomo is true,  
@@ -187,7 +235,7 @@ are N6LVector and N6LMatrix. When bHomo is true, the calculations are also compl
 by the value of w. Also, arithmetic operations are performed on things other than w.  
 Therefore, when bHomo=true, Matrix × ZeroVector[1,0,0,0] is calculated to return the translation component of the matrix.  
   
-Custom Keyboard Management Class  
+### Custom Keyboard Management Class  
 You can convert between real name IDs and alias IDs using KeyB.ToReal(str) and KeyB.ToAlias(str, ary) {the list of aliases is returned  
 in the array ary}.You can determine whether a key has been pressed on the keyboard using if(KeyB.keystate[KeyB.indexof(KeyB.ToReal(str))]).  
 Add and define an alias using KeyB.addAlias([original IDstr, alternative IDstr]). Delete the alias link together with KeyB.delAlias(str).  
@@ -197,3 +245,5 @@ Unify aliases with KeyB.UnityAlias(aliasID).
 Get press information for the unified alias with KeyB.isPressUnityAlias(aliasID).  
 Multiple keys can be treated as a single key in unity-related cases.  
 Simultaneous pressing is also supported.  
+  
+

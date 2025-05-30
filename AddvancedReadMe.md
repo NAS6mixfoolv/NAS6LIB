@@ -24,7 +24,7 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
 * **`planet.js`**: Features functions for **Kepler's equation**, useful for orbital mechanics or celestial simulations.  
     * **Class**: `N6LPlanet`: Kepler Equation Planetary Orbits  
 * **`prime.js`**: Includes utilities for **prime number related calculations**.  
-    * **Class**: `N6LIsPrime`: Prime Number Testing  
+    Prime Number Testing  
 * **`quaternion.js`**: Provides robust **Quaternion operations** for managing rotations, designed to avoid issues like gimbal lock.  
     * **Class**: `N6LQuaternion`: Quaternion  
     * **Class**: `N6LLnQuaternion`: Logarithmic Quaternions for more convenient interpolation.  

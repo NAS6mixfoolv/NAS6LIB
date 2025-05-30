@@ -43,9 +43,9 @@ readCSV('filename', 'analyzeCSV', 'donefunc');
 
 ### NAS6LIB Class Summary
 
-### TypeName Member
+### Type Name Member
 * **N6LXXX.typename** = "N6LXXX"
-  * **Description**：Identifying the type by string
+  * **Description**：Identifies the type by its string representation.
 
 ### N6LTimerMan
   

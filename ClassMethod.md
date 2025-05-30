@@ -1262,50 +1262,14 @@ sw:0:Lilith:1:dragon head:2:dragon tail
    4:no include mc include N6LPlanet(i,0).m_hs(9)
   * **Returns**    ：－－－  
 
-
-        if(sw == 0) { //Lilith//リリス
-            var dat = new Date(1996, 7, 1);
-            this.m_nperday = (0.975) * (131.1 - 120.53) / (92.0);
-            this.m_el = (120.53 + m_nperday * nday) % 360.0;
-            if(this.m_el < 0.0) this.m_el += 360.0;
-            this.ex.x[0] = this.m_el;
-        }
-        else if(sw == 1) { //dragon head//ドラゴンヘッド
-            var dat = new Date(1996, 7, 1);
-            this.m_nperday = (187.56 - 192.48) / (92.0);
-            this.m_el = (192.48 + m_nperday * nday) % 360.0;
-            if(this.m_el < 0.0) this.m_el += 360.0;
-            this.ex.x[0] = this.m_el;
-            this.m_rev = true;
-        }
-        else if(sw == 2) { //dragon tail//ドラゴンテイル
-            var dat = new Date(1996, 7, 1);
-            this.m_nperday = (187.56 - 192.48) / (92.0);
-            this.m_el = (192.48 + m_nperday * nday + 180.0) % 360.0;
-            if(this.m_el < 0.0) this.m_el += 360.0;
-            this.ex.x[0] = this.m_el;
-            this.m_rev = true;
-        }
-        else if(sw == 3) { //no include asc include N6LPlanet(i,0).m_hs(0)//asc何も入らないN6LPlanet(i,0).m_hs(0)に入ってる
-            this.m_el = 0.0;
-            if(this.m_el < 0.0) this.m_el += 360.0;
-            this.ex.x[0] = this.m_el;
-        }
-        else if(sw == 4) { //no include mc include N6LPlanet(i,0).m_hs(9)//mc何も入らないN6LPlanet(i,0).m_hs(9)に入ってる
-            this.m_el = 0.0;
-            if(this.m_el < 0.0) this.m_el += 360.0;
-            this.ex.x[0] = this.m_el;
-        }
-
-    CreateConfig(pno, pname, nday, dat0, ax, earth) {
-    CreateEtc(pno, pname, nday, dat0, sw, earth) {
-
-
-
-
-
-
-
+* **If you want to use internal call functions, please see the source file.**
+    recompute(nday)
+    InitMoon(t) 
+    Init(nday)
+    Init2(nday)
+    fabs(x) 
+    sgnv(x, y, vx, vy) {
+ 
 * **N6LPlanet.Comp(rh)**
   * **Description**：comparison  
   * **Parameters**：rh:N6LPlanet:compare this  
@@ -1326,3 +1290,25 @@ sw:0:Lilith:1:dragon head:2:dragon tail
   * **Parameters**：rh:N6LPlanet:compare this:eps:error:real  
   * **Returns**    ：true:false:  
   
+* **N6LPlanet.kepler(nday, xx, num)**  
+  * **Description**：Kepler Equations  
+  * **Parameters**：nday:xx[0](Output Parameter):N6LVector:xyz:num:Approximation iteration count (default=100)  
+  * **Returns**    ：near point angle
+  
+* **N6LPlanet.ecliptic(x, y, z, xyz)**  
+  * **Description**：xyz to ecliptic  
+  * **Parameters**：x,y,z:xyz[0](Output Parameter):ecliptic
+  * **Returns**    ：－－－
+  
+* **N6LPlanet.asc(dat1)**  
+  * **Description**：ascendant  
+  * **Parameters**：dat1:Date:
+  * **Returns**    ：－－－
+  
+* **N6LPlanet.house(aasc)**  
+  * **Description**：house  
+  * **Parameters**：aasc:ascendant
+  * **Returns**    ：－－－
+  
+
+ 

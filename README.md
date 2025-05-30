@@ -33,7 +33,7 @@ html
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js)"></script><br>
 <br>
   
-2. Minimum Sample (2D Vector Addition)  
+### 2. Minimum Sample (2D Vector Addition)  
 Here's a simple JavaScript example to get started:  
   
 JavaScript  
@@ -43,7 +43,7 @@ var v2 = new N6LVector([3, 4]);
 var v3 = v1.Add(v2);  
 console.log(v3.x); // Result: [4, 6]  
   
-Core Features & Modules Overview  
+### Core Features & Modules Overview  
 NAS6LIB is a collection of JavaScript modules, each providing specific functionalities:  
   
 vector.js: Defines fundamental Vector operations for 2D, 3D, and N-dimensional calculations.  
@@ -67,25 +67,25 @@ for homogeneous coordinates (e.g., two-dimensional wxy and three-dimensional wxy
 for homogeneous coordinates, with all elements divided by the w value for arithmetic operations. For instance,  
 Matrix × ZeroVector([1,0,0,0],bHomo=true) returns the translation component of the matrix.  
   
-Coordinate System  
+### Coordinate System  
 NAS6LIB's core mathematical calculations (vectors, matrices, etc.) are based on a Left-Handed Coordinate System.  
 This reflects its origins in DirectX game development. When integrating with other 3D libraries  
 (e.g., WebGL-based ones like Three.js which primarily use a Right-Handed Coordinate System), please be aware of  
 potential axis differences, especially regarding the Z-axis.  
   
-Deeper Dive & Advanced Details  
+### Deeper Dive & Advanced Details  
 For more in-depth information, including a detailed class list with main methods, advanced relativistic orbital  
 mechanics formulas, and specific usage examples for modules like keyboard.js, please refer to the advanced documentation:  
   
 Advanced NAS6LIB Documentation  
 [AddvancedReadMe](AddvancedReadMe.md)  
   
-Future Outlook  
+### Future Outlook  
 The prototype of NAS6LIB originated from a VC++ DirectX air combat game, evolving through VB+VC#+XNA before  
 being succeeded by the current JavaScript version in 2016. The original development started about 25 years ago,  
 around 2000. It may return again and become VC#+WASM in the future.  
 
-Version History  
+### Version History  
 NAS6LIB_1_2_0 (2016/06/26): Renewal  
 NAS6LIB_1_3_0 (2016/07/29): Added ./nas6lib/keyboard.js  
 NAS6LIB_1_4_0 (2016/07/31): N6LMatrix.Vector() perfect calculation  

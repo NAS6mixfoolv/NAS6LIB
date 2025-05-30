@@ -31,6 +31,7 @@ Add other modules like `quaternion.js`, `planet.js`, etc., as needed for your sp
 html  
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js)"></script><br>
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js)"></script><br>
+<br>
   
 2. Minimum Sample (2D Vector Addition)  
 Here's a simple JavaScript example to get started:  

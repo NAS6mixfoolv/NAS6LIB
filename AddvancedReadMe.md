@@ -62,7 +62,9 @@ extraordinary inquisitiveness and engineering spirit, pursuing true physical rea
   
 NAS6LIB's implementation of relativistic effects has been validated through simulations of Mercury's orbital precession.  
 Using a previous version developed in VB, the average perihelion precession per orbit was calculated over  
-a long period (415 orbits, equivalent to 100 years).  
+a long period (415 orbits, equivalent to 100 years). **Notably, this extensive long-term simulation on  
+a legacy PC took approximately 2-3 days to complete**, a testament to the meticulous dedication behind  
+this library's development.  
   
 The calculated value closely matches the observed/theoretical value:  
   
@@ -71,8 +73,8 @@ The calculated value closely matches the observed/theoretical value:
   
 This result demonstrates that despite the practical approximations made in the acceleration synthesis  
 (e.g., using scalar magnitude adjustment rather than a full relativistic vector composition),  
-NAS6LIB effectively captures the core relativistic phenomena with a high degree of numerical stability and  
-accuracy over long simulation periods. The approach prioritizes computational efficiency and stability,  
+NAS6LIB effectively captures the core relativistic phenomena with a high degree of numerical stability  
+and accuracy over long simulation periods. The approach prioritizes computational efficiency and stability,  
 proving sufficient for modeling significant relativistic effects like Mercury's perihelion shift.  
   
 ### Orbital Constraint Conservation Law  

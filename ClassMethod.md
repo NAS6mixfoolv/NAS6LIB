@@ -2,15 +2,15 @@
   
 * N6LTimerMan：construction  
 member：  
-N6LTimerMan.interval:interval timer check  
-N6LTimerMan.enable:  
-N6LTimerMan.timer[]:timers  
-member（N6LTimerMan.timer[id]）：  
-N6LTimerMan.timer[id].ID:  
-N6LTimerMan.timer[id].enable:  
-N6LTimerMan.timer[id].starttime:  
-N6LTimerMan.timer[id].alerm:after msec  
-N6LTimerMan.timer[id].alermfunc:call method  
+  N6LTimerMan.interval:interval timer check  
+  N6LTimerMan.enable:  
+  N6LTimerMan.timer[]:timers  
+  member（N6LTimerMan.timer[id]）：  
+    N6LTimerMan.timer[id].ID:  
+    N6LTimerMan.timer[id].enable:  
+    N6LTimerMan.timer[id].starttime:  
+    N6LTimerMan.timer[id].alerm:after msec  
+    N6LTimerMan.timer[id].alermfunc:call method  
 format：  
 var tman = new N6LTimerMan();  
 Note: even if some make a timer, setTimeout () is one of centralized management to N6LTimerMan  
@@ -20,7 +20,7 @@ desc：add timer
 arg ：－－－  
 ret ：－－－  
    
-* * N6LTimerMan.changeinterval(int)  
+* N6LTimerMan.changeinterval(int)  
 desc：change interval  
 arg ：int：msec  
 ret ：－－－  

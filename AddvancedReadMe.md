@@ -34,7 +34,8 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
 
 ## Class Method Summary
 
-
+[ClassMethod](ClassMethod.md)  
+ 
 ---
 
 ## Relativistic Physics and Advanced Mathematical Core

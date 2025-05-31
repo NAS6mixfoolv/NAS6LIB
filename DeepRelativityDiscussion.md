@@ -226,7 +226,7 @@ SGR1000=(2.5)(V0/c)^2=5.963859845632e-12
 SGRR1000=SGR1000/SC0-1=3.139565543e-4  
 SGRR=SGRR1000/(R0*2 π*86400)=9.084392e-17  
 If you exclude the special effects and extract the general effects, multiplying them by (6/5)  
-SG=SGRR*(6/5)=1.09012704e-16
+SG=SGRR*(6/5)=1.09012704e-16  
 The actual measured value was 1.1e-16, so the calculation was roughly successful＞＜  
   
 SGRR1000 extracts the effect of general relativity at an altitude of 1000[m], with altitude 0[m] as the base  

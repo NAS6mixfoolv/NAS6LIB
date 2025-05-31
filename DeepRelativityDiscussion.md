@@ -71,8 +71,8 @@ $i=0, ct$:
 $\frac{d}{ds}\left[\left(1 - \frac{2m}{r}\right)\left(\frac{dt}{ds}\right)\right] = 0 \quad \text{(*1D)}$  
   
 Choosing specific components:  
-We consider motion in the equatorial plane, where $\theta = \pi/2$ and $\dv{\theta}{s} = 0$. Since $\theta$ is constant,  
-\text{(*1B)} is ignored.  
+$$We consider motion in the equatorial plane, where $\theta = \pi/2$ and $\dv{\theta}{s} = 0$. Since $\theta$ is constant,  
+\text{(*1B)} is ignored.$$  
   
 From \text{(*1C)}, we obtain the conservation of angular momentum:  
 $r^2\frac{d\phi}{ds} = h \quad (\text{constant}) \quad \text{(*3)}$  
@@ -83,14 +83,14 @@ $\left(1 - \frac{2m}{r}\right)\frac{dt}{ds} = l \quad (\text{constant}) \quad \t
 From \text{(*1A)}:  
 $\left(1 - \frac{2m}{r}\right) = (cl)^2 - \left(\frac{dr}{ds}\right)^2 - \left(\frac{h}{r}\right)^2\left(1 - \frac{2m}{r}\right) \quad \text{(*5)}$  
   
-Let's differentiate $r$ as a function of $\phi$:  
+$$Let's differentiate $r$ as a function of $\phi$:  
 $\dv{r}{\phi} = r' = \dv{r}{s}\dv{s}{\phi}$  
 From \text{(*3)}, $\dv{s}{\phi} = r^2/h$. So, $\dv{r}{s} = r'\dv{\phi}{s} = hr'/r^2$.  
 Let $u = 1/r$, then $r' = \dv{}{\phi}(1/u) = -u'/u^2$.  
 Substituting into \text{(*5)}:  
 $\left(1 - 2mu\right) = (cl)^2 - (hu')^2 - (hu)^2\left(1 - 2mu\right)$  
 Rearranging to solve for $u'^2$:  
-$u'^2 = \frac{(cl)^2 - 1}{h^2} + \frac{2mu}{h^2} - u^2 + 2mu^3 \quad \text{(*6)}$  
+$u'^2 = \frac{(cl)^2 - 1}{h^2} + \frac{2mu}{h^2} - u^2 + 2mu^3 \quad \text{(*6)}$  $$  
   
 Differentiating with respect to $\phi$:  
 $2u'u'' = \frac{2m}{h^2}u' - 2uu' + 6mu^2u' \quad \text{(*7)}$  

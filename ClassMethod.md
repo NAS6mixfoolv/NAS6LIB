@@ -18,12 +18,12 @@
 ---  
   
 ### Global Symbols  
-* ** in vector.js**  
+* **in vector.js**  
   * var N6L_DEBUG_MODE = false;//if debug N6L_DEBUG_MODE = true;  
-* ** in matrix.js**  
+* **in matrix.js**  
   * var SwDefInverseMat = 1;//Inverse Matrix calculate default switch  
 //1:Use TransposedMat():2:Use InverseMat00():3:Use InverseMat01():4:Use DeterminMatInvMat():Any:Error  
-* ** in keyboard.js**  
+* **in keyboard.js**  
   * var TManKeyBoard;//Timer manager associated with the keyboard  
   * var KeyBoardID = [];//Define real name//U.S. standard keyboard  
   * var KeyBoardAliasID = [];//Define alias Japanese keyboard  
@@ -32,7 +32,7 @@
   * var dokp;//For internal use  
   * var dokd;//For internal use  
   * var doku;//For internal use  
-* ** in prime.js**  
+* **in prime.js**  
   * const N6LONELOOPNUM = 1000;//Number of calculations per main loop  
   * var N6LNUM;//Number to be checked for primality  
   * var N6LMAX;//Maximum number of judgments  

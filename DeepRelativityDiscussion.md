@@ -125,7 +125,7 @@ $v=\frac{2A}{r}$
 Squaringthevelocitygives:   
 $v^2=\frac{4A^2}{r^2}$  
 Also, for a central mass M and gravitational constant G, the orbital velocity v is:  
-$v=\sqrtfrac{GM}{r})$  
+$v=\sqrt{\frac{GM}{r}}$  
 Squaringthevelocitygives:  
 $v^2=\frac{GM}{r}$  
 

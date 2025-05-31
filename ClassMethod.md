@@ -1549,7 +1549,7 @@ sw:0:Lilith:1:dragon head:2:dragon tail
   
 * **N6LHsv.HsvGrd(div, cnt, hsv, sw)**  
   * **Description**：AHSV Gradient  
-  * **Parameters**：div：Number of divisions:cnt:count:hsv:The final AHSV array:sw:Gradient Direction  
+  * **Parameters**：div：Number of divisions:cnt:count:hsv:The final AHSV array:sw:The shortcut or detour direction of gradients  
   * **Returns**    ：N6LHsv  
   
   

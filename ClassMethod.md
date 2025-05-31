@@ -32,11 +32,14 @@
   * var dokp;//For internal use  
   * var dokd;//For internal use  
   * var doku;//For internal use  
-* **in prime.js**  
-  * const N6LISPRMONELOOPNUM = 1000;//Number of calculations per main loop  
+* **in prime.js**
+  * var N6LISPRMONELOOPNUM = 1000;//Number of calculations per main loop  
   * var N6LISPRMNUM;//Number to be checked for primality  
   * var N6LISPRMMAX;//Maximum number of judgments  
   * var N6LISPRMRET = 0;//Return value of IsPrime:not 0:Is Prime:-1:Not Prime:0:calucrating  
+  * var N6LISPRMTMP = 5;//For internal use  
+  * var N6LISPRMTMP0 = 5;//For internal use  
+  * var N6LISPRMTMP1 = 5;//For internal use  
   
 ### Global Utility Functions  
 * **function Rand(min, max)**  

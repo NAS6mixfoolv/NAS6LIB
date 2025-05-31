@@ -54,7 +54,7 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
 ## Class Method Summary  
 [Table of contents](#table-of-contents)  
  
- [ClassMethod](ClassMethod.md)  
+**◆[ClassMethod](ClassMethod.md)◆**  
  
 ---  
   

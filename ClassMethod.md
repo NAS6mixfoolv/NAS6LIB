@@ -1,4 +1,5 @@
 ### Table of contents  
+* [Global Symbols](#global-symbols)  
 * [Global Utility Functions](#global-utility-functions)  
 * [NAS6LIB Class Summary](#nas6lib-class-summary)  
   * [Type Name Member](#type-name-member)  
@@ -16,6 +17,26 @@
   
 ---  
   
+### Global Symbols  
+* ** in vector.js**  
+  * var N6L_DEBUG_MODE = false;//if debug N6L_DEBUG_MODE = true;  
+* ** in matrix.js**  
+  * var SwDefInverseMat = 1;//Inverse Matrix calculate default switch  
+//1:Use TransposedMat():2:Use InverseMat00():3:Use InverseMat01():4:Use DeterminMatInvMat():Any:Error  
+* ** in keyboard.js**  
+  * var TManKeyBoard;//Timer manager associated with the keyboard  
+  * var KeyBoardID = [];//Define real name//U.S. standard keyboard  
+  * var KeyBoardAliasID = [];//Define alias Japanese keyboard  
+  * var UnityAliasID = [];//Alias unified Japanese keyboard  
+  * var KeyB = new N6LKeyBoard(); //N6LKeyBoard entity  
+  * var dokp;//For internal use  
+  * var dokd;//For internal use  
+  * var doku;//For internal use  
+* ** in prime.js**  
+  * const N6LONELOOPNUM = 1000;//Number of calculations per main loop  
+  * var N6LNUM;//Number to be checked for primality  
+  * var N6LMAX;//Maximum number of judgments  
+  * var N6LISPRMRET = 0;//Return value of IsPrime:not 0:Is Prime:-1:Not Prime:0:calucrating  
   
 ### Global Utility Functions  
 * **function Rand(min, max)**  

@@ -44,19 +44,6 @@ $a=1-0.5(\frac{v}{c})^2$
   
   ## General relativity effect SG    
   
-\documentclass{article}
-\usepackage{amsmath} % For mathematical environments like align, equation
-\usepackage{amssymb} % For mathematical symbols
-\usepackage{physics} % For common physics notations like \dv, \pdv
-\usepackage{hyperref} % For hyperlinks (if you want to keep the (*X) links)
-
-% Optional: Adjust section numbering depth
-\setcounter{secnumdepth}{0} % No section numbering
-
-\begin{document}
-
-\section*{Circular Orbits in Schwarzschild Spacetime}
-
 In the case of a circular orbit (eccentricity $e=0$):
 
 The line element of the Schwarzschild metric (a vacuum solution to Einstein's field equations possessing spherical symmetry) is given by:
@@ -122,7 +109,7 @@ If we consider $(r d\phi/dt)$ as the tangential velocity of the circular orbit, 
 Therefore, in Euclidean geometry, the \textbf{force equation for gravity in Schwarzschild spacetime} can be expressed as:
 $$F = -\frac{GMm}{r^2}(1+S) = -\frac{GMm}{r^2}\left(1 + 3\left(\frac{V}{c}\right)^2\right)$$
 
-\end{document}
+
 
 
 

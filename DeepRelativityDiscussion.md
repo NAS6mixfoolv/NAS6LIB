@@ -103,7 +103,7 @@ Considering the \textbf{equation for the gravitational force in Schwarzschild sp
 in the form $F = -(GMm/r^2)(1+S)$, where $F$ is force, $r$ is radius, $G$ is gravitational constant,  
 $M$ and $m$ are masses, $V$ is orbital velocity, $c$ is speed of light, and $S$ is the relativistic correction term.  
   
-Here, $h = r^2\dv{\phi}{s}$, $m = GM/c^2$, and $u=1/r$.  
+Here, $h = r^2\frac{d\phi}{ds}$, $m = GM/c^2$, and $u=1/r$.  
 Let's examine the \textbf{relativistic correction term $3mu^2$}. We can factor out $m/h^2$:  
 $u'' + u = \frac{m}{h^2}\left(1 + \frac{3mu^2}{m/h^2}\right) = \frac{m}{h^2}(1+S)$  
 Now we investigate $S$:  

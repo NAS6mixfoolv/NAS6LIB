@@ -199,7 +199,6 @@ The `N6LKeyBoard` class provides advanced keyboard input management, including a
 * **Simultaneous Press Detection**: Easily check if multiple keys are pressed at once.  
   
 ### Main Methods  
-[Table of contents](#table-of-contents)  
   
 * `KeyB.ToReal(str)`: Converts an alias ID string to its real key ID.  
 * `KeyB.ToAlias(str, ary)`: Converts a real key ID string to its alias IDs, returning a list of aliases in the `ary` array.  

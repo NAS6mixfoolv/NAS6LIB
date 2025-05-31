@@ -171,7 +171,7 @@ corresponding to the solution for the Kerr metric in certain contexts.
   
 * **If we were to calculate it using the effects of special relativity,**  
 
-Mercury's orbital length $a=0.3871*2-pi=2.432[AU]$  
+Mercury's orbital length $a=0.3871*2\pi=2.432[AU]$  
 Orbital distance shortened by the effects of special relativity  
 $a'=2.432[AU]*(-0.5)(\frac{v}{c})^2=4639.078[m]$(**A)  
 (**A) is the orbital distance shortened by the effects of special relativity per revolution [m]  

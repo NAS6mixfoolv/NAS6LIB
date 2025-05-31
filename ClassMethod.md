@@ -310,7 +310,7 @@ var N6LVector = function(rh, bh) { }
   * **Returns**    ：true:parallel:false:not parallel  
   
 * **N6LVector.Max()**  
-  * **Description**：The maximum absolute value of the value of the element (sign as it is)**  
+  * **Description**：The maximum absolute value of the value of the element (sign as it is)  
   * **Parameters**：－－－  
   * **Returns**    ：The maximum absolute value of the value of the element (sign as it is):real  
   
@@ -327,7 +327,7 @@ note：Prevents it by the ± 1.0 less than the value of each of the elements whe
   * **Returns**    ：lookat:N6LMatrix  
   
 * **N6LVector.RotArcQuat(rh)**  
-  * **Description**：rotation arc(arc ball)**  
+  * **Description**：rotation arc(arc ball)  
   * **Parameters**：this:N6LVector:vec1,rh:N6LVector:vec2  
   * **Returns**    ：rotation arc(arc ball):N6LQuaternion  
   
@@ -384,14 +384,14 @@ note：Homogeneous coordinate rotation of the unit x-axis
 with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substituting  
   
 * **N6LVector.RotAxisQuat(axis, theta)**  
-  * **Description**：rotate axis(calc quaternion)**  
+  * **Description**：rotate axis(calc quaternion)  
   * **Parameters**：axis:N6LVector:theta:rad  
   * **Returns**    ：rotate axis:N6LVector  
 note：Homogeneous coordinate rotation of the unit x-axis  
 with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substituting  
   
 * **N6LVector.RotAxisVec(rotvec)**  
-  * **Description**：rotate axis(calc quaternion)**  
+  * **Description**：rotate axis(calc quaternion)  
   * **Parameters**：rotvec:N6LVector,rotate vector  
   * **Returns**    ：rotate axis:N6LVector  
   
@@ -770,7 +770,7 @@ Homogeneous coordinate rotation of the unit x-axis
 with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substituting  
   
 * **N6LMatrix.RotAxisQuat(axis, theta)**  
-  * **Description**：rotate axis(calc quaternion)**  
+  * **Description**：rotate axis(calc quaternion)  
   * **Parameters**：axis:N6LVector:theta:rad  
   * **Returns**    ：rotate axis:N6LMatrix  
 note:scale, translate information is kept  
@@ -787,7 +787,7 @@ Homogeneous coordinate rotation of the unit x-axis
 with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substituting  
   
 * **N6LMatrix.RotAxisVec(rotvec)**  
-  * **Description**：rotate axis(calc quaternion)**  
+  * **Description**：rotate axis(calc quaternion)  
   * **Parameters**：rotvec:N6LVector,rotate vector  
   * **Returns**    ：rotate axis:N6LMatrix  
 note:scale, translate information is kept  

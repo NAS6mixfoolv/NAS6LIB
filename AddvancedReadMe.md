@@ -3,6 +3,19 @@
 This document provides a deeper dive into NAS6LIB's architecture, advanced features, and detailed technical specifications.  
   
 ---
+
+### Table of contents
+* [Modules and Classes Overview](# Modules and Classes Overview)
+  * [Class Method Summary](# Class Method Summary)
+* [Relativistic Physics and Advanced Mathematical Core](# Relativistic Physics and Advanced Mathematical Core)
+  * [Verification of Relativistic Perihelion Precession](# Verification of Relativistic Perihelion Precession (Mercury))
+  * [Orbital Constraint Conservation Law](# Orbital Constraint Conservation Law)
+  * [Glossary of Symbols](# Glossary of Symbols)
+  * [Calculation Table](# Calculation Table)
+* [Custom Keyboard Management Class](# Custom Keyboard Management Class (`keyboard.js`))
+  * [Key Features](# Key Features)
+  
+---  
   
 ## Modules and Classes Overview  
   

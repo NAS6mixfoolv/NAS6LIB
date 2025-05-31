@@ -33,9 +33,9 @@
   * var dokd;//For internal use  
   * var doku;//For internal use  
 * **in prime.js**  
-  * const N6LONELOOPNUM = 1000;//Number of calculations per main loop  
-  * var N6LNUM;//Number to be checked for primality  
-  * var N6LMAX;//Maximum number of judgments  
+  * const N6LISPRMONELOOPNUM = 1000;//Number of calculations per main loop  
+  * var N6LISPRMNUM;//Number to be checked for primality  
+  * var N6LISPRMMAX;//Maximum number of judgments  
   * var N6LISPRMRET = 0;//Return value of IsPrime:not 0:Is Prime:-1:Not Prime:0:calucrating  
   
 ### Global Utility Functions  

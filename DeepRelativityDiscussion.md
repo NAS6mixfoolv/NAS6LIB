@@ -51,7 +51,7 @@ is given by:where $c$ is the speed of light, $t$ is the coordinate time, $r$ is 
 $\theta$ is the co-latitude coordinate, $\phi$ is the longitude coordinate, and $2m = r_s$ is the Schwarzschild radius,  
 defined as $r_s = 2GM/c^2$, with $M$ being the mass of the central body.  
   
-The metric tensor in units $(c^2, 1, 1, 1)$ is:  
+The metric tensor in units $(-c^2, 1, 1, 1)$ is:  
 $ds^2 = \left(1 - \frac{r_s}{r}\right)c^2 dt^2 - \frac{dr^2}{\left(1 - \frac{r_s}{r}\right)} - r^2 d\theta^2 - r^2 \sin^2\theta d\phi^2$  
 Substituting $r_s = 2m$:  
 $ds^2 = \left(1 - \frac{2m}{r}\right)c^2 dt^2 - \frac{dr^2}{\left(1 - \frac{2m}{r}\right)} - r^2 d\theta^2 - r^2 \sin^2\theta d\phi^2 \quad \text{(*1)}$  

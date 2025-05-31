@@ -70,10 +70,10 @@ $\frac{d}{ds}\left(r^2\sin^2\theta\frac{d\phi}{ds}\right) = 0 \quad \text{(*1C)}
 $i=0, ct$:  
 $\frac{d}{ds}\left[\left(1 - \frac{2m}{r}\right)\left(\frac{dt}{ds}\right)\right] = 0 \quad \text{(*1D)}$  
   
-Choosing specific components:  
-We consider motion in the equatorial plane, where $\theta = \pi/2$ and $\dv{\theta}{s} = 0$.  
-Since $\theta$ is constant, (\*1B) is ignored.  
-  
+Choosing specific components:
+We consider motion in the equatorial plane, where $\theta = \pi/2$ and $\frac{d\theta}{ds} = 0$.  
+Since $\theta$ is constant, (*1B) is ignored.  
+
 From \text{(*1C)}, we obtain the conservation of angular momentum:  
 $r^2\frac{d\phi}{ds} = h \quad (\text{constant}) \quad \text{(*3)}$  
   
@@ -84,9 +84,9 @@ From \text{(*1A)}:
 $\left(1 - \frac{2m}{r}\right) = (cl)^2 - \left(\frac{dr}{ds}\right)^2 - \left(\frac{h}{r}\right)^2\left(1 - \frac{2m}{r}\right) \quad \text{(*5)}$  
   
 Let's differentiate $r$ as a function of $\phi$:  
-$\dv{r}{\phi} = r' = \dv{r}{s}\dv{s}{\phi}$  
-From (\*3), $\dv{s}{\phi} = r^2/h$. So, $\dv{r}{s} = r'\dv{\phi}{s} = hr'/r^2$.  
-Let $u = 1/r$, then $r' = \dv{}{\phi}(1/u) = -u'/u^2$.  
+$\frac{dr}{d\phi} = r' = \frac{dr}{ds}\frac{ds}{d\phi}$  
+From (\*3), $\frac{ds}{d\phi} = r^2/h$. So, $\frac{dr}{ds} = r'\frac{d\phi}{ds} = hr'/r^2$.  
+Let $u = 1/r$, then $r' = -u'/u^2$.  
 Substituting into (\*5):  
 $\left(1 - 2mu\right) = (cl)^2 - (hu')^2 - (hu)^2\left(1 - 2mu\right)$  
 Rearranging to solve for $u'^2$:  

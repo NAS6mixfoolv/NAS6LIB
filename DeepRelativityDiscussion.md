@@ -169,7 +169,7 @@ e=d/(360*60*60)=35.98[arc seconds/100 years]
 e is the calculation combining special and general  
 Relativistic effect $S=(\frac{v}{c})^2$  
 Special effect SS is -0.5S General effect SG is 3.0S Total SGS is 2.5S  
-$Ans=e*\frace{6}{5}=43 .17[arc seconds/100 years]$  
+$Ans=e*\frac{6}{5}=43 .17[arc seconds/100 years]$  
 General theoretical calculation method  
 $dφ=360*3600*(\frac{3}{2})*(\frac{rs}{a})*(\frac{1}{1-e^2})*4.15*100=360*3600*(\frac{3}{2})*\frac{2953}{149598700000*0.3871}*(\frac{1}{1-0.2056^2})*4.15*100=42.9[arc seconds/100 years]$  
   

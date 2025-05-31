@@ -186,6 +186,11 @@ for the planets in the solar system.
   
 ---  
   
+**Links for further discussion and consideration of the theory of relativity**  
+[Deep Relativity Discussion](DeepRelativityDiscussion.md)   
+  
+---    
+  
 ## Custom Keyboard Management Class (`keyboard.js`)  
 [Table of contents](#table-of-contents)  
   

@@ -23,7 +23,11 @@ Experience NAS6LIB in action:
 * **Solar System Planet Orbit Simulator**: [https://nas6mixfoolv.github.io/solarsystem/](https://nas6mixfoolv.github.io/solarsystem/)
 * **Satellite Orbit Simulator**: [https://nas6mixfoolv.github.io/satellite](https://nas6mixfoolv.github.io/satellite/)  
 * **Main Demo Page**: [https://nas6mixfoolv.github.io/NAS6LIB/](https://nas6mixfoolv.github.io/NAS6LIB/)  
+
+## Automated Test  
   
+* **Validity verified by automated testing**: [http://nas6.net/testpoly_chktest/testpoly_chktest.htm](http://nas6.net/testpoly_chktest/testpoly_chktest.htm)  
+ 
 ---  
   
 ## Quick Start  

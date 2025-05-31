@@ -157,7 +157,7 @@ Orbital distance shortened by the effects of special relativity
 $a'=2.432[AU]*(-0.5)(\frac{v}{c})^2=4639.078[m]$(**A)  
 (**A) is the orbital distance shortened by the effects of special relativity per revolution [m]  
 Conversion to speed per radian  
-$b=\frac{a'}{2\piV}=0.01542288777667[s/mrad]$  
+$b=\frac{a'}{2\pi*V}=0.01542288777667[s/mrad]$  
 Conversion from a perfect circular orbit to an elliptical orbit  
 $c=\frac{b}{1-e^2}=0.01477512644554796428854595199462$  
 Mercury orbits 415 times per 100 years  

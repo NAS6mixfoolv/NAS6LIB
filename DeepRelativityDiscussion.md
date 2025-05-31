@@ -35,7 +35,9 @@ $SGS=SG+SS=(\frac{2.5}{1-e^2})(\frac{v}{c})^2$
 ---  
   
 # Proof  
+
   ## Special relativity effect SS  
+
 Lorentz contraction  
 The approximation  
 $a=\sqrt(1-(\frac{v}{c})^2)$  
@@ -115,6 +117,7 @@ $F = -\frac{GMm}{r^2}(1+S) = -\frac{GMm}{r^2}\left(1 + 3\left(\frac{V}{c}\right)
   
 * **Orbital Velocity: Circular and Elliptical**  
   * **For a Circular Orbit (e=0)**  
+
 The area A of a circular sector with radius r and angle θ, and orbital velocity v, is given by:  
 $A=(\frac{1}{2})r^2\theta=(\frac{1}{2})rv$  
 From this, the velocity v is:  
@@ -125,7 +128,9 @@ Also, for a central mass M and gravitational constant G, the orbital velocity v 
 $v=\sqrtfrac{GM}{r})$  
 Squaringthevelocitygives:  
 $v^2=\frac{GM}{r}$  
+
   * **For an Elliptical Orbit**  
+
 The area B of an elliptical sector with distance from focus q, true anomaly $\psi$, eccentricity e,
 and orbital velocity w, is given by:  
 $B=(\frac{1}{2})q^2\psi\sqrt(1-e^2)=(\frac{1}{2})qw\sqrt(1-e^2)$  
@@ -149,9 +154,12 @@ $\frac{3}{1-e^2}(\frac{v}{c})^2$
 This expression represents the relativistic correction term for elliptical orbits in general relativity,  
 corresponding to the solution for the Kerr metric in certain contexts.  
   
+---  
+  
 # Special and general relativity  
   
 * **If we were to calculate it using the effects of special relativity,**  
+
 Mercury's orbital length $a=0.3871*2-pi=2.432[AU]$  
 Orbital distance shortened by the effects of special relativity  
 $a'=2.432[AU]*(-0.5)(\frac{v}{c})^2=4639.078[m]$(**A)  
@@ -187,6 +195,7 @@ $dφ=360*3600*(\frac{3}{2})*(\frac{rs}{a})*4.15*100*(\frac{1}{1-e^2})=42.96[arc 
 Well, that's how it goes  
   
 * **Let's calculate the clock difference due to the difference in altitude.**  
+
 Regarding the relativistic effect S  
 Special SS = (-0.5/(1-e^2))(v/c)^2  
 General SG = (3.0/(1-e^2))(v/c)^2  

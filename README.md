@@ -14,14 +14,14 @@ mechanics such as the perihelion of Mercury.
 ## Related Repositories  
   
 * **Solar System Planet Orbit Simulator**: [https://github.com/NAS6mixfoolv/solarsystem/](https://github.com/NAS6mixfoolv/solarsystem/)
-* **Satellite Orbit Simulator**: [https://github.com/NAS6mixfoolv/satellite](https://github.com/NAS6mixfoolv/satellite/)  
+* **Satellite Orbit Simulator**: [https://github.com/NAS6mixfoolv/satellite/](https://github.com/NAS6mixfoolv/satellite/)  
   
 ## Demos  
   
 Experience NAS6LIB in action:  
   
 * **Solar System Planet Orbit Simulator**: [https://nas6mixfoolv.github.io/solarsystem/](https://nas6mixfoolv.github.io/solarsystem/)
-* **Satellite Orbit Simulator**: [https://nas6mixfoolv.github.io/satellite](https://nas6mixfoolv.github.io/satellite/)  
+* **Satellite Orbit Simulator**: [https://nas6mixfoolv.github.io/satellite/](https://nas6mixfoolv.github.io/satellite/)  
 * **Main Demo Page**: [https://nas6mixfoolv.github.io/NAS6LIB/](https://nas6mixfoolv.github.io/NAS6LIB/)  
 
 ## Automated Test  

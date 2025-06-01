@@ -153,7 +153,7 @@ $w=\sqrt{\frac{GN(1+e^2+2e\cos\psi}{q(1-e^2)}}$
 Squaringthevelocitygives:  
 $w^2=\frac{GN(1+e^2+2e\cos\psi)}{q(1-e^2)}$  
 Relativistic Correction Term for Elliptical Orbits  
-When attempting to apply the relativistic correction term $3(\frac{v}{c})^2  
+When attempting to apply the relativistic correction term $3(\frac{v}{c})^2$  
 using the elliptical orbital velocity, the term $(1+e^2 +2e\cos\psi)$ is included.  
 Considering the relationship between elliptical orbital velocity and circular orbital velocity,
 and given the term $3(\frac{v}{c})^2$  

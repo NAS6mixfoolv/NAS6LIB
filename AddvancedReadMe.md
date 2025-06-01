@@ -12,6 +12,7 @@ This document provides a deeper dive into NAS6LIB's architecture, advanced featu
   * [Orbital Constraint Conservation Law](#orbital-constraint-conservation-law)  
   * [Glossary of Symbols](#glossary-of-symbols)  
   * [Calculation Table](#calculation-table)  
+  * [Links for further discussion and consideration of the theory of relativity](#links-for-further-discussion-and-consideration-of-the-theory-of-relativity)  
 * [Custom Keyboard Management Class (`keyboard.js`)](#custom-keyboard-management-class-keyboardjs)  
   * [Key Features](#key-features)  
   
@@ -186,8 +187,8 @@ for the planets in the solar system.
   
 ---  
   
-**Links for further discussion and consideration of the theory of relativity**  
-[Deep Relativity Discussion](DeepRelativityDiscussion.md)   
+### Links for further discussion and consideration of the theory of relativity  
+**◆◆◆[Deep Relativity Discussion](DeepRelativityDiscussion.md)◆◆◆**   
   
 ---    
   

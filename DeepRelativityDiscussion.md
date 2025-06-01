@@ -256,8 +256,8 @@ I'm sorry, but my calculation method is a pain because I have to mess around wit
 It seems that $SGR=g/c^2$  without doing this.  
   
 So, how about gravity at altitude 0[m] on Earth using my method? Let's try to calculate the acceleration g.  
-Generally, $SB=(3.0/(1-e^2 ))(v/c)^2$  
-$F = -(GMm/r^2)(1+SB) = -(GMm/r^2)(1+(3.0/(1-e^2))(v/c)^2) = ma = -mg$  
+Generally, $SG=(3.0/(1-e^2 ))(v/c)^2$  
+$F = -(GMm/r^2)(1+SG) = -(GMm/r^2)(1+(3.0/(1-e^2))(v/c)^2) = ma = -mg$  
 $g = -(GM/r^2)(1+(3.0/(1-e^2))(v/c)^2)$  
   
 $G:6.67 \times 10^{-11} , M:5.972 \times 10^{24}, r:6.370 \times 10^{6} , e:0.0167, v:462.963, c:299792458$  

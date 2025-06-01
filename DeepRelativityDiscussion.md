@@ -204,7 +204,7 @@ Convert this to [arc seconds/100 years]:
 $d\phi' = SG \times 360 \times 3600 \times 4.15 \times 100 = 42.96 \text{ [arc seconds/100 years]}$  
 (360×3600 is arc seconds, 4.15 is the number of orbits of Mercury in one year, 100 is 100 years)  
 $d\phi' = 360 \times 3600 \times 3 \times (v/c)^2 \times 4.15 \times 100/(1-e^2) = 42.96 \text{ [arc seconds/100 years]}$  
-Generally derived theoretical value d phi:  
+Generally derived theoretical value $d\phi$:  
 $d\phi = 360 \times 3600 \times (3/2) \times (r_s/a) \times 4.15 \times 100/(1-e^2) = 42.96 \text{ [arc seconds/100 years]}$  
 Well, that's how it goes.  
   

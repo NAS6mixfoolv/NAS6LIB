@@ -149,7 +149,7 @@ $w=\frac{2B}{q\sqrt(1-e^2)}$
 Squaringthevelocitygives:  
 $w^2=\frac{4B^2}{q^2(1-e^2)}$  
 Also, for a central mass N and gravitational constant G, the orbital velocity w is:  
-$w=\sqrt\frac{GN(1+e^2+2e\cos\psi}{q(1-e^2)}$  
+$w=\sqrt{\frac{GN(1+e^2+2e\cos\psi}{q(1-e^2)}}$  
 Squaringthevelocitygives:  
 $w^2=\frac{GN(1+e^2+2e\cos\psi)}{q(1-e^2)}$  
 Relativistic Correction Term for Elliptical Orbits  
@@ -235,8 +235,8 @@ The actual measured value was $1.1\times10^{-16}$ , so the calculation was rough
   
 From SGRR1000, we use an altitude of 0[m] as the base point, and extract the effects of general relativity  
 while excluding the effects of special relativity at an altitude of 1000[m].  
-  
-SGR is a conversion that divides by the distance from the center of the Earth R0 to get per 1[m] of altitude,  
+    
+The SGR unit is a conversion that divides by the distance from the center of the Earth R0 to get per 1[m] of altitude,  
 by 2π to get per 1[rad], and by 86400 to get per 1[s].  
   
 I'm sorry, but my calculation method is a pain because I have to mess around with units.  

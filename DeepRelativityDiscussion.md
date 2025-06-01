@@ -139,7 +139,7 @@ $v=\sqrt{\frac{GM}{r}}$
 Squaringthevelocitygives:  
 $v^2=\frac{GM}{r}$  
 
-  * **For an Elliptical Orbit**  
+   * **For an Elliptical Orbit**  
 
 The area B of an elliptical sector with distance from focus q, true anomaly $\psi$, eccentricity e,
 and orbital velocity w, is given by:  

@@ -27,7 +27,8 @@ Experience NAS6LIB in action:
 ## Automated Test  
   
 * **Validity verified by automated testing**: [http://nas6.net/testpoly_chktest/testpoly_chktest.htm](http://nas6.net/testpoly_chktest/testpoly_chktest.htm)  
- 
+* **3D rotation test**: [http://nas6.net/rot.htm](http://nas6.net/rot.htm)  
+  
 ---  
   
 ## Quick Start  

@@ -209,8 +209,8 @@ $d\phi = 360 \times 3600 \times (3/2) \times (r_s/a) \times 4.15 \times 100/(1-e
 Well, that's how it goes.  
   
 * **Let's calculate the clock difference due to the difference in altitude.**  
-Regarding the relativistic effect S:  
   
+Regarding the relativistic effect S:  
 Special $SS = (-0.5/(1-e^2))(v/c)^2$  
 General $SG = (3.0/(1-e^2))(v/c)^2$  
 Special + General $SGS = (2.5/(1-e^2))(v/c)^2$  

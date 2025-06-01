@@ -1,6 +1,6 @@
 # NAS6LIB: JavaScript Physics Engine & Robust Math Library  
   
-**Programmed by NAS6** - [nas6.net](http://nas6.net/)  
+**Programmed by NAS6** - [nas6.net](https://nas6.net/)  
   
 NAS6LIB is a comprehensive JavaScript library for **physics simulations** and **geometric transformations**, originally developed  
 for real-time 3D graphics in game development. It offers highly optimized and numerically stable implementations of  
@@ -26,8 +26,8 @@ Experience NAS6LIB in action:
 
 ## Automated Test  
   
-* **Validity verified by automated testing**: [http://nas6.net/testpoly_chktest/testpoly_chktest.htm](http://nas6.net/testpoly_chktest/testpoly_chktest.htm)  
-* **3D rotation test**: [http://nas6.net/rot.htm](http://nas6.net/rot.htm)  
+* **Validity verified by automated testing**: [https://nas6.net/testpoly_chktest/testpoly_chktest.htm](https://nas6.net/testpoly_chktest/testpoly_chktest.htm)  
+* **3D rotation test**: [https://nas6.net/rot.htm](https://nas6.net/rot.htm)  
   
 ---  
   

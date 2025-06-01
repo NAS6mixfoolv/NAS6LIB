@@ -157,7 +157,7 @@ When attempting to apply the relativistic correction term $3(\frac{v}{c})^2$
 using the elliptical orbital velocity, the term $(1+e^2 +2e\cos\psi)$ is included.  
 Considering the relationship between elliptical orbital velocity and circular orbital velocity,
 and given the term $3(\frac{v}{c})^2$  
-derived for a circular orbit, the additional factor needed to complete the relativistic correction is $\frac{1}{1-e^2}.
+derived for a circular orbit, the additional factor needed to complete the relativistic correction is $\frac{1}{1-e^2}$.
   
 Thus, the relativistic correction term for an elliptical orbit becomes:  
 $\frac{3}{1-e^2}(\frac{v}{c})^2$  

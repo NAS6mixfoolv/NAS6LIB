@@ -226,18 +226,29 @@ Altitude $1000 \text{ [m]}$ Distance from the center of the Earth $R1000 = R0+10
 Circumference of the point $L1000 = R1000(2\pi) = 40006278 \text{ [m]}$  
 Rotational speed $V1000 = L1000/T0 = 463.0356323879 \text{ [m/s]}$  
 $SGSR1000 = (2.5)(V1000/c)^2 = 5.963859845632 \times 10^{-12}$  
-$SGSR1000AT0 = SGSR1000/SGR0 - 1 = 3.139565543 \times 10^{-4}$  
-$SGSR = SGSR1000AT0/(R0 \times 2\pi \times 86400) = 9.084392 \times 10^{-17}$  
   
-If you exclude the special effects and extract the general effects, multiplying them by (6/5):  
-$SGR = SGSR \times (6/5) = 1.09012704 \times 10^{-16}$  
-The actual measured value was $1.1\times10^{-16}$ , so the calculation was roughly successful＞＜  
+* **Explanation of Calculation for Relativistic Clock Difference**  
   
-From SGRR1000, we use an altitude of 0[m] as the base point, and extract the effects of general relativity  
-while excluding the effects of special relativity at an altitude of 1000[m].  
-    
-The SGR unit is a conversion that divides by the distance from the center of the Earth R0 to get per 1[m] of altitude,  
-by 2π to get per 1[rad], and by 86400 to get per 1[s].  
+Let's clarify the calculation for the relativistic clock difference:  
+Here are the derived values from the calculations:  
+* $SGSR1000AT0 = SGSR1000/SGSR0 - 1 = 3.139565543 \times 10^{-4}$  
+* $SGSR = SGSR1000AT0/(R0 \times 2\pi \times 86400) = 9.084392 \times 10^{-17}$  
+* $SGR = SGSR \times (6/5) = 1.09012704 \times 10^{-16}$  
+  
+The **observational data for the clock difference is $1.1 \times 10^{-16} \text{ [s/m]}$**.  
+As you can see, the calculated value is very close to the observed data!  
+  
+* **What These Values Represent**  
+  
+The term $SGSR1000AT0$ represents the **general relativistic effect at an altitude of  
+$1000 \text{ [m]}$, using $0 \text{ [m]}$ altitude as the base, while excluding special relativistic effects**.  
+  
+The term $SGR$ is a converted value. It expresses the relativistic effect  
+**per $1 \text{ [m]}$ of altitude, per $1 \text{ [radian]}$, and per $1 \text{ [second]}$**.  
+This conversion is achieved by dividing by:  
+* The distance from the Earth's center $R0$ (for per $1 \text{ [m]}$ of altitude).  
+* $2\pi$ (for per $1 \text{ [radian]}$).  
+* $86400$ (for per $1 \text{ [second]}$).  
   
 I'm sorry, but my calculation method is a pain because I have to mess around with units.  
 It seems that $SGR=g/c^2$  without doing this.  

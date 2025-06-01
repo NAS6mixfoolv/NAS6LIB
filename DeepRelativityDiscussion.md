@@ -14,7 +14,7 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
   
 $F=-(\frac{GMm}{r^2})(1+S)=-(\frac{GMm}{r^2})(1+d\phi)=-(\frac{GMm}{r^2})(1+(\frac{v}{c})^2)$  
   
-**relativity effect S(Schwarzschild correction term)**  
+**relativity effect S(Schwarzschild correction term)(Omitting coefficients)**  
 $S=d\phi=(\frac{v}{c})^2$  
 **Special relativity effect SS(Schwarzschild correction term + special)**  
 $SS=(\frac{-0.5}{1-e^2})(\frac{v}{c})^2$  

@@ -125,8 +125,8 @@ If we consider $(r d\phi/dt)$ as the tangential velocity of the circular orbit, 
 Therefore, in Euclidean geometry, the \textbf{force equation for gravity in Schwarzschild spacetime} can be expressed as:  
 $F = -\frac{GMm}{r^2}(1+S) = -\frac{GMm}{r^2}\left(1 + 3\left(\frac{V}{c}\right)^2\right)$  
   
-* **Orbital Velocity: Circular and Elliptical**  
-  * **For a Circular Orbit (e=0)**  
+# Orbital Velocity: Circular and Elliptical  
+* **For a Circular Orbit (e=0)**  
 
 The area A of a circular sector with radius r and angle θ, and orbital velocity v, is given by:  
 $A=(\frac{1}{2})r^2\theta=(\frac{1}{2})rv$  
@@ -139,7 +139,7 @@ $v=\sqrt{\frac{GM}{r}}$
 Squaringthevelocitygives:  
 $v^2=\frac{GM}{r}$  
 
-   * **For an Elliptical Orbit**  
+* **For an Elliptical Orbit**  
 
 The area B of an elliptical sector with distance from focus q, true anomaly $\psi$, eccentricity e,
 and orbital velocity w, is given by:  

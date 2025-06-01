@@ -71,6 +71,8 @@ hsv.js: Handles mutual conversions between HSV and RGB color models.
 prime.js: Includes utilities for prime number related calculations.  
 common.js: Provides essential file download and utility functions.  
   
+### Element Order
+
 The element order of vectors and matrices in this library is wxyz. This choice allows uniformity and variable length  
 for homogeneous coordinates (e.g., two-dimensional wxy and three-dimensional wxyz). Calculations are also adjusted  
 for homogeneous coordinates, with all elements divided by the w value for arithmetic operations. For instance,  

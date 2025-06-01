@@ -45,7 +45,7 @@ $SGS=SG+SS=(\frac{2.5}{1-e^2})(\frac{v}{c})^2$
 # Proof  
 [Back to Table of contents](#table-of-contents)  
 
-  ## Special relativity effect SS  
+  ## Special relativity effect SS coefficient  
 
 Lorentz contraction  
 The approximation  
@@ -53,7 +53,7 @@ $a=\sqrt(1-(\frac{v}{c})^2)$
 (when $(\frac{v}{c})$ is much smaller than 1) is  
 $a=1-0.5(\frac{v}{c})^2$  
   
-  ## General relativity effect SG    
+  ## General relativity effect SG coefficient    
   
 In the case of a circular orbit (eccentricity $e=0$):  
   

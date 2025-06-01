@@ -243,6 +243,9 @@ As you can see, the calculated value is very close to the observed data!
 The term $SGSR1000AT0$ represents the **general relativistic effect at an altitude of  
 $1000 \text{ [m]}$, using $0 \text{ [m]}$ altitude as the base, while excluding special relativistic effects**.  
   
+To **extract the general relativistic effect from data that combines both special and general relativistic effects,  
+you multiply the data by (6/5)**. This is why $SGR$ is calculated as $SGSR \times (6/5)$.  
+  
 The term $SGR$ is a converted value. It expresses the relativistic effect  
 **per $1 \text{ [m]}$ of altitude, per $1 \text{ [radian]}$, and per $1 \text{ [second]}$**.  
 This conversion is achieved by dividing by:  

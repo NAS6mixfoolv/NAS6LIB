@@ -76,7 +76,7 @@ common.js: Provides essential file download and utility functions.
 The element order of vectors and matrices in this library is wxyz. This choice allows uniformity and variable length  
 for homogeneous coordinates (e.g., two-dimensional wxy and three-dimensional wxyz). Calculations are also adjusted  
 for homogeneous coordinates, with all elements divided by the w value for arithmetic operations. For instance,  
-Matrix × ZeroVector([1,0,0,0],bHomo=true) returns the translation vector of the matrix.  
+Matrix × ZeroVector([1,0,0,0],bHomo=true) returns the translation homo vector of the matrix.  
   
 ### Coordinate System  
 NAS6LIB's core mathematical calculations (vectors, matrices, etc.) are based on a Left-Handed Coordinate System.  

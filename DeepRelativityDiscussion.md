@@ -85,13 +85,13 @@ Choosing specific components:
 We consider motion in the equatorial plane, where $\theta = \pi/2$ and $\frac{d\theta}{ds} = 0$.  
 Since $\theta$ is constant, (*1B) is ignored.  
 
-From \text{(*1C)}, we obtain the conservation of angular momentum:  
+From $\text{(*1C)}$, we obtain the conservation of angular momentum:  
 $r^2\frac{d\phi}{ds} = h \quad (\text{constant}) \quad \text{(*3)}$  
   
-From \text{(*1D)}, we obtain the conservation of energy:  
+From $\text{(*1D)}$, we obtain the conservation of energy:  
 $\left(1 - \frac{2m}{r}\right)\frac{dt}{ds} = l \quad (\text{constant}) \quad \text{(*4)}$  
   
-From \text{(*1A)}:  
+From $\text{(*1A)}$:  
 $\left(1 - \frac{2m}{r}\right) = (cl)^2 - \left(\frac{dr}{ds}\right)^2 - \left(\frac{h}{r}\right)^2\left(1 - \frac{2m}{r}\right) \quad \text{(*5)}$  
   
 Let's differentiate $r$ as a function of $\phi$:  

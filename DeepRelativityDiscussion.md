@@ -11,7 +11,7 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
 ---    
   
 # Approximation of relativity in Euclidean geometry (coefficients omitted)  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 $F=-(\frac{GMm}{r^2})(1+S)=-(\frac{GMm}{r^2})(1+d\phi)=-(\frac{GMm}{r^2})(1+(\frac{v}{c})^2)$  
   
@@ -44,7 +44,7 @@ $SGS=SG+SS=(\frac{2.5}{1-e^2})(\frac{v}{c})^2$
 ---  
   
 # Proof  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
 
   ## Special relativity effect SS  
 
@@ -167,7 +167,7 @@ corresponding to the solution for the Kerr metric in certain contexts.
 ---  
   
 # Special and General Relativity  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 * **Calculation Using Special Relativity Effects**  
   
@@ -268,7 +268,7 @@ $g/c^2 = 1.0923 \times 10^{-16}$
 Is that right?  
   
   
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
 
 
 

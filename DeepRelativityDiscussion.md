@@ -11,7 +11,6 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
 ---    
   
 # Approximation of relativity in Euclidean geometry (coefficients omitted)  
-[Back to Table of contents](#table-of-contents)  
   
 $F=-(\frac{GMm}{r^2})(1+S)=-(\frac{GMm}{r^2})(1+d\phi)=-(\frac{GMm}{r^2})(1+(\frac{v}{c})^2)$  
   

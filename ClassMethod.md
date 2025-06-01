@@ -18,7 +18,6 @@
 ---  
   
 ### Global Symbols  
-[Back to Table of contents](#table-of-contents)  
 * **in vector.js**  
   * var N6L_DEBUG_MODE = false;//if debug N6L_DEBUG_MODE = true;  
 * **in matrix.js**  

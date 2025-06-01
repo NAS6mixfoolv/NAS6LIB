@@ -106,7 +106,7 @@ $u'^2 = \frac{(cl)^2 - 1}{h^2} + \frac{2mu}{h^2} - u^2 + 2mu^3 \quad \text{(*6)}
 Differentiating with respect to $\phi$:  
 $2u'u'' = \frac{2m}{h^2}u' - 2uu' + 6mu^2u' \quad \text{(*7)}$  
 The solution $u'=0$, which implies $u=1/r$ (constant), corresponds to a circular orbit.  
-Assuming $u' \neq 0$, we can divide \text{(*7)} by $2u'$:  
+Assuming $u' \neq 0$, we can divide $\text{(*7)}$ by $2u'$:  
 $u'' + u = \frac{m}{h^2} + 3mu^2 \quad \text{(*8)}$  
 This equation can be seen as $u'' + u = m/h^2$,  
 which corresponds to the equation for Newtonian gravity, plus a relativistic correction term $3mu^2$.  

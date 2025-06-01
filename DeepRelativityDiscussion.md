@@ -233,10 +233,11 @@ If you exclude the special effects and extract the general effects, multiplying 
 $SGR = SGSR \times (6/5) = 1.09012704 \times 10^{-16}$  
 The actual measured value was $1.1\times10^{-16}$ , so the calculation was roughly successful＞＜  
   
-SGRR1000 extracts the effect of general relativity at an altitude 1000[m], with altitude 0[m] as the base.  
+From SGRR1000, we use an altitude of 0[m] as the base point, and extract the effects of general relativity  
+while excluding the effects of special relativity at an altitude of 1000[m].  
   
 SGR is a conversion that divides by the distance from the center of the Earth R0 to get per 1[m] of altitude,  
-divides by 2π to get per 1[rad], and divides by 86400 to get per 1[s].  
+by 2π to get per 1[rad], and by 86400 to get per 1[s].  
   
 I'm sorry, but my calculation method is a pain because I have to mess around with units.  
 It seems that $SGR=g/c^2$  without doing this.  

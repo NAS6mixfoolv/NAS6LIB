@@ -193,7 +193,8 @@ Ans $= e \times 6/5 = 43.17 \text{ [arc seconds/100 years]}$
 * **General Theoretical Calculation Method**  
   
 $d\phi = 360 \times 3600 \times (3/2) \times (r_s/a)/(1-e^2) \times 4.15 \times 100$  
-$= 360 \times 3600 \times 3/2 \times 2953/(149598700000 \times 0.3871)/(1-0.2056^2) \times 4.15 \times 100 = 42.9 \text{ [arc seconds/100 years]}$  
+$= 360 \times 3600 \times 3/2 \times 2953/(149598700000 \times 0.3871)/(1-0.2056^2) \times 4.15 \times 100$  
+$= 42.9 \text{ [arc seconds/100 years]}$  
   
 * **To be honest, if you simplify it, the relativity effect $S=(v/c)^2.$**  
   

@@ -16,6 +16,8 @@ This document provides a deeper dive into NAS6LIB's architecture, advanced featu
 * [Custom Keyboard Management Class (`keyboard.js`)](#custom-keyboard-management-class-keyboardjs)  
   * [Key Features](#key-features)  
   
+[Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
+
 ---  
   
 ## Modules and Classes Overview  

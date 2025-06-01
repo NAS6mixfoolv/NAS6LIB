@@ -110,18 +110,18 @@ Assuming $u' \neq 0$, we can divide \text{(*7)} by $2u'$:
 $u'' + u = \frac{m}{h^2} + 3mu^2 \quad \text{(*8)}$  
 This equation can be seen as $u'' + u = m/h^2$,  
 which corresponds to the equation for Newtonian gravity, plus a relativistic correction term $3mu^2$.  
-Considering the \textbf{equation for the gravitational force in Schwarzschild spacetime}  
+Considering the $\textbf{equation for the gravitational force in Schwarzschild spacetime}$  
 in the form $F = -(GMm/r^2)(1+S)$, where $F$ is force, $r$ is radius, $G$ is gravitational constant,  
 $M$ and $m$ are masses, $V$ is orbital velocity, $c$ is speed of light, and $S$ is the relativistic correction term.  
   
 Here, $h = r^2\frac{d\phi}{ds}$, $m = GM/c^2$, and $u=1/r$.  
-Let's examine the \textbf{relativistic correction term $3mu^2$}. We can factor out $m/h^2$:  
+Let's examine the $\textbf{relativistic correction term 3mu^2}$. We can factor out $m/h^2$:  
 $u'' + u = \frac{m}{h^2}\left(1 + \frac{3mu^2}{m/h^2}\right) = \frac{m}{h^2}(1+S)$  
 Now we investigate $S$:  
 $S = \frac{3mu^2}{m/h^2} = 3u^2h^2 = 3\left(\frac{1}{r^2}\right)\left(r^2\frac{d\phi}{ds}\right)^2 = 3r^2\left(\frac{dt}{ds}\frac{d\phi}{dt}\right)^2 = 3r^2\left(\frac{d\phi}{dt}\right)^2\left(\frac{1}{c^2}\right) = 3\frac{(r d\phi/dt)^2}{c^2}$  
 If we consider $(r d\phi/dt)$ as the tangential velocity of the circular orbit, $V$, then $S = 3(V/c)^2$.  
   
-Therefore, in Euclidean geometry, the \textbf{force equation for gravity in Schwarzschild spacetime} can be expressed as:  
+Therefore, in Euclidean geometry, the $\textbf{force equation for gravity in Schwarzschild spacetime}$ can be expressed as:  
 $F = -\frac{GMm}{r^2}(1+S) = -\frac{GMm}{r^2}\left(1 + 3\left(\frac{V}{c}\right)^2\right)$  
   
 # Orbital Velocity: Circular and Elliptical  

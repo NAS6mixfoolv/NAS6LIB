@@ -221,16 +221,16 @@ Circumference at altitude $0 \text{ [m]}$: $L0 = 40000000 \text{ [m]}$
 Distance from the center of the Earth: $R0 = L0/(2\pi) = 6366197 \text{ [m]}$  
 Day $T0 = 86400 \text{ [s]}$  
 Rotational speed $V0 = L0/T0 = 462.963 \text{ [m/s]}$  
-$SGR0 = (2.5)(V0/c)^2 = 5.96198804041 \times 10^{-12}$  
+$SGSR0 = (2.5)(V0/c)^2 = 5.96198804041 \times 10^{-12}$  
 Altitude $1000 \text{ [m]}$ Distance from the center of the Earth $R1000 = R0+1000 = 6367197 \text{ [m]}$  
 Circumference of the point $L1000 = R1000(2\pi) = 40006278 \text{ [m]}$  
 Rotational speed $V1000 = L1000/T0 = 463.0356323879 \text{ [m/s]}$  
-$SGR1000 = (2.5)(V1000/c)^2 = 5.963859845632 \times 10^{-12}$  
-$SGRR1000 = SGR1000/SGR0 - 1 = 3.139565543 \times 10^{-4}$  
-$SGRR = SGRR1000/(R0 \times 2\pi \times 86400) = 9.084392 \times 10^{-17}$  
+$SGSR1000 = (2.5)(V1000/c)^2 = 5.963859845632 \times 10^{-12}$  
+$SGSR1000AT0 = SGSR1000/SGR0 - 1 = 3.139565543 \times 10^{-4}$  
+$SGSR = SGSR1000AT0/(R0 \times 2\pi \times 86400) = 9.084392 \times 10^{-17}$  
   
 If you exclude the special effects and extract the general effects, multiplying them by (6/5):  
-$SGR = SGRR \times (6/5) = 1.09012704 \times 10^{-16}$  
+$SGR = SGSR \times (6/5) = 1.09012704 \times 10^{-16}$  
 The actual measured value was $1.1\times10^{-16}$ , so the calculation was roughly successful＞＜  
   
 SGRR1000 extracts the effect of general relativity at an altitude 1000[m], with altitude 0[m] as the base.  

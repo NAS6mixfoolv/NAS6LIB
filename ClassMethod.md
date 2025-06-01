@@ -18,7 +18,7 @@
 ---  
   
 ### Global Symbols  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
 * **in vector.js**  
   * var N6L_DEBUG_MODE = false;//if debug N6L_DEBUG_MODE = true;  
 * **in matrix.js**  
@@ -43,7 +43,7 @@
   * var N6LISPRMTMP1 = 5;//For internal use  
   
 ### Global Utility Functions  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
 * **function Rand(min, max)**  
   * **Description**：(Math.random() * (max - min) + min)  
   * **Parameters**：min,max  
@@ -87,15 +87,15 @@ readCSV('filename', 'analyzeCSV', 'donefunc');
   * **Returns**    ：num:Is Prime:-1:not Prime:0:Calculating  
   
 ### NAS6LIB Class Summary  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 ### Type Name Member  
-[Table of contents](#table-of-contents)  
+  
 * **N6LXXX.typename** = "N6LXXX"  
   * **Description**：Identifies the type by its string representation.  
   
 ### N6LTimerMan  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 * **N6LTimerMan：construction**  
 * * **member**：  
@@ -133,7 +133,7 @@ Note: even if some make a timer, setTimeout () is one of centralized management 
   * **Returns**    ：－－－  
   
 ### N6LTimerMan.timer[id]  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 * **N6LTimerMan.timer[id].start()**  
   * **Description**：start  
@@ -194,7 +194,7 @@ function SignalFunc(id) {
 Call time, N6LTimerMan.interval = 25 (default value) is more than is preferred  
   
 ### N6LVector  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 * **N6LVector：construction**  
   * **member**：  
@@ -497,7 +497,7 @@ b0:N6LVector,Straight b endpoints:b1:N6LVector,Straight b endpoints:
   * **Returns**    ：Inverse infinity perspective projection:N6LVector  
   
 ### N6LMatrix  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
 * **N6LMatrix：construction**  
   * **member**：  
@@ -880,7 +880,7 @@ note：the second axis may have an angle, if the angle of the other of the axis 
 It has a second axis in the recalculation to the first axis  
   
 ### N6LQuaternion  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LQuaternion：construction**  
@@ -1043,7 +1043,7 @@ with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substitu
   * **Returns**    ：Sphere4D:N6LVector  
   
 ### N6LLnQuaternion  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LLnQuaternion：construction**  
@@ -1158,7 +1158,7 @@ with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substitu
   * **Returns**    ：lerp:N6LQuaternion  
   
 ### N6LKeyBoard  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LKeyBoard：construction**  
@@ -1230,7 +1230,7 @@ function func(){
   * **Returns**    ：real name ID:string  
   
 ### N6LMassPoint  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LMassPoint：construction**  
@@ -1280,7 +1280,7 @@ var N6LMassPoint = function(px, pv, pm, pr, pe) {  }
   * **Returns**    ：true:false:  
   
 ### N6LPlanet  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LPlanet：construction**  
@@ -1416,7 +1416,7 @@ sw:0:Lilith:1:dragon head:2:dragon tail
   * **Returns**    ：－－－  
   
 ### N6LRngKt  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LRngKt：construction**  
@@ -1476,7 +1476,7 @@ sw:0:Lilith:1:dragon head:2:dragon tail
     accel２()  
             
 ### N6LHsv  
-[Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
   
   
 * **N6LHsv：construction**  
@@ -1554,7 +1554,7 @@ sw:0:Lilith:1:dragon head:2:dragon tail
   
   
   
-  [Table of contents](#table-of-contents)  
+[Back to Table of contents](#table-of-contents)  
 
   
   

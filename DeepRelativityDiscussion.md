@@ -8,6 +8,7 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
   * [Proof](#proof)  
 * [Special and general relativity](#special-and-general-relativity)  
 * [Calculation Table](#calculation-table)  
+  * [Understanding the Calculations: Connecting Orbital Mechanics to Spacetime](#understanding-the-calculations-connecting-orbital-mechanics-to-spacetime)  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
 
@@ -316,6 +317,46 @@ When I made these corrections, it became closer to the Schwarzschild radius of t
 | Neptune     | 2961.6535882982              | 2961.65358537239         |  
   
 ---  
+
+# Understanding the Calculations: Connecting Orbital Mechanics to Spacetime  
+[Back to Table of contents](#table-of-contents)  
+  
+The table above presents various ways to express the **Schwarzschild radius** (rs = (2GM)/c^2 )  
+ using the orbital parameters of planets in our Solar System. The Schwarzschild radius is a fundamental concept in **General Relativity**,  
+defining the boundary around a mass (like the Sun) where gravity is so strong that nothing, not even light,  
+can escape if it crosses this point. For our Sun, this theoretical radius is approximately 2953[m].  
+  
+Notice how the different combinations of planetary orbital elements (semi-major axis a, eccentricity e, orbital period T, velocities  
+Vp,Va,Vavg , specific angular momentum h, and specific orbital energy E), when adjusted for relativistic effects   
+(like the perihelion precession term dφ), consistently yield values very close to the Sun's Schwarzschild radius.   
+This elegantly demonstrates the deep interconnectedness between classical Newtonian orbital mechanics   
+and the more precise framework of Einstein's General Relativity. It showcases how these seemingly disparate orbital characteristics  
+are fundamentally tied to the gravitational properties of the central mass (the Sun).  
+  
+# Practical Implications and Relativistic Effects  
+  
+While the Schwarzschild radius is most famously associated with black holes, understanding its underlying principles helps us appreciate  
+the nuances of gravity even in less extreme environments:  
+  
+* **Artificial Satellites and Stable Orbits:**  
+  
+For Earth's artificial satellites to maintain their "natural" and long-lasting orbits,  
+they must operate far outside Earth's own Schwarzschild radius (which is a mere 9mm for Earth's mass!).  
+The stability of their orbits is fundamentally ensured by their distance from this theoretical boundary.  
+Our everyday experience with orbital mechanics largely relies on Newtonian physics,  
+but the underlying relativistic framework ensures that these orbits are naturally stable under gravity.  
+  
+* **Precision and Relativistic Corrections:**  
+  
+Even for Earth-orbiting satellites, subtle relativistic effects are critical.  
+For instance, the Global Positioning System (GPS) relies on extremely precise timing. Atomic clocks on GPS satellites experience  
+both **special relativistic time dilation** (due to their high speed) and **general relativistic time dilation**  
+(due to Earth's weaker gravitational potential compared to its surface).  
+Without accounting for these tiny relativistic corrections, GPS would quickly accumulate errors, demonstrating  
+that even far from a black hole, the principles derived from General Relativity have real-world impact.  
+  
+
+
   
 [Back to Table of contents](#table-of-contents)  
 

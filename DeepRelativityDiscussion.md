@@ -356,9 +356,11 @@ Without accounting for these tiny relativistic corrections, GPS would quickly ac
 that even far from a black hole, the principles derived from General Relativity have real-world impact.  
   
 # Schwarzschild radius as a standard for orbital elements
-The fact that the Schwarzschild radius can be determined by observing a natural planet and repeating natural orbits means  
-that it is a stable condition for the orbit, and if the orbit is natural, it is possible to confirm that the value  
-is more accurate by determining each orbital element of the planet and satellite based on the Schwarzschild radius.  
+The ability to determine the Schwarzschild radius from the observed orbital parameters of naturally existing planets,  
+which maintain their stable paths, highlights its significance as a criterion for orbital stability. Conversely,  
+for any truly natural orbit, the precision of its orbital elements (for planets and satellites alike) can be cross-verified  
+and potentially refined by aligning them with the value of the Schwarzschild radius derived from the central mass.  
+This emphasizes the fundamental role of general relativistic principles even in seemingly Newtonian orbital mechanics.  
   
   
 [Back to Table of contents](#table-of-contents)  

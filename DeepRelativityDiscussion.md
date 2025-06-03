@@ -356,11 +356,21 @@ Without accounting for these tiny relativistic corrections, GPS would quickly ac
 that even far from a black hole, the principles derived from General Relativity have real-world impact.  
   
 # Schwarzschild radius as a standard for orbital elements  
-The ability to determine the Schwarzschild radius from the observed **various orbital elements** of **planets and satellite**,  
+  
+The ability to determine the Schwarzschild radius from the observed **various orbital elements** of **planets and satellites**,  
 which maintain their stable paths, highlights its significance as a criterion for orbital stability.  
 Conversely, for any truly natural orbit, the precision of its orbital elements (for planets and satellites alike)  
 can be cross-verified and potentially refined by aligning them with the value of the Schwarzschild radius derived from the central mass.  
+  
+This implies that the importance of **the Schwarzschild radius** is synonymous with that of **the standard gravitational parameter** μ=GM.  
+μ is a fundamental physical quantity, derived from the mass and the gravitational constant,  
+representing the inherent strength of a gravitational source in classical orbital mechanics. The Schwarzschild radius  
+($r_s = {2GM}{c^2} ) can be seen as this same μ, scaled by the speed of light squared,  
+effectively expressing the **"strength of gravity"** in units of distance. Thus, both μ and $r_s$ equally represent the gravitational influence of a body,  
+though from different perspectives (classical vs. relativistic, or different unit systems).  
+  
 This emphasizes the fundamental role of general relativistic principles even in seemingly Newtonian orbital mechanics.  
+  
   
   
   

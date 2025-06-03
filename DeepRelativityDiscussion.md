@@ -355,12 +355,13 @@ both **special relativistic time dilation** (due to their high speed) and **gene
 Without accounting for these tiny relativistic corrections, GPS would quickly accumulate errors, demonstrating  
 that even far from a black hole, the principles derived from General Relativity have real-world impact.  
   
-# Schwarzschild radius as a standard for orbital elements
-The ability to determine the Schwarzschild radius from the observed orbital parameters of naturally existing planets,  
-which maintain their stable paths, highlights its significance as a criterion for orbital stability. Conversely,  
-for any truly natural orbit, the precision of its orbital elements (for planets and satellites alike) can be cross-verified  
-and potentially refined by aligning them with the value of the Schwarzschild radius derived from the central mass.  
+# Schwarzschild radius as a standard for orbital elements  
+The ability to determine the Schwarzschild radius from the observed **various orbital elements** of **planets and satellite**,  
+which maintain their stable paths, highlights its significance as a criterion for orbital stability.  
+Conversely, for any truly natural orbit, the precision of its orbital elements (for planets and satellites alike)  
+can be cross-verified and potentially refined by aligning them with the value of the Schwarzschild radius derived from the central mass.  
 This emphasizes the fundamental role of general relativistic principles even in seemingly Newtonian orbital mechanics.  
+  
   
   
 [Back to Table of contents](#table-of-contents)  

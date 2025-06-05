@@ -290,6 +290,7 @@ such as objects disappearing or displaying incorrect geometry. These issues ofte
 which can be very difficult to debug without these explicit numerical maintenance steps.  
   
 # Implementation example of N6LMatrix.RotAxis()  
+[Back to Table of contents](#table-of-contents)  
   
 Let's break down the RotAxis() method and highlight the crucial steps that align with our previous discussion on numerical stability:  
   

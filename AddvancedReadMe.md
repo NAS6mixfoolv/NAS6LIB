@@ -15,6 +15,7 @@ This document provides a deeper dive into NAS6LIB's architecture, advanced featu
   * [Links for further discussion and consideration of the theory of relativity](#links-for-further-discussion-and-consideration-of-the-theory-of-relativity)  
 * [Custom Keyboard Management Class (`keyboard.js`)](#custom-keyboard-management-class-keyboardjs)  
   * [Key Features](#key-features)  
+* [Maintaining Valid Matrix Numerical Values](#maintaining-valid-matrix-numerical-values)  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
 
@@ -216,6 +217,76 @@ The `N6LKeyBoard` class provides advanced keyboard input management, including a
   
 For more detailed API documentation and specific method signatures, please refer to the source code comments within `keyboard.js`.  
 
+# Maintaining Valid Matrix Numerical Values 
+[Back to Table of contents](#table-of-contents)  
+  
+To ensure the numerical validity of matrices and prevent common issues in 3D graphics, the N6LMatrix library employs the following methods:  
+  
+Method Descriptions:  
+  
+N6LMatrix.Repair(eps)  
+  
+Description: Repairs and fixes matrix elements to values in the vicinity of 0.0, 1.0, or -1.0 within a specified error margin.  
+This helps in restoring precision from rounding errors.  
+Parameters: eps: The acceptable error margin (real number).  
+Returns: this (the modified matrix).  
+  
+N6LMatrix.Max()  
+  
+Description: Returns the maximum absolute value among all elements of the matrix (retains the original sign).  
+Parameters: None.  
+Returns: The maximum absolute value of an element (real number).  
+  
+N6LMatrix.DivMax()  
+  
+Description: Divides all matrix elements by the maximum absolute value found in the matrix.  
+Parameters: None.  
+Returns: A new N6LMatrix with elements divided by the maximum absolute value.  
+Note: This method is crucial to prevent fatal errors where the absolute value of elements exceeds ±1.0 due to error accumulation,  
+which can cause each element's value to become much larger or smaller than expected.  
+  
+N6LMatrix.NormalMat()  
+  
+Description: Normalizes the matrix. Specifically, for rotation matrices, this involves ensuring  
+the orthogonality and unit length (1.0) of each axis vector within the rotation part.  
+Parameters: None.  
+Returns: A new N6LMatrix that is normalized.  
+  
+N6LMatrix.Homogeneous()  
+  
+Description: Applies homogeneous scaling. This method divides the x, y, z components by the w component and sets w to 1,  
+effectively applying the homogeneous scale to each element.  
+Parameters: None.  
+Returns: A new N6LMatrix with homogeneous scaling applied.  
+  
+N6LMatrix.ToHomo()  
+  
+Description: Converts the matrix to a homogeneous matrix.  
+Parameters: None.  
+Returns: A new N6LMatrix in homogeneous form.  
+  
+N6LMatrix.ToNormal()  
+  
+Description: Converts the matrix to a normal matrix.  
+Parameters: None.  
+Returns: A new N6LMatrix in normalized form.  
+  
+Crucial Applications in N6LMatrix  
+We specifically use N6LMatrix.Repair(eps), N6LMatrix.NormalMat(), and N6LMatrix.Homogeneous() to address common numerical issues.  
+  
+N6LMatrix.Repair(eps) is used to repair rounding errors that accumulate during floating-point calculations.  
+Without this, tiny inaccuracies can compound and lead to visual artifacts.  
+N6LMatrix.NormalMat() ensures the orthogonality and unit length of the axis vectors in the rotation part of the matrix.  
+Over time, repeated transformations can cause rotation matrices to lose their orthogonal property due to numerical instability,  
+leading to visual distortions or incorrect rotations.  
+N6LMatrix.Homogeneous() handles the normalization of homogeneous coordinates.  
+It divides the x, y, and z components by the w component, setting w to 1, and applies this homogeneous scale to the respective elements.  
+This step is critical for correct perspective projection and avoiding numerical issues when w approaches zero.  
+  
+Failing to apply these operations during various matrix transformations can lead to unforeseen visual bugs,  
+such as objects disappearing or displaying incorrect geometry. These issues often stem from the accumulation of minute floating-point errors,  
+which can be very difficult to debug without these explicit numerical maintenance steps.  
+  
 
 [Back to Table of contents](#table-of-contents)  
 

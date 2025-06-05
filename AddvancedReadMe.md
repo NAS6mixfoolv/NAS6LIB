@@ -16,6 +16,8 @@ This document provides a deeper dive into NAS6LIB's architecture, advanced featu
 * [Custom Keyboard Management Class (`keyboard.js`)](#custom-keyboard-management-class-keyboardjs)  
   * [Key Features](#key-features)  
 * [Maintaining Valid Matrix Numerical Values](#maintaining-valid-matrix-numerical-values)  
+  * [Implementation example of N6LMatrix.RotAxis()](#implementation-example-of-n6lmatrixrotaxis)  
+  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
 
@@ -286,6 +288,65 @@ This step is critical for correct perspective projection and avoiding numerical 
 Failing to apply these operations during various matrix transformations can lead to unforeseen visual bugs,  
 such as objects disappearing or displaying incorrect geometry. These issues often stem from the accumulation of minute floating-point errors,  
 which can be very difficult to debug without these explicit numerical maintenance steps.  
+  
+# Implementation example of N6LMatrix.RotAxis()  
+  
+Let's break down the RotAxis() method and highlight the crucial steps that align with our previous discussion on numerical stability:  
+  
+RotAxis(axis, theta) Method Analysis  
+
+This method calculates a rotation matrix around a given axis by theta degrees (or radians, typically).  
+  
+Input Validation:  
+  
+The initial if blocks handle invalid axis or this matrix dimensions, returning an identity matrix with a warning in debug mode.  
+This is good practice for robust code.  
+
+Axis Normalization:  
+  
+var vwk = new N6LVector(3);  
+var mwk = new N6LMatrix(this);  
+if(!this.bHomo) vwk = new N6LVector(axis);  
+else vwk = axis.ToNormal();  
+vwk = vwk.NormalVec();  
+vwk = axis.ToNormal(); or vwk = new N6LVector(axis); :  
+This ensures that if the input axis vector is homogeneous (has a w component), it's converted to a normal 3D vector.  
+vwk = vwk.NormalVec(); : This is critical! It explicitly normalizes the axis vector (makes its length 1).  
+A rotation axis must be a unit vector for the rotation formula to work correctly.  
+If the input axis vector had accumulated errors and its length wasn't exactly 1, this step corrects it.  
+Rotation Matrix Calculation (Rodrigues' Rotation Formula):  
+  
+var c = Math.cos(theta);  
+var s = Math.sin(theta);  
+var d = new N6LMatrix([  
+    [c+vwk.x[0]*vwk.x[0]*(1.0-c),       vwk.x[0]*vwk.x[1]*(1.0-c)-vwk.x[2]*s,      vwk.x[0]*vwk.x[2]*(1.0-c)+vwk.x[1]*s],  
+    [vwk.x[1]*vwk.x[0]*(1.0-c)+vwk.x[2]* s,    c+vwk.x[1]*vwk.x[1]*(1.0-c),           vwk.x[1]*vwk.x[2]*(1.0-c)-vwk.x[0]*s],  
+    [vwk.x[2]*vwk.x[0]*(1.0-c)-vwk.x[1]*s,     vwk.x[2]*vwk.x[1]*(1.0-c)+vwk.x[0]*s,   c+vwk.x[2]*vwk.x[2]*(1.0-c)         ]]);  
+
+This directly implements Rodrigues' Rotation Formula to create a 3x3 rotation matrix d based on the normalized vwk axis and theta angle.  
+
+Rotation Matrix Normalization (d = d.NormalMat();):  
+  
+d = d.NormalMat();  
+This is where your N6LMatrix.NormalMat() comes into play for the newly generated rotation matrix d.  
+Even though Rodrigues' formula should theoretically produce an orthogonal matrix, floating-point precision errors during  
+its calculation (especially with cos and sin values) can cause it to deviate slightly from perfect orthogonality.  
+Calling NormalMat() here immediately repairs the orthogonality and ensures unit length of the basis vectors of this fresh rotation matrix.  
+This prevents new numerical errors from being introduced and compounding in subsequent calculations.  
+
+Matrix Multiplication and Repair (return this.Mul(ret).Repair();):  
+  
+if(!this.bHomo) return this.Mul(d); // If not homogeneous, likely 3x3 matrices  
+var ret = d.ToHomo();               // Convert the 3x3 rotation to 4x4 homogeneous  
+return this.Mul(ret).Repair();      // Multiply and then repair the final result  
+If the this matrix is homogeneous (bHomo is true), the newly created 3x3 rotation matrix d is first converted to a 4x4 homogeneous matrix (ret = d.ToHomo();).  
+Then, it's multiplied (this.Mul(ret)) with the current matrix (this).  
+Finally, and most importantly, .Repair() is called on the result of the multiplication.  
+This is a crucial step! After performing a matrix multiplication, especially with floating-point numbers,  
+accumulated rounding errors can cause elements to deviate slightly from their ideal values  
+(e.g., a perfect 0.0 becoming 0.000000001, or 1.0 becoming 0.999999999).  
+Repair() steps in to snap these values back to their intended nearby 0.0, 1.0, or -1.0,  
+thereby maintaining numerical stability and preventing subtle visual glitches or further error accumulation. 
   
 
 [Back to Table of contents](#table-of-contents)  

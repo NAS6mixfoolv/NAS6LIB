@@ -185,17 +185,17 @@ class N6LMatrix {
     };
 
     From3JS(ary) {
-        if(ary.length != 16){
+        if(ary.elements.length != 16){
           if(N6L_DEBUG_MODE){
             console.warn("N6LMatrix.From3JS(ary): Invalid matrix dimensions(ary). Returning N6LMatrix(4).UnitMat().SetHomo(true)");
           }
           return new N6LMatrix(4).UnitMat().SetHomo(true);
         }
         return new N6LMatrix([
-            [Number(ary[15]), Number(ary[12]), Number(ary[13]), Number(ary[14])],
-            [Number(ary[3]), Number(ary[0]), Number(ary[1]), Number(ary[2])],
-            [Number(ary[7]), Number(ary[4]), Number(ary[5]), Number(ary[6])],
-            [Number(ary[11]), Number(ary[8]), Number(ary[9]), Number(ary[10])]]);
+            [Number(1), Number(ary.elements[12]), Number(ary.elements[13]), Number(ary.elements[14])],
+            [Number(1), Number(ary.elements[0]), Number(ary.elements[1]), Number(ary.elements[2])],
+            [Number(1), Number(ary.elements[4]), Number(ary.elements[5]), Number(ary.elements[6])],
+            [Number(1), Number(ary.elements[8]), Number(ary.elements[9]), Number(ary.elements[10])]]);
     };
 
     //行の取得
@@ -552,6 +552,25 @@ class N6LMatrix {
                 if(ret.x[i].EpsEqual(ret.x[i].ZeroVec())) ret.x[i] = ret.x[i].UnitVec(i);
             }
         }
+        if(this.bHomo && ret.x.length == 4) {
+          var az = ret.GetRow(3);
+          var ay = ret.GetRow(2);
+          var ax = az.Cross(ay).NormalVec();
+          ay = az.Cross(ax).NormalVec();
+          ret.SetRow(1,ax);
+          ret.SetRow(2,ay);
+          ret.SetRow(3,az);
+        }
+        else {
+          var az = ret.GetRow(2);
+          var ay = ret.GetRow(1);
+          var ax = az.Cross(ay).NormalVec();
+          ay = az.Cross(ax).NormalVec();
+          ret.SetRow(0,ax);
+          ret.SetRow(1,ay);
+          ret.SetRow(2,az);
+        }
+
         //ret = ret.TransposedMat();
         return ret;
     };

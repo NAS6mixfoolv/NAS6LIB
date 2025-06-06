@@ -271,6 +271,8 @@ and streamlined way to describe transformations.
 (e.g., when converting back to non-homogeneous 3D coordinates for specific operations).  
 Forgetting to appropriately toggle or manage the bHomo flag can lead to unexpected visual errors and bugs.  
 Always ensure bHomo is set to true or false according to the intended use case of the matrix.  
+By using N6LXXX.SetHomo(rh), N6LXXX.ToHomo(), N6LXXX.ToNormal(), etc.,  
+you can manipulate the bHomo flag relatively safely.  
   
 ---  
   

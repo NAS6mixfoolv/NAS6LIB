@@ -349,7 +349,14 @@ accumulated rounding errors can cause elements to deviate slightly from their id
 Repair() steps in to snap these values back to their intended nearby 0.0, 1.0, or -1.0,  
 thereby maintaining numerical stability and preventing subtle visual glitches or further error accumulation. 
   
+* **Reason for introducing N6LMatrix.Repair()**
 
+When debugging numerical analysis, I found that the values ​​were not -1, 0, or 1 at all,  
+even though in theory they should be, due to rounding errors.  
+If that is the case, and the error is within the range of eps,  
+then I decided to force the value to that value, and solved the problem.  
+  
+  
 [Back to Table of contents](#table-of-contents)  
 
 

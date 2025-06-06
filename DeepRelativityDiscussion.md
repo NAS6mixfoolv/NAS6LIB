@@ -152,7 +152,7 @@ $w=\frac{2B}{q\sqrt(1-e^2)}$
 Squaringthevelocitygives:  
 $w^2=\frac{4B^2}{q^2(1-e^2)}$  
 Also, for a central mass N and gravitational constant G, the orbital velocity w is:  
-$w=\sqrt{\frac{GN(1+e^2+2e\cos\psi}{q(1-e^2)}}$  
+$w=\sqrt{\frac{GN(1+e^2+2e\cos\psi)}{q(1-e^2)}}$  
 Squaringthevelocitygives:  
 $w^2=\frac{GN(1+e^2+2e\cos\psi)}{q(1-e^2)}$  
 Relativistic Correction Term for Elliptical Orbits  

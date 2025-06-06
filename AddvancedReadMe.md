@@ -260,14 +260,14 @@ as unified linear algebra operations. The benefits are immense:
 
 The bHomo flag acts as a special switch within N6L, enabling unique behaviors when set to true.  
   
-When bHomo is true, N6L performs specific operations:  
+**When bHomo is true, N6L performs specific operations:**  
 For arithmetic operations, transpositions, and other transformations, N6L extracts the 3x3 ROT component (omitting the w component),  
 performs the operation on this 3x3 sub-matrix, and then recombines the w component afterwards.  
   
 This behavior leverages the intrinsic properties of homogeneous coordinate calculations, allowing for a more intuitive  
 and streamlined way to describe transformations.  
   
-Important Note: There are cases where the bHomo flag must be false at the end of a transformation chain  
+**Important Note:** There are cases where the bHomo flag must be false at the end of a transformation chain  
 (e.g., when converting back to non-homogeneous 3D coordinates for specific operations).  
 Forgetting to appropriately toggle or manage the bHomo flag can lead to unexpected visual errors and bugs.  
 Always ensure bHomo is set to true or false according to the intended use case of the matrix.  

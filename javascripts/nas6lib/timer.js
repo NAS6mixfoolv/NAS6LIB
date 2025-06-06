@@ -63,6 +63,7 @@ class N6LTimerMan {
     if(l == 0) this.start();
     this.timer.push(new N6LTimer(l));
     this.timer[l].start();
+    return l;
   };
   changeinterval(int) {
     this.interval = int;

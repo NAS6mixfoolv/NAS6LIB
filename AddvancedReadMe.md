@@ -80,7 +80,7 @@ and verifies the accuracy both numerically and visually. It is a one-of-a-kind l
 extraordinary inquisitiveness and engineering spirit, pursuing true physical reality while acknowledging efficiency."  
   
   ### Verification of Relativistic Perihelion Precession (Mercury)  
-  [Table of contents](#table-of-contents)  
+  [Back to Table of contents](#table-of-contents)  
   
 NAS6LIB's implementation of relativistic effects has been validated through simulations of Mercury's orbital precession.  
 Using a previous version developed in VB, the average perihelion precession per orbit was calculated over a long period  

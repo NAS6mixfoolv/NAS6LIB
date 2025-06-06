@@ -356,6 +356,10 @@ even though in theory they should be, due to rounding errors.
 If that is the case, and the error is within the range of eps,  
 then I decided to force the value to that value, and solved the problem.  
   
+* **These corrections are encapsulated**  
+  
+These corrections are embedded and encapsulated in transformation methods such as RotAxis(),  
+so library users can simply call these transformation methods to ensure the numerical validity of most matrices.  
   
 [Back to Table of contents](#table-of-contents)  
 

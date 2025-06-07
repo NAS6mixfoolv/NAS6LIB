@@ -11,7 +11,8 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
   * [Understanding the Calculations: Connecting Orbital Mechanics to Spacetime](#understanding-the-calculations-connecting-orbital-mechanics-to-spacetime)  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
-
+[Back to NAS6LIB Wiki](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
+  
 ---    
   
 # Approximation of relativity in Euclidean geometry (coefficients omitted)  

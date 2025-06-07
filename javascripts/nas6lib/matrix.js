@@ -561,7 +561,7 @@ class N6LMatrix {
           ret.SetRow(2,ay);
           ret.SetRow(3,az);
         }
-        else {
+        else if(!this.bHomo && ret.x.length == 3) {
           var az = ret.GetRow(2);
           var ay = ret.GetRow(1);
           var ax = az.Cross(ay).NormalVec();

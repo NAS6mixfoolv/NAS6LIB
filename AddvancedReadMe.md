@@ -21,6 +21,7 @@ This document provides a deeper dive into NAS6LIB's architecture, advanced featu
   
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
+[Back to NAS6LIB Wiki](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
 
 ---  
   

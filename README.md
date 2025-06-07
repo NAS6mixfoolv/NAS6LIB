@@ -11,6 +11,10 @@ mechanics such as the perihelion of Mercury.
   
 ---  
   
+## Wiki  
+  
+* **Wiki Page**: [https://github.com/NAS6mixfoolv/NAS6LIB/wiki/](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
+  
 ## Related Repositories  
   
 * **Solar System Planet Orbit Simulator**: [https://github.com/NAS6mixfoolv/solarsystem/](https://github.com/NAS6mixfoolv/solarsystem/)

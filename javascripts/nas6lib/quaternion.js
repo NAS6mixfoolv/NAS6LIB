@@ -102,45 +102,47 @@ class N6LQuaternion {
     Add(rh) {
         var ret;
         var IntWK = 0;
-        var QuatWK = new N6LQuaternion(this);
+        var QuatWK = new N6LQuaternion(this).NormalQuat();
         if(rh && rh.typename == "N6LQuaternion"){
-            ret = new N6LVector(this.q);
-            for(IntWK = 0; IntWK < 4; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] + rh.q.x[IntWK];
+            ret = new N6LQuaternion(rh).NormalQuat();
+            for(IntWK = 0; IntWK < 4; IntWK++) QuatWK.q.x[IntWK] = QuatWK.q.x[IntWK] + ret.q.x[IntWK];
         }
         else if(typeof(rh) == "number") {
             QuatWK.q = QuatWK.q.Add(rh);
         }
-        return QuatWK;
+        return QuatWK.NormalQuat();
     };
 
     Sub(rh) {
         var ret;
         var IntWK = 0;
-        var QuatWK = new N6LQuaternion(this);
+        var QuatWK = new N6LQuaternion(this).NormalQuat();
         if(rh && rh.typename == "N6LQuaternion"){
-            ret = new N6LVector(this.q);
-            for(IntWK = 0; IntWK < 4; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] - rh.q.x[IntWK];
+            ret = new N6LQuaternion(rh).NormalQuat();
+            for(IntWK = 0; IntWK < 4; IntWK++) QuatWK.q.x[IntWK] = QuatWK.q.x[IntWK] - ret.q.x[IntWK];
         }
         else if(typeof(rh) == "number") {
             QuatWK.q = QuatWK.q.Sub(rh);
         }
-        return QuatWK;
+        return QuatWK.NormalQuat();
     };
 
     Mul(rh) {
         var IntWK = 0;
         var QuatWK = new N6LQuaternion(this);
         if(rh && rh.typename == "N6LQuaternion"){
+            var l = new N6LQuaternion(this).NormalQuat();
+            var r = new N6LQuaternion(rh).NormalQuat();
             QuatWK = new N6LQuaternion(
-                this.q.x[0] * rh.q.x[0] - this.q.x[1] * rh.q.x[1] - this.q.x[2] * rh.q.x[2] - this.q.x[3] * rh.q.x[3],
-                this.q.x[0] * rh.q.x[1] + this.q.x[1] * rh.q.x[0] + this.q.x[2] * rh.q.x[3] - this.q.x[3] * rh.q.x[2],
-                this.q.x[0] * rh.q.x[2] - this.q.x[1] * rh.q.x[3] + this.q.x[2] * rh.q.x[0] + this.q.x[3] * rh.q.x[1],
-                this.q.x[0] * rh.q.x[3] + this.q.x[1] * rh.q.x[2] - this.q.x[2] * rh.q.x[1] + this.q.x[3] * rh.q.x[0]);
+                l.q.x[0] * r.q.x[0] - l.q.x[1] * r.q.x[1] - l.q.x[2] * r.q.x[2] - l.q.x[3] * r.q.x[3],
+                l.q.x[0] * r.q.x[1] + l.q.x[1] * r.q.x[0] + l.q.x[2] * r.q.x[3] - l.q.x[3] * r.q.x[2],
+                l.q.x[0] * r.q.x[2] - l.q.x[1] * r.q.x[3] + l.q.x[2] * r.q.x[0] + l.q.x[3] * r.q.x[1],
+                l.q.x[0] * r.q.x[3] + l.q.x[1] * r.q.x[2] - l.q.x[2] * r.q.x[1] + l.q.x[3] * r.q.x[0]);
         }
         else if(typeof(rh) == "number") {
             QuatWK.q = QuatWK.q.Mul(rh);
         }
-        return QuatWK;
+        return QuatWK.NormalQuat();
     };
 
     Div(rh) {
@@ -228,8 +230,25 @@ class N6LQuaternion {
         var l = new N6LQuaternion(this).NormalQuat();
         var r = new N6LQuaternion(rh).NormalQuat();
         var i;
-        for(i = 0; i < 4; i++) ret += l.q.x[i] * r.q.x[i];
+        for(i = 1; i < 4; i++) ret += l.q.x[i] * r.q.x[i];
         return ret;
+    };
+
+    //cross//外積
+    Cross(rh) {
+        if(!rh || rh.typename != "N6LQuaternion"){
+          if(N6L_DEBUG_MODE){
+            console.warn("N6LQuaternion.Cross(rh): Invalid rh.typename. Returning this.");
+          }
+          return new N6LQuaternion(this);
+        }
+        var l = new N6LQuaternion(this).NormalQuat();
+        var r = new N6LQuaternion(rh).NormalQuat();
+        var ret = new N6LVector([0,
+        l.x[1] * r.x[2] - l.x[2] * r.x[1],
+        l.x[2] * r.x[0] - l.x[0] * r.x[2],
+        l.x[0] * r.x[1] - l.x[1] * r.x[0]]);
+        return ret.NormalQuat();
     };
 
     //rotate axis//軸に対する回転

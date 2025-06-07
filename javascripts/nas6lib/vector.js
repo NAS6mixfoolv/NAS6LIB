@@ -120,7 +120,7 @@ class N6LVector {
                 default:if(N6L_DEBUG_MODE){
                           console.warn("N6LVector.ToX3DOM: Invalid vector dimensions. Returning this.");
                         }
-                        return this;
+                        return new N6LVector(this);
                 }
             }
             else if(wk.x.length == 4) return new x3dom.fields.SFVec4f(wk.x[1], wk.x[2], wk.x[3], wk.x[0]);
@@ -132,7 +132,7 @@ class N6LVector {
         default:if(N6L_DEBUG_MODE){
                   console.warn("N6LVector.ToX3DOM: Invalid vector dimensions. Returning this.");
                 }
-                return this;
+                return new N6LVector(this);
         }
     };
 
@@ -146,7 +146,7 @@ class N6LVector {
         default:if(N6L_DEBUG_MODE){
                   console.warn("N6LVector.FromX3DOM: Invalid vector dimensions. Returning this.");
                 }
-                return this;
+                return new N6LVector(this);
         }
     };
 
@@ -161,7 +161,7 @@ class N6LVector {
                 default:if(N6L_DEBUG_MODE){
                   console.warn("N6LVector.To3JS: Invalid vector dimensions. Returning this.");
                 }
-                return this;
+                return new N6LVector(this);
                 }
             }
             else if(wk.x.length == 4) return new THREE.Vector4(wk.x[1], wk.x[2], wk.x[3], wk.x[0]);
@@ -173,7 +173,7 @@ class N6LVector {
         default:if(N6L_DEBUG_MODE){
           console.warn("N6LVector.To3JS: Invalid vector dimensions. Returning this.");
         }
-        return this;
+        return new N6LVector(this);
         }
     };
 
@@ -233,7 +233,7 @@ class N6LVector {
               if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Sub(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
-              return this;
+              return new N6LVector(this);
             }
             var i = 0;
             var l = new N6LVector(this);
@@ -273,7 +273,7 @@ class N6LVector {
               if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Mul(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
-              return this;
+              return new N6LVector(this);
             }
             var i = 0;
             var l = new N6LVector(this);
@@ -294,7 +294,7 @@ class N6LVector {
               if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Mul(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
-              return this;
+              return new N6LVector(this);
             }
             var l = new N6LVector(this);
             if(l.bHomo) {
@@ -351,7 +351,7 @@ class N6LVector {
               if(N6L_DEBUG_MODE){
                 console.warn("N6LVector.Mul(rh): Invalid vector dimensions.(this, rh). Returning this.");
               }
-              return this;
+              return new N6LVector(this);
             }
             var l = new N6LVector(this);
             if(l.bHomo) {
@@ -410,7 +410,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Dot(rh): Invalid rh.typename. Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var sum = 0.0;
         var i = 0;
@@ -431,7 +431,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Cross(rh): Invalid rh.typename. Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         if(!this.bHomo) {
             if(this.x.length == 2 && this.x.length == rh.x.length) return this.x[0] * rh.x[1] - this.x[1] * rh.x[0];
@@ -466,7 +466,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.isParallel(rh): Invalid rh.typename. Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var l = new N6LVector(this).NormalVec();
         var r = new N6LVector(rh).NormalVec();
@@ -501,7 +501,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.LookAtMat2(rh): Invalid rh. Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var eye = new N6LVector(this).Mul(-1);
         var lookat;
@@ -511,7 +511,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.LookAtMat2(rh): Invalid rh.typename. Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var ez = lookat.Sub(eye).NormalVec(); //視線ベクトル
         var axis; //各軸宣言
@@ -539,7 +539,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotArcQuat(rh): Invalid rh.typename. Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var v0 = this.NormalVec();
         var v1 = rh.NormalVec();
@@ -579,7 +579,7 @@ class N6LVector {
             var ab = a.Sub(this);
             return ab.NormalVec();
         }
-        if(!this.Abs()) return this;
+        if(!this.Abs()) return new N6LVector(this);
         return this.Div(this.Abs());
     };
 
@@ -655,7 +655,7 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Rot2D(theta): Invalid vector dimensions.(this). Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var ret = new N6LVector([this.x[0]*Math.cos(theta)-this.x[1]*Math.sin(theta),    this.x[0]*Math.sin(theta)+this.x[1]*Math.cos(theta)]);
         if(this.bHomo) ret = ret.ToHomo();
@@ -668,13 +668,13 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxis(axis,theta): Invalid axis.typename Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         if((this.x.length != 3 && this.x.length != 4) || this.x.length != axis.x.length){
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxis(axis,theta): Invalid vector dimensions.(this,axis). Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         var l = new N6LVector(this);
         if(l.bHomo){ l = l.ToNormal(); axis = axis.ToNormal(); }
@@ -702,13 +702,13 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisQuat(axis,theta): Invalid axis.typename Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         if((this.x.length != 3 && this.x.length != 4) || (this.x.length != axis.x.length)){
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisQuat(axis,theta): Invalid vector dimensions.(this,axis). Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         axis = axis.NormalVec();
         var q = new N6LQuaternion(1, 0, 0, 0);
@@ -727,13 +727,13 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisVec(rotvec): Invalid rotvec.typename Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         if((this.x.length != 3 && this.x.length != 4) || (this.x.length != rotvec.x.length)){
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.RotAxisVec(rotvec): Invalid vector dimensions.(this,rotvec). Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         axis = axis.NormalVec();
         var q = new N6LQuaternion(1, 0, 0, 0);
@@ -752,13 +752,13 @@ class N6LVector {
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.ProjectAxis(axis): Invalid axis.typename Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         if(this.x.length != axis.x.length){
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.ProjectAxis(axis): Invalid vector dimensions.(this,axis). Returning this.");
           }
-          return this;
+          return new N6LVector(this);
         }
         axis = axis.NormalVec();
         if(!axis.SquareAbs()) return axis.Mul(this.Dot(axis));
@@ -838,7 +838,7 @@ class N6LVector {
 
     //homogeneous//同次座標
     Homogeneous() {
-        if(!this.bHomo) return this;
+        if(!this.bHomo) return new N6LVector(this);
         var i;
         var ret = new N6LVector(this);
         var w = this.x[0];
@@ -849,7 +849,7 @@ class N6LVector {
 
     //to homogeneous//同次ベクトルに変換
     ToHomo() {
-        if(this.bHomo) return this;
+        if(this.bHomo) return new N6LVector(this);
         var n = this.x.length;
         var ret = new N6LVector(n + 1, true);
         var i;
@@ -860,7 +860,7 @@ class N6LVector {
 
     //to normal//通常ベクトルに変換
     ToNormal(bbb) {
-        if(!this.bHomo) return this;
+        if(!this.bHomo) return new N6LVector(this);
         var ret = new N6LVector(this.x.length - 1);
         var i;
         var w = this.x[0];

@@ -100,10 +100,11 @@ class N6LQuaternion {
 
     //four arithmetic operations(contain convenience)//四則演算(便宜上も含む)
     Add(rh) {
+        var ret;
         var IntWK = 0;
         var QuatWK = new N6LQuaternion(this);
         if(rh && rh.typename == "N6LQuaternion"){
-            ret = new N6LVector(this);
+            ret = new N6LVector(this.q);
             for(IntWK = 0; IntWK < 4; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] + rh.q.x[IntWK];
         }
         else if(typeof(rh) == "number") {
@@ -113,10 +114,11 @@ class N6LQuaternion {
     };
 
     Sub(rh) {
+        var ret;
         var IntWK = 0;
         var QuatWK = new N6LQuaternion(this);
         if(rh && rh.typename == "N6LQuaternion"){
-            ret = new N6LVector(this);
+            ret = new N6LVector(this.q);
             for(IntWK = 0; IntWK < 4; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] - rh.q.x[IntWK];
         }
         else if(typeof(rh) == "number") {
@@ -223,8 +225,10 @@ class N6LQuaternion {
           return new N6LQuaternion(this);
         }
         var ret = 0.0;
+        var l = new N6LQuaternion(this).NormalQuat();
+        var r = new N6LQuaternion(rh).NormalQuat();
         var i;
-        for(i = 0; i < 4; i++) ret += this.q.x[i] * rh.q.x[i];
+        for(i = 0; i < 4; i++) ret += l.q.x[i] * r.q.x[i];
         return ret;
     };
 
@@ -372,11 +376,12 @@ class N6LQuaternion {
           }
           return new N6LQuaternion(this);
         }
-        var QuatWK = new N6LQuaternion();
-        var d = this.Dot(q);
+        var QuatWK = new N6LQuaternion(this).NormalQuat();
+        var QuatWK2 = new N6LQuaternion(q).NormalQuat();
+        var d = QuatWK.Dot(QuatWK2);
         var s = Math.sqrt(1.0 - d * d);
         if(!s) s = 1.0;
-        QuatWK = this.Mul(s * (1.0 - t) / s).Add(q.Mul((s * t) / s));
+        QuatWK = QuatWK.Mul(s * (1.0 - t) / s).Add(QuatWK2.Mul((s * t) / s));
         return QuatWK.NormalQuat().Repair();
     };
 

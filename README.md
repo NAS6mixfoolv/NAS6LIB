@@ -43,9 +43,8 @@ Include the necessary JavaScript files in your HTML. You'll typically need `vect
 Add other modules like `quaternion.js`, `planet.js`, etc., as needed for your specific use case.  
   
 ```html  
-<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script><br>
-<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script><br>
-<br>
+<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script>
+<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script>
 ```
   
 ### 2. Minimum Sample (2D Vector Addition)  

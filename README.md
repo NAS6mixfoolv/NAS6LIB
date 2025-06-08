@@ -15,7 +15,7 @@ NAS6LIB works in major browser environments.
 Currently, it has been confirmed to work with  
 jQuery 3.7.1  
 x3dom 1.8.3  
-ThreeJS R130  
+ThreeJS R177  
   
 Related files will be updated in due course.  
   

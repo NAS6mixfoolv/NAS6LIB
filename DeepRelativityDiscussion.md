@@ -432,7 +432,7 @@ effectively encapsulating the term **(v/c)^2**.
 Let's illustrate this by setting c=1 for simplicity:  
   
 In the **timelike-first convention**: s^2 = t^2 - (x^2 + y^2 + z^2).  
-If an object travels a spatial distance L = sqrt(x^2 + y^2 + z^2) in time t, then its velocity v = L/t, implying L = vt.  
+If an object travels a spatial distance $L = \sqrt{x^2 + y^2 + z^2}$ in time t, then its velocity v = L/t, implying L = vt.  
 Substituting this into the equation yields: s^2 = t^2 - (vt)^2 = t^2 (1 - v^2).  
 Restoring c: s^2 = t^2 (1 - (v/c)^2).  
   

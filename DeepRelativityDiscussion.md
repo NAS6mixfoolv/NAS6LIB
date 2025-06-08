@@ -376,6 +376,7 @@ This emphasizes the fundamental role of general relativistic principles even in 
 ---  
   
 #  Metric Signature Conventions: Spacelike-First vs. Timelike-First  
+[Back to Table of contents](#table-of-contents)  
   
 In the context of Special Relativity, the Minkowski metric, which defines spacetime intervals,  
 is commonly expressed using one of two primary signature conventions.  

@@ -222,10 +222,10 @@ though functionally equivalent, row-major layout for its internal representation
   
 N6L's expected matrix layout (row-major):  
   
-M = |1   0   0   0| // Row 0: W-component (Homogeneous scale)
-    |Tx  M00 M01 M02| // Row 1: Translation X component, followed by Rotation/Scale X-axis components (X-axis of local basis)
-    |Ty  M10 M11 M12| // Row 2: Translation Y component, followed by Rotation/Scale Y-axis components (Y-axis of local basis)
-    |Tz  M20 M21 M22| // Row 3: Translation Z component, followed by Rotation/Scale Z-axis components (Z-axis of local basis)
+M = |1　　0　0　　0|　// Row 0: W-component (Homogeneous scale)  
+　　|Tx M00 M01 M02| // Row 1: Translation X component, followed by Rotation/Scale X-axis components (X-axis of local basis)  
+　　|Ty M10 M11 M12| // Row 2: Translation Y component, followed by Rotation/Scale Y-axis components (Y-axis of local basis)  
+　　|Tz M20 M21 M22| // Row 3: Translation Z component, followed by Rotation/Scale Z-axis components (Z-axis of local basis)  
   
 Key Benefits of Homogeneous Coordinates  
 Using a homogeneous coordinate system and 4x4 matrices allows various 3D graphics transformations to be handled  

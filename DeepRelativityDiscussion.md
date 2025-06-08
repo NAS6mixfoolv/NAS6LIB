@@ -422,7 +422,7 @@ such as quaternion "norms," when applied to physical phenomena.
 ---  
   
 # The Intrinsic Meaning: (v/c)^2  
-Regardless of whether the "spacelike-first" or "timelike-first" convention is employed, both forms of the spacetime  
+Regardless of whether the **spacelike-first** or **timelike-first** convention is employed, both forms of the spacetime  
 interval fundamentally articulate the same physical principle. They describe the relationship between the distance light travels  
 in a given unit of time and the coordinate change of an object over that same unit of time.  
   

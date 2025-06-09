@@ -28,9 +28,11 @@ a graphical page like this is created.
   
 ![gif of solarsystem](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/solarsystem000.gif)  
 *太陽系シミュレーション (Solar System Simulation)*  
+[Solar System Simulation DEMO](https://nas6.net/solarsystem.htm)  
   
 ![gif of fresnel](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/fresnel000.gif)  
 *フレネル効果 (Fresnel Effect)*  
+[Fresnel Effect DEMO](https://nas6.net/javascripts/threejs/examples/WaterPlaneTest.htm)  
   
 ---  
   

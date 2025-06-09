@@ -26,8 +26,8 @@ Related files will be updated in due course.
 By performing numerical calculations with NAS6LIB and leaving the drawing to an existing 3D library,  
 a graphical page like this is created.  
   
-![gif of solarsystem](https://github.com/NAS6mixfoolv/NAS6LIB/main/solarsystem000.gif)
-![gif of fresnel](https://github.com/NAS6mixfoolv/NAS6LIB/main/fresnel.gif)
+![gif of solarsystem](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/solarsystem000.gif)
+![gif of fresnel](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/fresnel.gif)
   
 ---  
   

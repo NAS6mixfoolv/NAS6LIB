@@ -50,7 +50,6 @@ class N6LQuaternion {
             this.q.x[3] = z;
         }
     }
-
   }
 
     Comp(rh) {
@@ -318,7 +317,7 @@ class N6LQuaternion {
 
     //quaternion to rotate matrix//クォータニオンから回転行列
     Matrix() {
-        var q = new N6LQuaternion(this);
+        var q = new N6LQuaternion(this).NormalQuat();
         var MatWK = new N6LMatrix([
             [1, 0,                                                  0,                                                  0                                              ],
             [0, 1.0-2.0*q.q.x[2]*q.q.x[2]-2.0*q.q.x[3]*q.q.x[3],    2.0*q.q.x[1]*q.q.x[2]-2.0*q.q.x[0]*q.q.x[3],        2.0*q.q.x[1]*q.q.x[3]+2.0*q.q.x[0]*q.q.x[2]    ],
@@ -340,8 +339,10 @@ class N6LQuaternion {
           return new N6LQuaternion(this);
         }
         var QuatWK = new N6LQuaternion();
+        var l = new N6LQuaternion(this).NormalQuat();
+        var r = new N6LQuaternion(q).NormalQuat();
         var i;
-        for(i = 0; i < 4; i++) QuatWK.q.x[i] = (1.0 - t) * this.q.x[i] + t * q.q.x[i];
+        for(i = 0; i < 4; i++) QuatWK.q.x[i] = (1.0 - t) * l.q.x[i] + t * r.q.x[i];
         return QuatWK.NormalQuat().Repair();
     };
 
@@ -354,7 +355,9 @@ class N6LQuaternion {
           return new N6LQuaternion(this);
         }
         var QuatWK = new N6LQuaternion();
-        var d = this.Dot(q);
+        var l = new N6LQuaternion(this).NormalQuat();
+        var r = new N6LQuaternion(q).NormalQuat();
+        var d = l.Dot(r);
         if(1.0 < d) d = 1.0;
         var s = 1.0 - (d * d);
         var ph = Math.acos(d);
@@ -363,7 +366,7 @@ class N6LQuaternion {
         var s1;
         var s2;
         var sgn = 1.0;
-        if(s == 0.0) QuatWK = new N6LQuaternion(this);
+        if(s == 0.0) QuatWK = new N6LQuaternion(l);
         else {
             if(d < 0.0) {
                 if(Math.PI / 2.0 < ph) sgn = -1.0;
@@ -379,16 +382,16 @@ class N6LQuaternion {
                 s2 = Math.sin(ph * t) / sp;
             }
             QuatWK = new N6LQuaternion([
-                (this.q.x[0] * s1 + q.q.x[0] * s2) * sgn,
-                (this.q.x[1] * s1 + q.q.x[1] * s2) * sgn,
-                (this.q.x[2] * s1 + q.q.x[2] * s2) * sgn,
-                (this.q.x[3] * s1 + q.q.x[3] * s2) * sgn]);
+                (l.q.x[0] * s1 + r.q.x[0] * s2) * sgn,
+                (l.q.x[1] * s1 + r.q.x[1] * s2) * sgn,
+                (l.q.x[2] * s1 + r.q.x[2] * s2) * sgn,
+                (l.q.x[3] * s1 + r.q.x[3] * s2) * sgn]);
         }
         return QuatWK.NormalQuat().Repair();
     };
 
-    //slerp//球面線形補完
-    Slerp2(q, t) {
+    //Lerp2//線形補完
+    Lerp2(q, t) {
         if(!q || q.typename != "N6LQuaternion") {
           if(N6L_DEBUG_MODE){
             console.warn("N6LQuaternion.Lerp(q, t): Invalid q.typename. Returning this.");
@@ -404,14 +407,20 @@ class N6LQuaternion {
         return QuatWK.NormalQuat().Repair();
     };
 
+    //To overcome the obstacles in changing function names//関数名変更における障害の吸収のため
+    Slerp2(q, t) {
+      return Lerp2(q, t);
+    };
+
     //sphere 4d//4次元球
     Sphere4D() {
         var VecWK = new N6LVector(4, true);
+        var l = new N6LQuaternion(this).NormalQuat();
         var i;
-        var d = Math.sqrt(2.0 * (1.0 - this.q.x[0]));
+        var d = Math.sqrt(2.0 * (1.0 - l.q.x[0]));
         if(!d) d = 1.0;
-        VecWK.x[0] = (1.0 - this.q.x[0]) / d;
-        for(i = 1; i < 4; i++) VecWK.x[i] = this.q.x[i] / d;
+        VecWK.x[0] = (1.0 - l.q.x[0]) / d;
+        for(i = 1; i < 4; i++) VecWK.x[i] = l.q.x[i] / d;
         return VecWK.NormalVec().Repair();
     };
 
@@ -505,8 +514,10 @@ class N6LLnQuaternion {
         if(rh && rh.typename == "N6LLnQuaternion"){
             var IntWK = 0;
             var QuatWK = new N6LLnQuaternion(0, 0, 0);
-            for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] + rh.q.x[IntWK];
-            return QuatWK;
+            var l = new N6LLnQuaternion(this).NormalLnQuat();
+            var r = new N6LLnQuaternion(rh).NormalLnQuat();
+            for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = l.q.x[IntWK] + r.q.x[IntWK];
+            return QuatWK.NormalLnQuat().Repair();
         }
         if(N6L_DEBUG_MODE){
           console.warn("N6LLnQuaternion.Add(rh): Invalid rh.typename. Returning this.");
@@ -518,8 +529,10 @@ class N6LLnQuaternion {
         if(rh && rh.typename == "N6LLnQuaternion"){
             var IntWK = 0;
             var QuatWK = new N6LLnQuaternion(0, 0, 0);
-            for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] - rh.q.x[IntWK];
-            return QuatWK;
+            var l = new N6LLnQuaternion(this).NormalLnQuat();
+            var r = new N6LLnQuaternion(rh).NormalLnQuat();
+            for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = l.q.x[IntWK] - r.q.x[IntWK];
+            return QuatWK.NormalLnQuat().Repair();
         }
         if(N6L_DEBUG_MODE){
           console.warn("N6LLnQuaternion.Sub(rh): Invalid rh.typename. Returning this.");
@@ -536,8 +549,10 @@ class N6LLnQuaternion {
         }
         var IntWK = 0;
         var QuatWK = new N6LLnQuaternion(0, 0, 0);
-        for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = this.q.x[IntWK] * rh;
-        return QuatWK;
+        var l = new N6LLnQuaternion(this).NormalLnQuat();
+        var r = new N6LLnQuaternion(rh).NormalLnQuat();
+        for(IntWK = 0; IntWK < 3; IntWK++) QuatWK.q.x[IntWK] = l.q.x[IntWK] * r;
+        return QuatWK.NormalLnQuat().Repair();
     };
 
     Div(rh) {
@@ -583,6 +598,13 @@ class N6LLnQuaternion {
     //absolute//絶対値
     Abs() {
         return Math.sqrt(this.SquareAbs());
+    };
+
+    //normalize//ノーマライズ
+    NormalLnQuat() {
+        var wk = this.Repair().Abs();
+        if(wk == 0.0) return new N6LLnQuaternion(this);
+        return this.Div(wk);
     };
 
     //zero//ゼロ
@@ -635,7 +657,9 @@ class N6LLnQuaternion {
           }
           return new N6LLnQuaternion(this);
         }
-        var LnQuatWK = this.Mul(1.0 - t).Add(q.Mul(t));
+        var l = new N6LLnQuaternion(this).NormalLnQuat();
+        var r = new N6LLnQuaternion(q).NormalLnQuat();
+        var LnQuatWK = l.Mul(1.0 - t).Add(r.Mul(t));
         var axis = new Array();
         var theta = new Array();
         LnQuatWK.Axis(axis, theta);
@@ -653,8 +677,10 @@ class N6LLnQuaternion {
           return new N6LLnQuaternion(this);
         }
         var IntWK = 0;
-        var LnQuatWK = this.Mul(d0);
-        for(IntWK = 0; IntWK < q.length; IntWK++) LnQuatWK = LnQuatWK.Add(q[IntWK].Mul(d[IntWK]));
+        var l = new N6LLnQuaternion(this).NormalLnQuat();
+        var r = new N6LLnQuaternion(q).NormalLnQuat();
+        var LnQuatWK = l.Mul(d0);
+        for(IntWK = 0; IntWK < r.length; IntWK++) LnQuatWK = LnQuatWK.Add(r[IntWK].Mul(d[IntWK]));
         var axis = new Array();
         var theta = new Array();
         LnQuatWK.Axis(axis, theta);

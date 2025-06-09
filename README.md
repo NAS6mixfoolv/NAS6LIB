@@ -141,5 +141,7 @@ NAS6LIB_1_9_1 (2024/03/25): Added GetEccentricity()
 NAS6LIB_1_9_2 (2024/04/09): Added comment  
 NAS6LIB_2_0_0 (2025/05/25): Improved error handling  
 NAS6LIB_2_0_1 (2025/05/26): Adaptation to the X3DOM environment  
+NAS6LIB_2_0_2 (2025/06/08): N6LQuaternion bugfix  
 License: GPL  
+  
   

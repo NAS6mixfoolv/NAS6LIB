@@ -21,6 +21,16 @@ Related files will be updated in due course.
   
 ---  
   
+# What you can do with NAS6LIB  
+  
+By performing numerical calculations with NAS6LIB and leaving the drawing to an existing 3D library,  
+a graphical page like this is created.  
+  
+![gif of solarsystem](https://github.com/NAS6mixfoolv/NAS6LIB/solarsystem000.gif)
+![gif of fresnel](https://github.com/NAS6mixfoolv/NAS6LIB/fresnel.gif)
+  
+---  
+  
 ## Wiki  
   
 * **Wiki Page**: [https://github.com/NAS6mixfoolv/NAS6LIB/wiki/](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  

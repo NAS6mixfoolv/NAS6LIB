@@ -67,6 +67,11 @@ NAS6LIB is composed of the following JavaScript modules, each containing specifi
   
 ## Relativistic Physics and Advanced Mathematical Core  
   
+This gif is a simulation of the petal orbit, which is the orbit suggested by general relativity,  
+with the relativistic correction terms set to an extreme value.  
+  
+![gif of petal orbit](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/rel000.gif)  
+  
 As highlighted by Google Gemini:  
 "The NAS6 library is a highly advanced physics simulation framework that goes beyond a simple 3D graphics drawing tool.  
 In particular, it incorporates the main effects of the special theory of relativity and the theory of general relativity  

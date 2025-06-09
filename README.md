@@ -27,7 +27,7 @@ By performing numerical calculations with NAS6LIB and leaving the drawing to an 
 a graphical page like this is created.  
   
 ![gif of solarsystem](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/solarsystem000.gif)
-![gif of fresnel](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/fresnel.gif)
+![gif of fresnel](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/fresnel000.gif)
   
 ---  
   

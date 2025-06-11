@@ -289,19 +289,19 @@ Gravitational constant (G): 6.674e-11 [Nm^2kg^-2]
 The Sun's Schwarzschild radius $r_s = 2953\,[m]$  
   
 These formulas lead to  
-r_s=a(1-e^2)dφ(2/3)=2GM/c^2  
-dφ=(r_s/a)(3/(2(1-e^2)))  
+$r_s=a(1-e^2)d\phi\frac{2}{3}=\frac{2GM}{c^2}$  
+$d\phi=\frac{r_s}{a}\frac{3}{2(1-e^2)}$  
 which is a formula per unit time per unit radian,  
 so to convert it to one revolution, we multiply it by 2π  
-2πdφ=(r_s/a)(6π/(2(1-e^2)))=(GM/ac^2)(6π/(1-e^2))  
+$2πd\phi=\frac{r_s}{a}\frac{6π}{2(1-e^2)}frac{GM}{ac^2}\frac{6π}{1-e^2}$  
 which matches the standard formula for perihelion movement.  
   
 Vp=√((GMs/a)((1+e)/(1-e)))  
 Va=√((GMs/a)((1-e)/(1+e)))  
 h=rVt=√(GMsa(1-e^2)) where Vt is the tangential velocity.  
 E=-(GMs)/(2a)  
-In deriving this calculation table, the following formula is used for dφ  
-dφ = (3/(1-e^2))(Vavg/c)^2  
+In deriving this calculation table, the following formula is used for $d\phi$  
+$d\phi = \frac{3}{1-e^2}\frac{Vavg}{c}^2  
   
 | Planet name | Orbital semi-major axis a [AU] | Orbital semi-major axis a [m] | Eccentricity e | Orbital period T [Earth years] | Orbital period T [sec] | Average orbital speed Vavg [m/sec] | Perihelion velocity Vp [m/sec] | Aphelion velocity Va [m/sec] | Specific angular momentum h | Specific orbital energy E | dφ | 2a(Vavg/c)^2(1+dφ) | a(1-e^2)dφ(2/3) | (8π^2a^3/c^2T^2)(1+dφ) | (2a(Vp/c)^2(1-e))(1+dφ)/(1+e) | (2a(Va/c)^2(1+e))(1+dφ)/(1-e) | (2h^2)(1+dφ)/(c^2a(1-e^2)) | (-4aE/c^2)(1+dφ) |  
 | :---------- | :----------------------------- | :---------------------------- | :------------- | :----------------------------- | :--------------------- | :--------------------------------- | :----------------------------- | :---------------------------- | :-------------------------- | :------------------------ | :--- | :-------------------- | :------------------ | :---------------------- | :------------------------------------ | :------------------------------------ | :---------------------------------- | :---------------------- |  

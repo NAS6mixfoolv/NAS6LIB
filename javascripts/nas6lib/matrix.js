@@ -229,6 +229,139 @@ class N6LMatrix {
         return ret;
     };
 
+   //it | w要素:"m33"→this.x[0].x[0],x要素:"m00"→this.x[1].x[1],Y軸:"m1","v1"→this.x[2], : row,col の最大値は9まで
+    //out = [];を渡す前提 | outが主な戻り値 関数の戻り値は補助
+    GetAccessor(it, out) {
+      var ret = -1;
+      out[0] = -1;
+      out[1] = -1;
+      var h = 0;//this.bHomo | false: h=0 / true: h=1
+      var w = 0;//           | w=0        / w=this.x.length - 1
+      var ww = 0;//          | ww=0       / ww=this.x[0].x.length - 1 //なのでthis.bHomoの状態によりw要素の転置を行う
+      if(this.bHomo) { h = 1; w = this.x.length - 1; ww = this.x[0].x.length - 1; }
+      if(typeof it == "string"){
+        var lenIT = it.length;
+        if((it[0] == "m")||(it[0] == "M")||(it[0] == "v")||(it[0] == "V")) {
+          if(1 < lenIT) {
+            var row = Number(it[1]);
+            if(row == w){ out[0] = 0; ret = 1; }
+            else { out[0] = row + h; ret = 1; }
+            if((it[0] == "v")||(it[0] == "V")||(lenIT == 2)) return ret;　//out[0] に検索したい行のインデックス、関数の戻り値はout[]の有効な要素数　またout[1]は-1でエラーの意味
+            if(2 < lenIT) {
+              var col = Number(it[2]);
+              if(col == ww){ out[1] = 0; ret = 2; }
+              else { out[1] = col + h; ret = 2; }
+              //out[0],out[1] に検索したい行と列のインデックス、関数の戻り値はout[]の有効な要素数//ここにきていたらout[0]は既に入っている
+              //wwはベクトルの保持データの最後の要素のインデックス(3次元同次ならば3)
+            }
+          }
+        }
+      }
+      return ret;
+    }
+
+
+    Get(it) {
+      if(typeof it == "string"){
+        if((it == "length")||(it == "Length")) return this.x.length;
+        else if((it == "array")||(it == "Array")) return this.x;
+        else if((it == "dimension")||(it == "Dimension")) {
+          var dms = this.x.length;
+          if(this.bHomo) dms--;
+          return dms;
+        }
+      }
+      else {
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LMatrix.Get(it): Invalid type.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      var out = [];
+      var ac = this.GetAccessor(it, out);
+      if(ac == 1) return this.x[out[0]];
+      else if(ac == 2) return this.x[out[0]].x[out[1]];
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LMatrix.Get(it): Invalid string.(it). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+    Set(it, val) {
+      var out = [];
+      var ac = this.GetAccessor(it, out);
+      if(val.typename == "N6LVector") {
+        this.x[out[0]] = new N6LVector(val);
+        return val;
+      }
+      else if(typeof val == "number") {
+        if(1 < ac) { this.x[out[0]].x[out[1]] = val; return val; }
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LMatrix.Set(it, val): Invalid string.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LMatrix.Set(it, val): Invalid type.(val). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+  //一般的な慣例の配置規則による構築
+  Create(rh, m, n){
+    var ret = new N6LMatrix();
+    var i = 0;
+    var h = 0;//同次の時のw要素転置に使う
+    if(Array.isArray(rh) && rh[0] && Array.isArray(rh[0])){
+        ret.x.length = rh.length;
+        if(ret.x.length >= 4) {//同次とみなす
+          h++;
+          ret.x[0] = new N6LVector().Create(rh[rh.length - 1], true);
+          ret.x[0].SetHomo(false);
+        }
+        for(i = h; i < rh.length; i++) {
+          ret.x[i] = new N6LVector().Create(rh[i - h], true);
+          ret.x[i].SetHomo(false);
+        }
+        if(ret.x.length >= 4) ret.bHomo = true;
+        else ret.bHomo = false;
+    }
+    else if(Array.isArray(rh) && m && n) {
+        ret.x.length = m;
+        var k;//行のイテレータ
+        var j;
+        var d;
+        if(m >= 4) {//同次とみなす
+          h++;
+          k = m * n;
+          d = new Array();
+          d[0] = rh[k - 1];
+          for(j = h; j < n; j++) d[j] = rh[j + k - n - h];
+          ret.x[0] = new N6LVector(d);
+          k = 0;
+          for(i = h; i < m; i++) {
+            d[0] = rh[k + n - h];
+            for(j = h; j < n; j++) {
+              d[j] = rh[j + k - h];
+            }
+            ret.x[i] = new N6LVector(d);
+            k += n;
+          }
+        }
+        else {
+          for(i = 0, k = 0; i < m; i++) {
+            d = new Array();
+            for(j = 0; j < n; j++) d[j] = rh[j + k];
+            ret.x[i] = new N6LVector(d);
+            k += n;
+          }
+        }
+        if(m >= 4) ret.bHomo = true;
+        else ret.bHomo = false;
+    }
+    return ret;
+  }
+
     //four arithmetic operations(contain convenience)//四則演算(便宜上も含む)
     Add(rh) {
         var ret = new N6LMatrix();

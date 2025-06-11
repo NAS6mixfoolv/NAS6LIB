@@ -97,6 +97,69 @@ class N6LQuaternion {
         return ret;
     };
 
+    //"w","x","y","z"でアクセサを取得
+    GetAccessor(it) {
+      var ret = -1;
+      if(typeof it == "string"){
+        if((it == "w")||(it == "W")) ret = 0; 
+        else if((it == "x")||(it == "X")) ret = 1;
+        else if((it == "y")||(it == "Y")) ret = 2;
+        else if((it == "z")||(it == "Z")) ret = 3;
+      }
+      return ret;
+    }
+
+    //"w","x","y","z","length","dimension"で各値を取得//"array"で内部配列への参照を返す
+    Get(it) {
+      if(typeof it == "string"){
+        if((it == "length")||(it == "Length")) return 4;
+        else if((it == "array")||(it == "Array")) return this.q.x;
+        else if((it == "dimension")||(it == "Dimension")) return 3;
+      }
+      else {
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LQuaternion.Get(it): Invalid type.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      var ac = this.GetAccessor(it);
+      if(0 <= ac) return this.q.x[ac];
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LQuaternion.Get(it): Invalid string.(it). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+    // { "w","x","y", or "z"} , val で各値にvalをセット
+    Set(it, val) {
+      var ac = this.GetAccessor(it);
+      if(typeof val == "number") {
+        if(0 <= ac) { this.q.x[ac] = val; return val; }
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LQuaternion.Set(it, val): Invalid string.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LQuaternion.Set(it, val): Invalid type.(val). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+  //一般的な慣例の配置規則による構築
+  Create(w){
+    var ret = new N6LQuaternion();
+    var i = 1;
+    var h = 1;
+    if(Array.isArray(w)) {
+        ret.q.x.length = w.length;
+        ret.q.x[0] = w[w.length - 1];
+        for(i = h; i < w.length; i++) ret.q.x[i] = w[i - h];
+    }
+    return ret;
+  }
+
+
     //four arithmetic operations(contain convenience)//四則演算(便宜上も含む)
     Add(rh) {
         var ret;
@@ -508,6 +571,66 @@ class N6LLnQuaternion {
         ret.q = new N6LVector().Parse(str);
         return ret;
     };
+
+
+    //"x","y","z"でアクセサを取得
+    GetAccessor(it) {
+      var ret = -1;
+      if(typeof it == "string"){
+        if((it == "x")||(it == "X")) ret = 0;
+        else if((it == "y")||(it == "Y")) ret = 1;
+        else if((it == "z")||(it == "Z")) ret = 2;
+      }
+      return ret;
+    }
+
+    //"x","y","z","length","dimension"で各値を取得//"array"で内部配列への参照を返す
+    Get(it) {
+      if(typeof it == "string"){
+        if((it == "length")||(it == "Length")) return 3;
+        else if((it == "array")||(it == "Array")) return this.q.x;
+        else if((it == "dimension")||(it == "Dimension")) return 3;
+      }
+      else {
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LLnQuaternion.Get(it): Invalid type.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      var ac = this.GetAccessor(it);
+      if(0 <= ac) return this.q.x[ac];
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LLnQuaternion.Get(it): Invalid string.(it). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+    // { "x","y", or "z"} , val で各値にvalをセット
+    Set(it, val) {
+      var ac = this.GetAccessor(it);
+      if(typeof val == "number") {
+        if(0 <= ac) { this.q.x[ac] = val; return val; }
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LLnQuaternion.Set(it, val): Invalid string.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LLnQuaternion.Set(it, val): Invalid type.(val). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+  //一般的な慣例の配置規則による構築
+  Create(x){
+    var ret = new N6LLnQuaternion();
+    var i;
+    if(Array.isArray(x)) {
+        ret.q.x.length = x.length;
+        for(i = 0; i < x.length; i++) ret.q.x[i] = x[i];
+    }
+    return ret;
+  }
 
     //four arithmetic operations(contain convenience)//四則演算(便宜上も含む)
     Add(rh) {

@@ -4,6 +4,12 @@
 //デバッグ時true
 var N6L_DEBUG_MODE = false;
 
+function DefinedToNum(val) {
+  if(val === undefined)　return 0;
+  if(val === false) return 0;
+  if(val === true) return 1;
+  return val;
+}
 
 //vector//ベクトル
 //construction ex//構築例
@@ -16,6 +22,7 @@ var N6L_DEBUG_MODE = false;
 //var veca = new N6LVector([1, 1, 0, 0], true);
 //var vecb = new N6LVector(veca); //deep copy
 //veca.x[0]:w veca.x[1]:x veca.x[2]:y veca.x[3]:z 
+
 class N6LVector {
 
   constructor(rh, bh) {
@@ -188,6 +195,80 @@ class N6LVector {
         return new N6LVector([1,0,0,0],true);
         }
     };
+
+    //"w","x","y","z"でアクセサを取得
+    GetAccessor(it) {
+      var ret = -1;
+      var h = 0;
+      if(this.bHomo) h = 1;//this.bHomo | false: h=0 true: h=1 //なのでthis.bHomoの状態によりw要素の転置を行う
+      if(typeof it == "string"){
+        if((it == "w")||(it == "W")) { if(this.bHomo) ret = 0; }
+        else if((it == "x")||(it == "X")) ret = 0 + h;
+        else if((it == "y")||(it == "Y")) ret = 1 + h;
+        else if((it == "z")||(it == "Z")) ret = 2 + h;
+      }
+      return ret;
+    }
+
+    //"w","x","y","z","length","dimension"で各値を取得//"array"で内部配列への参照を返す
+    Get(it) {
+      if(typeof it == "string"){
+        if((it == "length")||(it == "Length")) return this.x.length;
+        else if((it == "array")||(it == "Array")) return this.x;
+        else if((it == "dimension")||(it == "Dimension")) {
+          var dms = this.x.length;
+          if(this.bHomo) dms--;
+          return dms;
+        }
+      }
+      else {
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LVector.Get(it): Invalid type.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      var ac = this.GetAccessor(it);
+      if(0 <= ac) return this.x[ac];
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LVector.Get(it): Invalid string.(it). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+    // { "w","x","y", or "z"} , val で各値にvalをセット
+    Set(it, val) {
+      var ac = this.GetAccessor(it);
+      if(typeof val == "number") {
+        if(0 <= ac) { this.x[ac] = val; return val; }
+        if(N6L_DEBUG_MODE){
+          console.warn("N6LVector.Set(it, val): Invalid string.(it). Returning 0.0.");
+        }
+        return 0.0;
+      }
+      if(N6L_DEBUG_MODE){
+        console.warn("N6LVector.Set(it, val): Invalid type.(val). Returning 0.0.");
+      }
+      return 0.0;
+    }
+
+  //一般的な慣例の配置規則による構築
+  Create(rh, bh){
+    var ret = new N6LVector();
+    var i = 0;
+    var h = 0;//bh | false: h=0 true: h=1 //なのでbhの状態によりw要素の転置を行う
+    if(Array.isArray(rh)) {
+        ret.x.length = rh.length;
+        if(bh) {
+          h++;
+          ret.x[0] = rh[rh.length - 1];
+        }
+        for(i = h; i < rh.length; i++) ret.x[i] = rh[i - h];
+        if(bh != undefined) ret.bHomo = bh;
+        else ret.bHomo = false;
+    }
+    return ret;
+  }
+
 
     //four arithmetic operations(contain convenience)//四則演算(便宜上も含む)
     Add(rh) {
@@ -1055,5 +1136,3 @@ class N6LVector {
     };
 
 }
-
-

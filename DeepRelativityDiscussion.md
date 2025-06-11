@@ -292,6 +292,7 @@ Vp=√((GMs/a)((1+e)/(1-e)))
 Va=√((GMs/a)((1-e)/(1+e)))  
 h=rVt=√(GMsa(1-e^2)) where Vt is the tangential velocity.  
 E=-(GMs)/(2a)  
+In deriving this calculation table, the following formula is used for dφ  
 dφ = (3/(1-e^2))(Vavg/c)^2  
   
 | Planet name | Orbital semi-major axis a [AU] | Orbital semi-major axis a [m] | Eccentricity e | Orbital period T [Earth years] | Orbital period T [sec] | Average orbital speed Vavg [m/sec] | Perihelion velocity Vp [m/sec] | Aphelion velocity Va [m/sec] | Specific angular momentum h | Specific orbital energy E | dφ | 2a(Vavg/c)^2(1+dφ) | a(1-e^2)dφ(2/3) | (8π^2a^3/c^2T^2)(1+dφ) | (2a(Vp/c)^2(1-e))(1+dφ)/(1+e) | (2a(Va/c)^2(1+e))(1+dφ)/(1-e) | (2h^2)(1+dφ)/(c^2a(1-e^2)) | (-4aE/c^2)(1+dφ) |  

@@ -121,7 +121,7 @@ in the form $F = -(GMm/r^2)(1+S)$, where $F$ is force, $r$ is radius, $G$ is gra
 $M$ and $m$ are masses, $V$ is orbital velocity, $c$ is speed of light, and $S$ is the relativistic correction term.  
   
 Here, $h = r^2\frac{d \phi}{ds}$, $m = GM/c^2$, and $u=1/r$.  
-Let's examine the $\textbf{relativistic correction term 3mu^2}$. We can factor out $m/h^2$:  
+Let's examine the relativistic correction term $3mu^2$. We can factor out $m/h^2$:  
 $u'' + u = \frac{m}{h^2}\left(1 + \frac{3mu^2}{m/h^2}\right) = \frac{m}{h^2}(1+S)$  
 Now we investigate $S$:  
 $S = \frac{3mu^2}{m/h^2} = 3u^2h^2 = 3\left(\frac{1}{r^2}\right)\left(r^2\frac{d\phi}{ds}\right)^2 = 3r^2\left(\frac{dt}{ds}\frac{d\phi}{dt}\right)^2 = 3r^2\left(\frac{d\phi}{dt}\right)^2\left(\frac{1}{c^2}\right) = 3\frac{(r d\phi/dt)^2}{c^2}$  

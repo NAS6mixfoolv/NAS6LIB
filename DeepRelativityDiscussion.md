@@ -160,9 +160,13 @@ $w^2=\frac{GN(1+e^2+2e\cos\psi)}{q(1-e^2)}$
 Relativistic Correction Term for Elliptical Orbits  
 When attempting to apply the relativistic correction term $3(\frac{v}{c})^2$  
 using the elliptical orbital velocity, the term $(1+e^2 +2e\cos\psi)$ is included.  
-Considering the relationship between elliptical orbital velocity and circular orbital velocity,
-and given the term $3(\frac{v}{c})^2$  
-derived for a circular orbit, the additional factor needed to complete the relativistic correction is $\frac{1}{1-e^2}$.
+For elliptical orbits, the relativistic correction to the Newtonian precession (i.e., the perihelion advance) is derived  
+by extending the relativistic term 3(V/c)^2 obtained for circular orbits. This requires accounting for the varying radial distance  
+and velocity characteristic of elliptical motion. When integrating the general relativistic perturbation over  
+an entire elliptical orbit, or by analyzing the effective potential, an additional factor related to the orbital eccentricity emerges.  
+Specifically, the perihelion shift per revolution is proportional to 1/(1-e^2) times the relativistic factor 3(GM/ac^2).  
+This factor ensures the correct relativistic correction for the full elliptical path, taking into account the varying speed  
+and distance from the central body.  
   
 Thus, the relativistic correction term for an elliptical orbit becomes:  
 $\frac{3}{1-e^2}(\frac{v}{c})^2$  

@@ -288,6 +288,14 @@ Solar mass (Ms): 1.989e30 [kg]
 Gravitational constant (G): 6.674e-11 [Nm^2kg^-2]  
 The Sun's Schwarzschild radius $r_s = 2953\,[m]$  
   
+These formulas lead to  
+r_s=a(1-e^2)dφ(2/3)=2GM/c^2  
+dφ=(r_s/a)(3/(2(1-e^2)))  
+which is a formula per unit time per unit radian,  
+so to convert it to one revolution, we multiply it by 2π  
+2πdφ=(r_s/a)(6π/(2(1-e^2)))=(GM/ac^2)(6π/(1-e^2))  
+which matches the standard formula for perihelion movement.  
+  
 Vp=√((GMs/a)((1+e)/(1-e)))  
 Va=√((GMs/a)((1-e)/(1+e)))  
 h=rVt=√(GMsa(1-e^2)) where Vt is the tangential velocity.  

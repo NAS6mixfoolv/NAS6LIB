@@ -171,7 +171,7 @@ and distance from the central body.
 Thus, the relativistic correction term for an elliptical orbit becomes:  
 $\frac{3}{1-e^2}(\frac{v}{c})^2$  
 This expression represents the relativistic correction term for elliptical orbits in general relativity,  
-corresponding to the solution for the Kerr metric in certain contexts.  
+A similar shape appears under the more conventional Kerr metric.  
   
 ---  
   

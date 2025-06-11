@@ -296,6 +296,8 @@ so to convert it to one revolution, we multiply it by 2π
 $2πd\phi=\frac{r_s}{a}\frac{6π}{2(1-e^2)}=\frac{GM}{ac^2}\frac{6π}{1-e^2}$  
 which matches the standard formula for perihelion movement.  
   
+How to calculate each item in the table below  
+Varg=2πa/T  
 Vp=√((GMs/a)((1+e)/(1-e)))  
 Va=√((GMs/a)((1-e)/(1+e)))  
 h=rVt=√(GMsa(1-e^2)) where Vt is the tangential velocity.  

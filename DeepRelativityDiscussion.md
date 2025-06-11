@@ -293,7 +293,7 @@ $r_s=a(1-e^2)d\phi\frac{2}{3}=\frac{2GM}{c^2}$
 $d\phi=\frac{r_s}{a}\frac{3}{2(1-e^2)}$  
 which is a formula per unit time per unit radian,  
 so to convert it to one revolution, we multiply it by 2π  
-$2πd\phi=\frac{r_s}{a}\frac{6π}{2(1-e^2)}frac{GM}{ac^2}\frac{6π}{1-e^2}$  
+$2πd\phi=\frac{r_s}{a}\frac{6π}{2(1-e^2)}=\frac{GM}{ac^2}\frac{6π}{1-e^2}$  
 which matches the standard formula for perihelion movement.  
   
 Vp=√((GMs/a)((1+e)/(1-e)))  

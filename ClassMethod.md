@@ -263,8 +263,36 @@ var N6LVector = function(rh, bh) { }
   
 * **N6LVector.From3JS(ary)**  
   * **Description**：convert from Array  
-  * **Parameters**：ary:Array()**  
+  * **Parameters**：ary:Array()  
   * **Returns**    ：convert from Array:N6LVector  
+  
+* **N6LVector.GetAccessor(it)**  
+  * **Description**：Get accessor with "w", "x", "y", "z"  
+  * **Parameters**：it:string  
+  * **Returns**    ：accessor:int  
+  
+* **N6LVector.Get(it)**  
+  * **Description**：Get each value with "w", "x", "y", "z", "length",
+and "dimension" and return a reference to the internal array with "array".  
+  * **Parameters**：it:string  
+  * **Returns**    ：value:real  
+  
+* **N6LVector.Set(it, val)**  
+  * **Description**：{ "w","x","y", or "z"} , set each value to val with val  
+  * **Parameters**：it:string:val:real  
+  * **Returns**    ：value:real  
+  
+* **N6LVector.Create(rh, bh)**  
+  * **Description**：Building on common conventions  
+  * **Parameters**：rh:Array:bh:bool  
+  * **Returns**    ：
+var v = new N6LVector().Create([1,2,3,4], true);
+var ary = v.Get("array");
+var len = v.Get("length");
+var acs = v.GetAccessor("x");
+//Zero fill x→z//acs acts directly as an iterator
+for(; acs < len; acs++) ary[acs] = 0.0;
+console.log(ary); // Result: [4, 0, 0, 0] 
   
 * **N6LVector.Add(rh)**  
   * **Description**：add  
@@ -594,6 +622,51 @@ Please continue to build declaration
   * **Description**：set row  
   * **Parameters**：rh:int:row:val:N6LVector:value  
   * **Returns**    ：set row:N6LMatrix  
+  
+* **N6LMatrix.GetAccessor(it, out)**  
+  * **Description**：Get accessor  
+it | w element: "m33" → this.x[0].x[0], x element: "m00" → this.x[1].x[1], Y axis: "m1", "v1" → this.x[2],  
+Maximum value of row, col is 9  
+Assuming passing out = []; | out is the main return value, function return value is auxiliary  
+  * **Parameters**：it:string  
+  * **Returns**    ：accessor:int  
+  
+* **N6LMatrix.Get(it)**  
+  * **Description**：Get each value with "mXX", "vX", "length",
+and "dimension" and return a reference to the internal array with "array".  
+  * **Parameters**：it:string  
+  * **Returns**    ：value:real  
+  
+* **N6LMatrix.Set(it, val)**  
+  * **Description**：{ "mXX","vX" } , set each value to val with val  
+  * **Parameters**：it:string:val:real  
+  * **Returns**    ：value:real  
+  
+* **N6LMatrix.Create(rh, m, n)**  
+  * **Description**：Building on common conventions  
+  * **Parameters**：rh:Array:bh:bool:m:row:n:col  
+  * **Returns**    ：
+var m = new N6LMatrix().Create([
+[1,0,0,1],
+[0,1,0,2],
+[0,0,1,3],
+[0,0,0,4]]);
+var arym = m.Get("array");
+var vv = m.Get("v0");//x-axis
+var aryv = vv.Get("array");
+var lenv = vv.Get("length");
+var acsv = vv.GetAccessor("x");
+//Zero-fill x→z//acs acts directly as an iterator
+for(; acsv < lenv; acsv++) aryv[acsv] = 0.0;
+m.Set("m23", 1);
+console.log(arym); // Result: [[4,0,0,0], [1,0,0,0], [2,0,1,0], [1,0,0,1]]
+var mm = new N6LMatrix().Create([ 
+1,0,0,1, 
+0,1,0,2, 
+0,0,1,3, 
+0,0,0,4],4,4);
+var arymm = mm.Get("array");
+console.log(arymm); // Result: [[4,0,0,0], [1,1,0,0], [2,0,1,0], [3,0,0,1]]
   
 * **N6LMatrix.Add(rh)**  
   * **Description**：add  
@@ -930,6 +1003,34 @@ var N6LQuaternion = function(w, x, y, z) { }
   * **Parameters**：str:string  
   * **Returns**    ：convert from string:N6LQuaternion  
   
+* **N6LQuaternion.GetAccessor(it)**  
+  * **Description**：Get accessor with "w", "x", "y", "z"  
+  * **Parameters**：it:string  
+  * **Returns**    ：accessor:int  
+  
+* **N6LQuaternion.Get(it)**  
+  * **Description**：Get each value with "w", "x", "y", "z", "length",
+and "dimension" and return a reference to the internal array with "array".  
+  * **Parameters**：it:string  
+  * **Returns**    ：value:real  
+  
+* **N6LQuaternion.Set(it, val)**  
+  * **Description**：{ "w", "x", "y", "z" } , set each value to val with val  
+  * **Parameters**：it:string:val:real  
+  * **Returns**    ：value:real  
+  
+* **N6LQuaternion.Create(rh, val)**  
+  * **Description**：Building on common conventions  
+  * **Parameters**：rh:Array:bh:bool:m:row:n:col  
+  * **Returns**    ：
+var q = new N6LQuaternion().Create([1,2,3,4]);
+var aryq = q.Get("array");
+var lenq = q.Get("length");
+var acsq = q.GetAccessor("x");
+//Zero-fill x→z//acs acts directly as an iterator
+for(; acsq < lenq; acsq++) aryq[acsq] = 0.0;
+console.log(aryq); // Result: [4, 0, 0, 0]
+
 * **N6LQuaternion.Add(rh)**  
   * **Description**：add  
   * **Parameters**：rh:N6LQuaternion,real  
@@ -1090,6 +1191,34 @@ var N6LLnQuaternion = function(x, y, z) { }
   * **Parameters**：str:string  
   * **Returns**    ：convert from string:N6LLnQuaternion  
   
+* **N6LLnQuaternion.GetAccessor(it)**  
+  * **Description**：Get accessor with "x", "y", "z"  
+  * **Parameters**：it:string  
+  * **Returns**    ：accessor:int  
+  
+* **N6LLnQuaternion.Get(it)**  
+  * **Description**：Get each value with "x", "y", "z", "length",
+and "dimension" and return a reference to the internal array with "array".  
+  * **Parameters**：it:string  
+  * **Returns**    ：value:real  
+  
+* **N6LLnQuaternion.Set(it, val)**  
+  * **Description**：{ "x", "y", "z" } , set each value to val with val  
+  * **Parameters**：it:string:val:real  
+  * **Returns**    ：value:real  
+  
+* **N6LLnQuaternion.Create(rh, val)**  
+  * **Description**：Building on common conventions  
+  * **Parameters**：rh:Array:bh:bool:m:row:n:col  
+  * **Returns**    ：
+var l = new N6LLnQuaternion().Create([1,2,3]);
+var aryl = l.Get("array");
+var lenl = l.Get("length");
+var acsl = l.GetAccessor("y");
+//Zero-fill x→z//acs acts directly as an iterator
+for(; acsl < lenl; acsl++) aryl[acsl] = 0.0;
+console.log(aryl); // Result: [1, 0, 0]
+
 * **N6LLnQuaternion.Add(rh)**  
   * **Description**：add  
   * **Parameters**：rh:N6LLnQuaternion  

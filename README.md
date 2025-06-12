@@ -58,10 +58,10 @@ Experience NAS6LIB in action:
 In the link,  
 ijkl is the rotation vector to test  
 xyz is the Euler angle to check for consistency  
-* **Validity verified by automated testing**:
+* **Validity verified by automated testing**:  
 [https://nas6.net/testpoly_chktest/testpoly_chktest.htm](https://nas6.net/testpoly_chktest/testpoly_chktest.htm)  
 [Validity verified by automated testing Zip Files](https://nas6.net/testpoly_chktest.zip)  
-* **3D rotation test**:
+* **3D rotation test**:  
 [https://nas6.net/rot.htm](https://nas6.net/rot.htm)  
 [3D rotation test Zip Files](https://nas6.net/rottestWithX3DOMAndThreeJS.zip)  
   

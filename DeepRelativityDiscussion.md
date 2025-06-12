@@ -383,7 +383,7 @@ can be cross-verified and potentially refined by aligning them with the value of
 This implies that the importance of **the Schwarzschild radius** is synonymous with that of **the standard gravitational parameter** μ=GM.  
 μ is a fundamental physical quantity, derived from the mass and the gravitational constant,  
 representing the inherent strength of a gravitational source in classical orbital mechanics. The Schwarzschild radius  
-($r_s = \frac{2GM}{c^2}$ ) can be seen as this same μ, scaled by the speed of light squared,  
+$( r_s = \frac{2GM}{c^2} )$ can be seen as this same μ, scaled by the speed of light squared,  
 effectively expressing the **"strength of gravity"** in units of distance. Thus, both μ and $r_s$ equally represent the gravitational influence of a body,  
 though from different perspectives (classical vs. relativistic, or different unit systems).  
   

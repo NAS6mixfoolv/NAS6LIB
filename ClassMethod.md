@@ -860,6 +860,8 @@ it does not make sense in the processing speed
 Simply, it is intended only for convenient use  
 Homogeneous coordinate rotation of the unit x-axis  
 with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substituting  
+[Reference links in the wiki : Use Quaternions for Faster Rotation](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/Advanced-Topics#use-quaternions-for-faster-rotation)  
+
   
 * **N6LMatrix.RotAxisVec(rotvec)**  
   * **Description**：rotate axis(calc quaternion)  
@@ -877,6 +879,7 @@ does not make sense in the processing speed
 In addition, since the N6LQuaternion.RotAxisVec() converts from the vector to the quaternion  
 It is heavier than (N6LQuaternion.RotAxisQuat())  
 Simply, it is intended only for convenient use  
+[Reference links in the wiki : Use Quaternions for Faster Rotation](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/Advanced-Topics#use-quaternions-for-faster-rotation)  
   
 * **N6LMatrix.Homogeneous()**  
   * **Description**：Homogeneous  
@@ -1109,11 +1112,13 @@ note：Prevents it by the ± 1.0 less than the value of each of the elements whe
   * **Returns**    ：rotate axis:N6LQuaternion  
 note：Homogeneous coordinate rotation of the unit x-axis  
 with the axis new N6LVector (4, true) .UnitVec (1);, etc. and please by substituting  
+[Reference links in the wiki : Use Quaternions for Faster Rotation](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/Advanced-Topics#use-quaternions-for-faster-rotation)  
   
 * **N6LQuaternion.RotAxisVec(rotvec)**  
-  * **Description**：rotate axis(calc quaternion)**  
+  * **Description**：rotate axis(calc quaternion)  
   * **Parameters**：rotvec:N6LVector,rotate vector  
-  * **Returns**    ：rotate axis:N6LQuaternion<br>;  
+  * **Returns**    ：rotate axis:N6LQuaternion  
+[Reference links in the wiki : Use Quaternions for Faster Rotation](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/Advanced-Topics#use-quaternions-for-faster-rotation)  
   
 * **N6LQuaternion.Axis(axis, theta)**  
   * **Description**：rotate axis  

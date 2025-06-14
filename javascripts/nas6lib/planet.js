@@ -89,52 +89,106 @@ class N6LPlanet {
       for(i = 0; i < rh.m_hs.length; i++) this.m_hs[i] = rh.m_hs[i];
     }
   }
+
+    // --- Bit flag constants for comparison result ---
+    // --- 比較結果のビットフラグ定数 ---
+    static get DIFF_TYPE() { return 0x80000000; } // If the types are different // 型が異なる場合
+
+    // Individual property differences // 個別プロパティの差異
+    static get DIFF_PNO() { return (1 << 0); } // If m_pno is different // m_pno が異なる場合
+    static get DIFF_PNAME() { return (1 << 1); } // If m_pname is different // m_pname が異なる場合
+    static get DIFF_DAT0() { return (1 << 2); } // If m_dat0 is different (be careful when comparing Date objects) // m_dat0 が異なる場合 (Dateオブジェクトの比較に注意)
+    static get DIFF_NDAY() { return (1 << 3); } // If m_nday is different // m_nday が異なる場合
+    static get DIFF_A() { return (1 << 4); } // If m_a is different // m_a が異なる場合
+    static get DIFF_E() { return (1 << 5); } // If m_e is different // m_e が異なる場合
+    static get DIFF_L0() { return (1 << 6); } // If m_l0 is different // m_l0 が異なる場合
+    static get DIFF_NPERDAY() { return (1 << 7); } // If m_nperday is different // m_nperday が異なる場合
+    static get DIFF_RA() { return (1 << 8); } // If m_ra is different // m_ra が異なる場合
+    static get DIFF_RB() { return (1 << 9); } // If m_rb is different // m_rb が異なる場合
+    static get DIFF_T() { return (1 << 10); } // If m_t is different // m_t が異なる場合
+    static get DIFF_S() { return (1 << 11); } // If m_s is different // m_s が異なる場合
+    static get DIFF_I() { return (1 << 12); } // If m_i is different // m_i が異なる場合
+    static get DIFF_W() { return (1 << 13); } // If m_w is different // m_w が異なる場合
+    static get DIFF_MV() { return (1 << 14); } // If m_mv is different // m_mv が異なる場合
+    static get DIFF_M() { return (1 << 15); } // If m_m (mass) is different // m_m (mass) が異なる場合
+    static get DIFF_R() { return (1 << 16); } // If m_r (radius) is different // m_r (radius) が異なる場合
+
+    // Nested object differences (using child object's comparison result directly or by specific flag)
+    // It is possible to use the return value of Comp/EpsComp of N6LVector by ANDing it as it is, but
+    // Assign an independent bit to indicate which N6LVector is different as the return value of Comp/EpsComp of N6LPlanet
+    // ネストされたオブジェクトの差異 (子オブジェクトの比較結果を直接利用、または専用フラグ)
+    // N6LVectorのComp/EpsCompの返り値をそのままANDして使うことも可能ですが、
+    // N6LPlanetのComp/EpsCompの戻り値としてどのN6LVectorが異なるかを表す独立したビットを割り当てます
+    static get DIFF_X0() { return (1 << 17); } // If x0 (N6LVector) is different // x0 (N6LVector) が異なる場合
+    static get DIFF_V0() { return (1 << 18); } // v0 (N6LVector) is different // v0 (N6LVector) が異なる場合
+    static get DIFF_EX() { return (1 << 19); } // ex (N6LVector) is different // ex (N6LVector) が異なる場合
+
+    // Remaining properties // 残りのプロパティ
+    static get DIFF_EL() { return (1 << 20); } // m_el is different // m_el が異なる場合
+    static get DIFF_D() { return (1 << 21); } // m_d is different // m_d が異なる場合
+    static get DIFF_ASC() { return (1 << 22); } // m_asc is different // m_asc が異なる場合
+    static get DIFF_HS_LENGTH() { return (1 << 23); } // m_hs is different length (see below for comparing array elements) // m_hs の長さが異なる場合 (配列要素の比較は後述)
+    static get DIFF_REV() { return (1 << 24); } // m_rev is different // m_rev が異なる場合
+
+    // Physical Model Constants // 物理モデルの定数
+    static get DIFF_CNST_G() { return (1 << 25); } // If CNST_G is different // CNST_G が異なる場合
+    static get DIFF_CNST_C() { return (1 << 26); } // If CNST_C is different // CNST_C が異なる場合
+    static get DIFF_CNST_AU() { return (1 << 27); } // If CNST_AU is different // CNST_AU が異なる場合
+    static get DIFF_CNST_DR() { return (1 << 28); } // If CNST_DR is different // CNST_DR が異なる場合
+    static get DIFF_CNST_TAU() { return (1 << 29); } // If CNST_TAU is different // CNST_TAU が異なる場合
+
+    // 0x80000000 is reserved for DIFF_TYPE
+    // Up to the 31st bit can be used (within the signed 32-bit integer range of JavaScript)
+    // If there are properties beyond that, consider using multiple ret values ??or returning the results in an array.
+    // 0x80000000 はDIFF_TYPEに予約済み
+    // 31ビット目まで利用可能 (JavaScriptの符号付き32ビット整数範囲内)
+    // それ以降のプロパティがある場合は、複数のret値を使うか、配列で結果を返すことを検討
+
+
     //比較関数：lhとrhの値が違う項目のビット立て
     Comp(rh) {
         var ret = 0;
         var i;
         if(rh.typename == "N6LPlanet"){
-            var l = new N6LPlanet(this);
-            var r = new N6LPlanet(rh);
-            if(l.m_pno != r.m_pno) ret |= (1 << 0);
-            if(l.m_pname != r.m_pname) ret |= (1 << 1);
-            if(l.m_dat0 != r.m_dat0) ret |= (1 << 2);
-            if(l.m_nday != r.m_nday) ret |= (1 << 3);
-            if(l.m_a != r.m_a) ret |= (1 << 4);
-            if(l.m_e != r.m_e) ret |= (1 << 5);
-            if(l.m_l0 != r.m_l0) ret |= (1 << 6);
-            if(l.m_nperday != r.m_nperday) ret |= (1 << 7);
-            if(l.m_ra != r.m_ra) ret |= (1 << 8);
-            if(l.m_rb != r.m_rb) ret |= (1 << 9);
-            if(l.m_t != r.m_t) ret |= (1 << 10);
-            if(l.m_s != r.m_s) ret |= (1 << 11);
-            if(l.m_i != r.m_i) ret |= (1 << 12);
-            if(l.m_w != r.m_w) ret |= (1 << 13);
-            if(l.m_mv != r.m_mv) ret |= (1 << 14);
-            if(l.m_m != r.m_m) ret |= (1 << 15);
-            if(l.m_r != r.m_r) ret |= (1 << 16);
-            if(l.x0 != r.x0) ret |= (1 << 17);
-            if(l.v0 != r.v0) ret |= (1 << 18);
-            if(l.ex != r.ex) ret |= (1 << 19);
-            if(l.m_el != r.m_el) ret |= (1 << 20);
-            if(l.m_d != r.m_d) ret |= (1 << 21);
-            if(l.m_asc != r.m_asc) ret |= (1 << 22);
-            if(l.m_hs.length != r.m_hs.length) ret |= (1 << 23);
-            if(l.m_rev != r.m_rev) ret |= (1 << 24);
-            if(l.CNST_G != r.CNST_G) ret |= (1 << 25);
-            if(l.CNST_C != r.CNST_C) ret |= (1 << 26);
-            if(l.CNST_AU != r.CNST_AU) ret |= (1 << 27);
-            if(l.CNST_DR != r.CNST_DR) ret |= (1 << 28);
-            if(l.CNST_TAU != r.CNST_TAU) ret |= (1 << 29);
+            if(this.m_pno !== rh.m_pno) ret |= N6LPlanet.DIFF_PNO;
+            if(this.m_pname !== rh.m_pname) ret |= N6LPlanet.DIFF_PNAME;
+            if(this.m_dat0.getTime() !== rh.m_dat0.getTime()) ret |= N6LPlanet.DIFF_DAT0;
+            if(this.m_nday !== rh.m_nday) ret |= N6LPlanet.DIFF_NDAY;
+            if(this.m_a !== rh.m_a) ret |= N6LPlanet.DIFF_A;
+            if(this.m_e !== rh.m_e) ret |= N6LPlanet.DIFF_E;
+            if(this.m_l0 !== rh.m_l0) ret |= N6LPlanet.DIFF_L0;
+            if(this.m_nperday !== rh.m_nperday) ret |= N6LPlanet.DIFF_NPERDAY;
+            if(this.m_ra !== rh.m_ra) ret |= N6LPlanet.DIFF_RA;
+            if(this.m_rb !== rh.m_rb) ret |= N6LPlanet.DIFF_RB;
+            if(this.m_t !== rh.m_t) ret |= N6LPlanet.DIFF_T;
+            if(this.m_s !== rh.m_s) ret |= N6LPlanet.DIFF_S;
+            if(this.m_i !== rh.m_i) ret |= N6LPlanet.DIFF_I;
+            if(this.m_w !== rh.m_w) ret |= N6LPlanet.DIFF_W;
+            if(this.m_mv !== rh.m_mv) ret |= N6LPlanet.DIFF_MV;
+            if(this.m_m !== rh.m_m) ret |= N6LPlanet.DIFF_M;
+            if(this.m_r !== rh.m_r) ret |= N6LPlanet.DIFF_R;
+            if(this.x0 !== rh.x0) ret |= N6LPlanet.DIFF_X0;
+            if(this.v0 !== rh.v0) ret |= N6LPlanet.DIFF_V0;
+            if(this.ex !== rh.ex) ret |= N6LPlanet.DIFF_EX;
+            if(this.m_el !== rh.m_el) ret |= N6LPlanet.DIFF_EL;
+            if(this.m_d !== rh.m_d) ret |= N6LPlanet.DIFF_D;
+            if(this.m_asc !== rh.m_asc) ret |= N6LPlanet.DIFF_ASC;
+            if(this.m_hs.length !== rh.m_hs.length) ret |= N6LPlanet.DIFF_HS_LENGTH;
+            if(this.m_rev !== rh.m_rev) ret |= N6LPlanet.DIFF_REV;
+            if(this.CNST_G !== rh.CNST_G) ret |= N6LPlanet.DIFF_CNST_G;
+            if(this.CNST_C !== rh.CNST_C) ret |= N6LPlanet.DIFF_CNST_C;
+            if(this.CNST_AU !== rh.CNST_AU) ret |= N6LPlanet.DIFF_CNST_AU;
+            if(this.CNST_DR !== rh.CNST_DR) ret |= N6LPlanet.DIFF_CNST_DR;
+            if(this.CNST_TAU !== rh.CNST_TAU) ret |= N6LPlanet.DIFF_CNST_TAU;
         }
-        else ret |= 0x80000000;
+        else ret |= N6LPlanet.DIFF_TYPE;
         return ret;
     };
  
     //比較関数：lhとrhの値が同じか？
     Equal(rh) {
         var ret = this.Comp(rh);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 
@@ -144,47 +198,45 @@ class N6LPlanet {
         var ret = 0;
         var i;
         if(rh.typename == "N6LPlanet"){
-            var l = new N6LPlanet(this);
-            var r = new N6LPlanet(rh);
-            if(l.m_pno < r.m_pno - eps || r.m_pno + eps < l.m_pno) ret |= (1 << 0);
-            if(l.m_pname != r.m_pname) ret |= (1 << 1);
-            if(l.m_dat0 != r.m_dat0) ret |= (1 << 2);
-            if(l.m_nday < r.m_nday - eps || r.m_nday + eps < l.m_nday) ret |= (1 << 3);
-            if(l.m_a < r.m_a - eps || r.m_a + eps < l.m_a) ret |= (1 << 4);
-            if(l.m_e < r.m_e - eps || r.m_e + eps < l.m_e) ret |= (1 << 5);
-            if(l.m_l0 < r.m_l0 - eps || r.m_l0 + eps < l.m_l0) ret |= (1 << 6);
-            if(l.m_nperday < r.m_nperday - eps || r.m_nperday + eps < l.m_nperday) ret |= (1 << 7);
-            if(l.m_ra < r.m_ra - eps || r.m_ra + eps < l.m_ra) ret |= (1 << 8);
-            if(l.m_rb < r.m_rb - eps || r.m_rb + eps < l.m_rb) ret |= (1 << 9);
-            if(l.m_t < r.m_t - eps || r.m_t + eps < l.m_t) ret |= (1 << 10);
-            if(l.m_s < r.m_s - eps || r.m_s + eps < l.m_s) ret |= (1 << 11);
-            if(l.m_i < r.m_i - eps || r.m_i + eps < l.m_i) ret |= (1 << 12);
-            if(l.m_w < r.m_w - eps || r.m_w + eps < l.m_w) ret |= (1 << 13);
-            if(l.m_mv < r.m_mv - eps || r.m_mv + eps < l.m_mv) ret |= (1 << 14);
-            if(l.m_m < r.m_m - eps || r.m_m + eps < l.m_m) ret |= (1 << 15);
-            if(l.m_r < r.m_r - eps || r.m_r + eps < l.m_r) ret |= (1 << 16);
-            if(!l.x0.EpsEqual(r.x0, eps)) ret |= (1 << 17);
-            if(!l.x0.EpsEqual(r.v0, eps)) ret |= (1 << 18);
-            if(!l.ex.EpsEqual(r.ex, eps)) ret |= (1 << 19);
-            if(l.m_el < r.m_el - eps || r.m_el + eps < l.m_el) ret |= (1 << 20);
-            if(l.m_d < r.m_d - eps || r.m_d + eps < l.m_d) ret |= (1 << 21);
-            if(l.m_asc < r.m_asc - eps || r.m_asc + eps < l.m_asc) ret |= (1 << 22);
-            if(l.m_hs.length != r.m_hs.length) ret |= (1 << 23);
-            if(l.m_rev != r.m_rev) ret |= (1 << 24);
-            if(l.CNST_G != r.CNST_G) ret |= (1 << 25);
-            if(l.CNST_C != r.CNST_C) ret |= (1 << 26);
-            if(l.CNST_AU != r.CNST_AU) ret |= (1 << 27);
-            if(l.CNST_DR != r.CNST_DR) ret |= (1 << 28);
-            if(l.CNST_TAU != r.CNST_TAU) ret |= (1 << 29);
+            if(this.m_pno !== rh.m_pno) ret |= N6LPlanet.DIFF_PNO;
+            if(this.m_pname !== rh.m_pname) ret |= N6LPlanet.DIFF_PNAME;
+            if(Math.abs(this.m_dat0.getTime() - rh.m_dat0.getTime()) > eps) ret |= N6LPlanet.DIFF_DAT0;
+            if(this.m_nday < rh.m_nday - eps || rh.m_nday + eps < this.m_nday) ret |= N6LPlanet.DIFF_NDAY;
+            if(this.m_a < rh.m_a - eps || rh.m_a + eps < this.m_a) ret |= N6LPlanet.DIFF_A;
+            if(this.m_e < rh.m_e - eps || rh.m_e + eps < this.m_e) ret |= N6LPlanet.DIFF_E;
+            if(this.m_l0 < rh.m_l0 - eps || rh.m_l0 + eps < this.m_l0) ret |= N6LPlanet.DIFF_L0;
+            if(this.m_nperday < rh.m_nperday - eps || rh.m_nperday + eps < this.m_nperday) ret |= N6LPlanet.DIFF_NPERDAY;
+            if(this.m_ra < rh.m_ra - eps || rh.m_ra + eps < this.m_ra) ret |= N6LPlanet.DIFF_RA;
+            if(this.m_rb < rh.m_rb - eps || rh.m_rb + eps < this.m_rb) ret |= N6LPlanet.DIFF_RB;
+            if(this.m_t < rh.m_t - eps || rh.m_t + eps < this.m_t) ret |= N6LPlanet.DIFF_T;
+            if(this.m_s < rh.m_s - eps || rh.m_s + eps < this.m_s) ret |= N6LPlanet.DIFF_S;
+            if(this.m_i < rh.m_i - eps || rh.m_i + eps < this.m_i) ret |= N6LPlanet.DIFF_I;
+            if(this.m_w < rh.m_w - eps || rh.m_w + eps < this.m_w) ret |= N6LPlanet.DIFF_W;
+            if(this.m_mv < rh.m_mv - eps || rh.m_mv + eps < this.m_mv) ret |= N6LPlanet.DIFF_MV;
+            if(this.m_m < rh.m_m - eps || rh.m_m + eps < this.m_m) ret |= N6LPlanet.DIFF_M;
+            if(this.m_r < rh.m_r - eps || rh.m_r + eps < this.m_r) ret |= N6LPlanet.DIFF_R;
+            if(!this.x0.EpsEqual(rh.x0, eps)) ret |= N6LPlanet.DIFF_X0;
+            if(!this.x0.EpsEqual(rh.v0, eps)) ret |= N6LPlanet.DIFF_V0;
+            if(!this.ex.EpsEqual(rh.ex, eps)) ret |= N6LPlanet.DIFF_EX;
+            if(this.m_el < rh.m_el - eps || rh.m_el + eps < this.m_el) ret |= N6LPlanet.DIFF_EL;
+            if(this.m_d < rh.m_d - eps || rh.m_d + eps < this.m_d) ret |= N6LPlanet.DIFF_D;
+            if(this.m_asc < rh.m_asc - eps || rh.m_asc + eps < this.m_asc) ret |= N6LPlanet.DIFF_ASC;
+            if(this.m_hs.length != rh.m_hs.length) ret |= N6LPlanet.DIFF_HS_LENGTH;
+            if(this.m_rev != rh.m_rev) ret |= N6LPlanet.DIFF_REV;
+            if(this.CNST_G != rh.CNST_G) ret |= N6LPlanet.DIFF_CNST_G;
+            if(this.CNST_C != rh.CNST_C) ret |= N6LPlanet.DIFF_CNST_C;
+            if(this.CNST_AU != rh.CNST_AU) ret |= N6LPlanet.DIFF_CNST_AU;
+            if(this.CNST_DR != rh.CNST_DR) ret |= N6LPlanet.DIFF_CNST_DR;
+            if(this.CNST_TAU != rh.CNST_TAU) ret |= N6LPlanet.DIFF_CNST_TAU;
         }
-        else ret |= 0x80000000;
+        else ret |= N6LPlanet.DIFF_TYPE;
         return ret;
     };
  
     //比較関数：lhとrhの値が同じか？epsで同値に幅
     EpsEqual(rh, eps) {
         var ret = this.EpsComp(rh, eps);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 

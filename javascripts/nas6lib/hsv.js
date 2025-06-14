@@ -58,20 +58,25 @@ class N6LHsv {
         }
     }
 
+    // --- Bit flag constants for comparison result ---
+    // --- 比較結果のビットフラグ定数 ---
+    static get DIFF_TYPE() { return 0x80000000; } // If the types are different // 型が異なる場合
+    DIFF_ARGB(i) { return (0x00000001 << i); } // If the argb[i] are different // argb[i]が異なる場合
+
     Comp(rh) {
         var ret = 0;
         this.ahsv = this.toHsv(this.argb);
         var i;
-        if(rh.typename == "N6LHsv"){
-            for(i = 0; i < this.argb.length; i++) if(this.argb[i] != rh.argb[i]) ret |= (1 << i);
+        if(rh.typename === "N6LHsv"){
+            for(i = 0; i < this.argb.length; i++) if(this.argb[i] !== rh.argb[i]) ret |= this.DIFF_ARGB(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LHsv.DIFF_TYPE;
         return ret;
     };
 
     Equal(rh) {
         var ret = this.Comp(rh);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 

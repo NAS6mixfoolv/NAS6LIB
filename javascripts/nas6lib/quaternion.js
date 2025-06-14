@@ -52,19 +52,24 @@ class N6LQuaternion {
     }
   }
 
+    // --- Bit flag constants for comparison result ---
+    // --- 比較結果のビットフラグ定数 ---
+    static get DIFF_TYPE() { return 0x80000000; } // If the types are different // 型が異なる場合
+    DIFF_QX(i) { return (0x00000001 << i); } // If the q.x[i] are different // q.x[i]が異なる場合
+
     Comp(rh) {
         var ret = 0;
         var i;
-        if(rh && rh.typename == "N6LQuaternion"){
-            for(i = 0; i < 4; i++) if(this.q.x[i] != rh.q.x[i]) ret |= (1 << i);
+        if(rh && rh.typename === "N6LQuaternion"){
+            for(i = 0; i < 4; i++) if(this.q.x[i] != rh.q.x[i]) ret |= this.DIFF_QX(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LQuaternion.DIFF_TYPE;
         return ret;
     };
  
     Equal(rh) {
         var ret = this.Comp(rh);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 
@@ -72,16 +77,16 @@ class N6LQuaternion {
         if(!eps) eps = 1e-6;
         var ret = 0;
         var i;
-        if(rh && rh.typename == "N6LQuaternion"){
-            for(i = 0; i < 4; i++) if(this.q.x[i] < rh.q.x[i] - eps || rh.q.x[i] + eps < this.q.x[i]) ret |= (1 << i);
+        if(rh && rh.typename === "N6LQuaternion"){
+            for(i = 0; i < 4; i++) if(this.q.x[i] < rh.q.x[i] - eps || rh.q.x[i] + eps < this.q.x[i]) ret |= this.DIFF_QX(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LQuaternion.DIFF_TYPE;
         return ret;
     };
  
     EpsEqual(rh, eps) {
         var ret = this.EpsComp(rh, eps);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 
@@ -527,19 +532,24 @@ class N6LLnQuaternion {
 
   }
 
+    // --- Bit flag constants for comparison result ---
+    // --- 比較結果のビットフラグ定数 ---
+    static get DIFF_TYPE() { return 0x80000000; } // If the types are different // 型が異なる場合
+    DIFF_QX(i) { return (0x00000001 << i); } // If the q.x[i] are different // q.x[i]が異なる場合
+
     Comp(rh) {
         var ret = 0;
         var i;
-        if(rh && rh.typename == "N6LLnQuaternion"){
-            for(i = 0; i < 3; i++) if(this.q.x[i] != rh.q.x[i]) ret |= (1 << i);
+        if(rh && rh.typename === "N6LLnQuaternion"){
+            for(i = 0; i < 3; i++) if(this.q.x[i] != rh.q.x[i]) ret |= this.DIFF_QX(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LLnQuaternion.DIFF_TYPE;
         return ret;
     };
  
     Equal(rh) {
         var ret = this.Comp(rh);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 
@@ -547,16 +557,16 @@ class N6LLnQuaternion {
         if(!eps) eps = 1e-6;
         var ret = 0;
         var i;
-        if(rh && rh.typename == "N6LLnQuaternion"){
-            for(i = 0; i < 3; i++) if(this.q.x[i] < rh.q.x[i] - eps || rh.q.x[i] + eps < this.q.x[i]) ret |= (1 << i);
+        if(rh && rh.typename === "N6LLnQuaternion"){
+            for(i = 0; i < 3; i++) if(this.q.x[i] < rh.q.x[i] - eps || rh.q.x[i] + eps < this.q.x[i]) ret |= this.DIFF_QX(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LLnQuaternion.DIFF_TYPE;
         return ret;
     };
  
     EpsEqual(rh, eps) {
         var ret = this.EpsComp(rh, eps);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 

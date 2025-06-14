@@ -67,21 +67,27 @@ class N6LMatrix {
 
   }
 
+    // --- Bit flag constants for comparison result ---
+    // --- 比較結果のビットフラグ定数 ---
+    static get DIFF_TYPE() { return 0x80000000; } // If the types are different // 型が異なる場合
+    static get DIFF_LENGTH() { return 0x00000001; } // If the array lengths are different // 配列の長さが異なる場合
+    DIFF_X(i) { return (0x00000002 << i); } // If the x[i] are different // x[i]が異なる場合
+
     Comp(rh) {
         var ret = 0;
         var i;
-        if(rh && rh.typename == "N6LMatrix"){
-            if(this.x.length != rh.x.length) ret |= 1;
+        if(rh && rh.typename === "N6LMatrix"){
+            if(this.x.length !== rh.x.length) ret |= N6LMatrix.DIFF_LENGTH;
             for(i = 0; i < this.x.length; i++)
-                if(this.x[i].Equal(rh.x[i]) == false) ret |= (2 << i);
+                if(this.x[i].Equal(rh.x[i]) === false) ret |= this.DIFF_X(i);//N6LVector.Comp
         }
-        else ret |= 0x80000000;
+        else ret |= N6LMatrix.DIFF_TYPE;
         return ret;
     };
  
     Equal(rh) {
         var ret = this.Comp(rh);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 
@@ -90,19 +96,21 @@ class N6LMatrix {
         var ret = 0;
         var i;
         var j = 0;
+        // If bbb is true, skip comparing x[0] (e.g. for the W component of a homogeneous coordinate system)
+        // bbbがtrueの場合、x[0]の比較をスキップする (例: 同次座標系のW成分のため)
         if(bbb) j = 1;
-        if(rh && rh.typename == "N6LMatrix"){
-            if(this.x.length != rh.x.length) ret |= 1;
+        if(rh && rh.typename === "N6LMatrix"){
+            if(this.x.length !== rh.x.length) ret |= N6LMatrix.DIFF_LENGTH;
             for(i = j; i < this.x.length; i++)
-                if(this.x[i].EpsEqual(rh.x[i], eps) == false) ret |= (2 << i);
+                if(this.x[i].EpsEqual(rh.x[i], eps) === false) ret |= this.DIFF_X(i);//N6LVector.Comp
         }
-        else ret |= 0x80000000;
+        else ret |= N6LMatrix.DIFF_TYPE;
         return ret;
     };
  
     EpsEqual(rh, eps, bbb) {
         var ret = this.EpsComp(rh, eps, bbb);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 

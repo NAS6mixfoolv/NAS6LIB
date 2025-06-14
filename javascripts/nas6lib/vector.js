@@ -52,22 +52,28 @@ class N6LVector {
     }
   } 
 
+    // --- Bit flag constants for comparison result ---
+    // --- 比較結果のビットフラグ定数 ---
+    static get DIFF_TYPE() { return 0x80000000; } // If the types are different // 型が異なる場合
+    static get DIFF_BHOMO() { return 0x00000001; } // If the bHomo are different // bHomoが異なる場合
+    static get DIFF_LENGTH() { return 0x00000002; } // If the array lengths are different // 配列の長さが異なる場合
+    DIFF_X(i) { return (0x00000004 << i); } // If the x[i] are different // x[i]が異なる場合
 
     Comp(rh) {
         var ret = 0;
         var i;
-        if(rh.typename == "N6LVector"){
-            if(this.bHomo != rh.bHomo) ret |= 1;
-            if(this.x.length != rh.x.length) ret |= 2;
-            for(i = 0; i < this.x.length; i++) if(this.x[i] != rh.x[i]) ret |= (4 << i);
+        if(rh.typename === "N6LVector"){
+            if(this.bHomo !== rh.bHomo) ret |= N6LVector.DIFF_BHOMO;
+            if(this.x.length !== rh.x.length) ret |= N6LVector.DIFF_LENGTH;
+            for(i = 0; i < this.x.length; i++) if(this.x[i] !== rh.x[i]) ret |= this.DIFF_X(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LVector.DIFF_TYPE;
         return ret;
     };
 
     Equal(rh) {
         var ret = this.Comp(rh);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 
@@ -76,19 +82,21 @@ class N6LVector {
         var ret = 0;
         var i;
         var j = 0;
+        // If bbb is true, skip comparing x[0] (e.g. for the W component of a homogeneous coordinate system)
+        // bbbがtrueの場合、x[0]の比較をスキップする (例: 同次座標系のW成分のため)
         if(bbb) j = 1;
-        if(rh.typename == "N6LVector"){
-            if(this.bHomo != rh.bHomo) ret |= 1;
-            if(this.x.length != rh.x.length) ret |= 2;
-            for(i = j; i < this.x.length; i++) if(this.x[i] < rh.x[i] - eps || rh.x[i] + eps < this.x[i]) ret |= (4 << i);
+        if(rh.typename === "N6LVector"){
+            if(this.bHomo !== rh.bHomo) ret |= N6LVector.DIFF_BHOMO;
+            if(this.x.length !== rh.x.length) ret |= N6LVector.DIFF_LENGTH;
+            for(i = j; i < this.x.length; i++) if(this.x[i] < rh.x[i] - eps || rh.x[i] + eps < this.x[i]) ret |= this.DIFF_X(i);
         }
-        else ret |= 0x80000000;
+        else ret |= N6LVector.DIFF_TYPE;
         return ret;
     };
 
     EpsEqual(rh, eps, bbb) {
         var ret = this.EpsComp(rh, eps, bbb);
-        if(ret == 0) return true;
+        if(ret === 0) return true;
         return false;
     };
 

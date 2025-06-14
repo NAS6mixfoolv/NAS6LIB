@@ -157,9 +157,9 @@ NAS6LIB_1_9_2 (2024/04/09): Added comment
 NAS6LIB_2_0_0 (2025/05/25): Improved error handling  
 NAS6LIB_2_0_1 (2025/05/26): Adaptation to the X3DOM environment  
 NAS6LIB_2_0_2 (2025/06/08): N6LQuaternion bugfix  
-NAS6LIB_2_0_3 (2025/06/10): N6LQuaternion & N6LLnQuaternion more bugfix
-NAS6LIB_2_1_0 (2025/06/11): add GetAccessor/Get/Set/Create
-NAS6LIB_2_1_1 (2025/06/14): refine Comp/Equal/EpsComp/EpsEqual
+NAS6LIB_2_0_3 (2025/06/10): N6LQuaternion & N6LLnQuaternion more bugfix  
+NAS6LIB_2_1_0 (2025/06/11): add GetAccessor/Get/Set/Create  
+NAS6LIB_2_1_1 (2025/06/14): refine Comp/Equal/EpsComp/EpsEqual  
 License: GPL  
   
   

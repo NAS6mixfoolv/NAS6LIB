@@ -260,10 +260,6 @@ Row N1 is the row for the x-axis component of the rotation matrix (local coordin
 Row N2 is the row for the y-axis component of the rotation matrix (local coordinate system).  
 Row N3 is the row for the z-axis component of the rotation matrix (local coordinate system).  
   
-Key Benefits of Homogeneous Coordinates  
-Using a homogeneous coordinate system and 4x4 matrices allows various 3D graphics transformations to be handled  
-as unified linear algebra operations. The benefits are immense:  
-  
 note:  
 Vector × matrix calculations are column-major calculations  
 Matrix × vector calculations are row-major calculations  
@@ -275,6 +271,10 @@ they can also be extracted straightforwardly
 In this case, the row-major notation for the formula is mainly N6LMatrix.Mul(N6LVector),  
 but it is also possible to write it as column-major notation  
 N6LVector.Mul(N6LMatrix) depending on the situation.  
+  
+Key Benefits of Homogeneous Coordinates  
+Using a homogeneous coordinate system and 4x4 matrices allows various 3D graphics transformations to be handled  
+as unified linear algebra operations. The benefits are immense:  
   
 * **Unified Transformation Representation:**  
 

@@ -1,6 +1,8 @@
 ﻿//Programed by NAS6
 //timer.js
 
+var DISP_NAS6LIB_COPYRIGHT = false;
+
 class N6LTimer {
 
   constructor(id) {
@@ -85,6 +87,10 @@ class N6LTimerMan {
 
 
 function TMUpdate(timerman) {
+  if(DISP_NAS6LIB_COPYRIGHT){
+    window.alert("powerd by NAS6LIB : licence : GPL-3.0\ncopyright : NAS6 : contact : nas6@nas6.net");
+    DISP_NAS6LIB_COPYRIGHT = false;
+  }
   if(timerman.enable == true){
     for(var m in timerman.timer){
       var tm = timerman.timer[m];

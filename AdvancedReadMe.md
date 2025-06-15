@@ -219,22 +219,55 @@ provided you consistently align your internal conventions.
 
 While homogeneous transformation matrices are typically represented as:  
   
-M = |ROT T|  
-　　|0　　1|  
+````math
+
+M =
+\begin{pmatrix}
+ROT & T \\
+0 & 1
+\end{pmatrix}
+
+````
   
 where ROT is the rotation component and T is the translation component, N6L adopts a slightly different,  
 though functionally equivalent, row-major layout for its internal representation. This specific arrangement does not cause any calculation issues.  
   
 N6L's expected matrix layout (row-major):  
   
-M = |1　　0　0　　0|　// Row 0: W-component (Homogeneous scale)  
-　　|Tx M00 M01 M02| // Row 1: Translation X component, followed by Rotation/Scale X-axis components (X-axis of local basis)  
-　　|Ty M10 M11 M12| // Row 2: Translation Y component, followed by Rotation/Scale Y-axis components (Y-axis of local basis)  
-　　|Tz M20 M21 M22| // Row 3: Translation Z component, followed by Rotation/Scale Z-axis components (Z-axis of local basis)  
+````math
+
+M =
+\begin{pmatrix}
+1 & 0 & 0 & 0 \\
+T_0 & ROT_{00} & ROT_{01} & ROT_{02} \\
+T_1 & ROT_{10} & ROT_{11} & ROT_{12} \\
+T_2 & ROT_{20} & ROT_{21} & ROT_{22}
+\end{pmatrix}
+
+````
+  
+Mij is the rotational transformation component.  
+Tk is the translational component.  
+Row N0 is the w component row.  
+Row N1 is the row for the x-axis component of the rotation matrix (local coordinate system).  
+Row N2 is the row for the y-axis component of the rotation matrix (local coordinate system).  
+Row N3 is the row for the z-axis component of the rotation matrix (local coordinate system).  
   
 Key Benefits of Homogeneous Coordinates  
 Using a homogeneous coordinate system and 4x4 matrices allows various 3D graphics transformations to be handled  
 as unified linear algebra operations. The benefits are immense:  
+  
+note:  
+Vector × matrix calculations are column-major calculations  
+Matrix × vector calculations are row-major calculations  
+The advantage of the row-major calculation format used by NAS6LIB  
+is that each axis of the local rotation transformation can be extracted straightforwardly as a row  
+The translation components in this case are arranged in columns  
+But by multiplying them with a homogeneous zero vector,  
+they can also be extracted straightforwardly  
+In this case, the row-major notation for the formula is mainly N6LMatrix.Mul(N6LVector),  
+but it is also possible to write it as column-major notation  
+N6LVector.Mul(N6LMatrix) depending on the situation.  
   
 * **Unified Transformation Representation:**  
 

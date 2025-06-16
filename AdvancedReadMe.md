@@ -321,6 +321,49 @@ By using N6LXXX.SetHomo(rh) // setting the bHomo flag, N6LXXX.ToHomo() // adding
 and N6LXXX.ToNormal() // removing the w element, etc,  
 you can manipulate the bHomo flag relatively safely. 
   
+* **Behavior of the bHomo flag in N6L**  
+  
+The behavior of the bHomo flag is complicated, but to explain why it was introduced  
+For example, the implementation of N6LVector.Abs() is as follows  
+```JavaScrpt
+//square absolute//absolute squared
+SquareAbs() {
+var sum = 0.0;
+var i = 0;
+var l = new N6LVector(this);
+if(l.bHomo) {
+i = 1;
+l = l.Homogeneous();
+}
+for(; i < l.x.length; i++) sum += l.x[i] * l.x[i];
+return sum;
+};
+
+//absolute//absolute value
+Abs() {
+return Math.sqrt(this.SquareAbs());
+};
+```
+That is, the bHomo flag determines whether to skip the w element,  
+and if this condition exists, the same N6LVector is treated as a homogeneous vector or a non-homogeneous vector,  
+and if it is a homogeneous vector, the w element is not included in the absolute value,  
+and this method has the advantage that it can be automatically determined.  
+However, this method also has some problems. In N6LMatrix, data is stored as  
+an N6LVector array in the N6LMatrix.x element,but this data storage requires  
+that the bHomo of the vector element of the N6LVector array is false  
+by default (behavior in normal matrix calculations).  
+Therefore, there are two ways to obtain the rows of a matrix, as follows.  
+```JavaScrpt
+var m = new N6LMatrix(4).UnitMat();
+var v1 = m.x[1]; //Get local x-axis bHomo=false
+var v2 = m.GetRow(1); //Get local x-axis bHomo=true
+```
+If the bHomo flag of the acquired N6LVector is not set as expected by the implementation requirements,  
+a bug may occur when handling the w element.  
+In my experience, I have a habit of taking m.x[1] directly,  
+and there have been cases where bHomo=false unintentionally caused malfunctions.  
+The solution to such cases is to explicitly call SetHomo(true or false) after acquiring the vector from the matrix.  
+  
 ---  
   
 ## Custom Keyboard Management Class (`keyboard.js`)  

@@ -328,20 +328,20 @@ For example, the implementation of N6LVector.Abs() is as follows
 ```JavaScrpt
 //square absolute//absolute squared
 SquareAbs() {
-var sum = 0.0;
-var i = 0;
-var l = new N6LVector(this);
-if(l.bHomo) {
-i = 1;
-l = l.Homogeneous();
-}
-for(; i < l.x.length; i++) sum += l.x[i] * l.x[i];
-return sum;
+  var sum = 0.0;
+  var i = 0;
+  var l = new N6LVector(this);
+  if(l.bHomo) {
+    i = 1;
+    l = l.Homogeneous();
+  }
+  for(; i < l.x.length; i++) sum += l.x[i] * l.x[i];
+  return sum;
 };
 
 //absolute//absolute value
 Abs() {
-return Math.sqrt(this.SquareAbs());
+  return Math.sqrt(this.SquareAbs());
 };
 ```
 That is, the bHomo flag determines whether to skip the w element,  

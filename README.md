@@ -61,7 +61,7 @@ xyz is the Euler angle to check for consistency
 
 ## Zip Files Links
 
-[NAS6LIB_2_1_1 Zip Files](https://nas6.net/NAS6LIB_2_1_1_javascripts.zip)  
+[NAS6LIB_2_1_2 Zip Files](https://nas6.net/NAS6LIB_2_1_2_javascripts.zip)  
 [SolarSystem DEMO Zip Files](https://nas6.net/solarsystem.zip)  
 [Satellite DEMO Zip Files](https://nas6.net/satellite.zip)  
 [Simple Template Zip Files](https://nas6.net/TestPage.zip)  

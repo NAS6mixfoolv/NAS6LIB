@@ -156,7 +156,7 @@ NAS6LIB_2_0_2 (2025/06/08): N6LQuaternion bugfix
 NAS6LIB_2_0_3 (2025/06/10): N6LQuaternion & N6LLnQuaternion more bugfix  
 NAS6LIB_2_1_0 (2025/06/11): add GetAccessor/Get/Set/Create  
 NAS6LIB_2_1_1 (2025/06/14): refine Comp/Equal/EpsComp/EpsEqual  
-NAS6LIB_2_1_2 (2025/06/17): Licensing arrangement
+NAS6LIB_2_1_2 (2025/06/17): Licensing arrangement  
 License: GPL-3.0  
   
   

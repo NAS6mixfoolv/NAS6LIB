@@ -45,8 +45,8 @@ a graphical page like this is created.
 Experience NAS6LIB in action:  
   
 * **Main Demo Page**: [https://nas6mixfoolv.github.io/NAS6LIB/](https://nas6mixfoolv.github.io/NAS6LIB/)  
-* **Solar System Planet Orbit Simulator**: [https://nas6.net/solarsystem/](https://nas6.net/solarsystem/)
-* **Satellite Orbit Simulator**: [https://nas6.net/satellite/](https://nas6.net/satellite/)  
+* **Solar System Planet Orbit Simulator**: [https://nas6.net/solarsystem/](https://nas6.net/solarsystem.htm)
+* **Satellite Orbit Simulator**: [https://nas6.net/satellite/](https://nas6.net/satellite.htm)  
 * **Fresnel Effect**: [Fresnel Effect DEMO](https://nas6.net/javascripts/threejs/examples/WaterPlaneTest.htm)  
 
 ## Automated Test  

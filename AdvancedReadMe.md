@@ -207,9 +207,10 @@ for the planets in the solar system.
 note:  
 This is an explanation of homogeneous coordinates defined  
 in the order w, x, y, z, .... The order is different, but the function is the same...  
-NAS6LIB comes from the DirectX environment rather than OpenGL, and so employs a left-handed coordinate system,  
-but right- and left-handed transformations should not pose any major problems if you are careful  
-in their straightforward application and keep system-specific calculations properly isolated.  
+Since NAS6LIB is not a renderer, there is no right-handed or left-handed system,  
+and it mainly follows the coordinate system of the renderer.  
+However, the cross product of vectors is defined in the right-handed system,  
+and as long as it follows the coordinate system of the renderer, no major problems will occur.  
   
 This section explains how N6L handles homogeneous coordinates and the significance of the bHomo flag,  
 which dictates special behaviors within the library.  

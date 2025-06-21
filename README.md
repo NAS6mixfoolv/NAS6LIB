@@ -12,7 +12,7 @@ mechanics such as the perihelion of Mercury.
 **Operating environment**  
   
 NAS6LIB works in major browser environments.  
-Currently, it has been confirmed to work with  
+Currently, we have confirmed that it works with the following libraries as options, although they are not required:  
 jQuery 3.7.1  
 x3dom 1.8.3  
 ThreeJS R177  

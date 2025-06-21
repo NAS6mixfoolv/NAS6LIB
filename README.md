@@ -9,7 +9,7 @@ fundamental linear algebra operations.
 A key unique feature is its advanced **relativistic gravitational many-body problem simulator**, demonstrating complex orbital  
 mechanics such as the perihelion of Mercury.  
   
-**Operating environment**  
+**Operating environment(Optional)**  
   
 NAS6LIB works in major browser environments.  
 Currently, we have confirmed that it works with the following libraries as options, although they are not required:  

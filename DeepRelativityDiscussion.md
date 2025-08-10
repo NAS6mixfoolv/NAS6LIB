@@ -474,9 +474,9 @@ The time t it takes for a velocity c to travel 2rs, the diameter of the sun, is
 t = 2rs/c  
 The speed of curvature v is  
 v = Argt  
-Rg = -(GM/r^2)(1 + 3(V/c)^2) = -4GMs/rs^2  
+Arg = -(GM/r^2)(1 + 3(V/c)^2) = -4GMs/rs^2  
 Therefore,  
-tanθ=v/c=(4GMs/rs^2)(2rs/c)/c=8GMs/rsc^2  
+tanθ=v/c=Argt/c=(4GMs/rs^2)(2rs/c)/c=8GMs/rsc^2  
 Since θ is smaller than 1, it can be approximated  
 θ=8GMs/rsc^2  
 and was correctly calculated.  

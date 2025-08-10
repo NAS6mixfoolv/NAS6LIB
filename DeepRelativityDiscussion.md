@@ -10,6 +10,7 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
 * [Calculation Table](#calculation-table)  
   * [Understanding the Calculations: Connecting Orbital Mechanics to Spacetime](#understanding-the-calculations-connecting-orbital-mechanics-to-spacetime)  
 * [Metric Signature Conventions: Spacelike-First vs. Timelike-First](#metric-signature-conventions-spacelike-first-vs-timelike-first)  
+* [About the curvature of light](#about-the-curvature-of-light)  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
 [Back to NAS6LIB Wiki](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
@@ -463,7 +464,25 @@ demonstrating that the spacetime metric inherently encodes how an object's speed
 its progression through spacetime.  
   
 ---  
-    
+
+# About the curvature of light  
+Arg, the acceleration of gravitational force in a circular orbit taking general relativity into account  
+r, radius, G, the gravitational constant, M, mass, V, orbital velocity, c, the speed of light, S, the relativistic correction term  
+Arg = -(GM/r^2)(1 + S) = -(GM/r^2)(1 + 3(V/c)^2)  
+Gravitational constant G = 6.67259e-11 [m^3/kgs^2], speed of light: c = 299792458 [m/s], mass of the sun Ms = 1.9891e+30 [kg]  
+The time t it takes for a velocity c to travel 2rs, the diameter of the sun, is  
+t = 2rs/c  
+The speed of curvature v is  
+v = Argt  
+Rg = -(GM/r^2)(1 + 3(V/c)^2) = -4GMs/rs^2  
+Therefore,  
+tanθ=v/c=(4GMs/rs^2)(2rs/c)/c=8GMs/rsc^2  
+Since θ is smaller than 1, it can be approximated  
+θ=8GMs/rsc^2  
+and was correctly calculated.  
+  
+---  
+
 [Back to Table of contents](#table-of-contents)  
 
 

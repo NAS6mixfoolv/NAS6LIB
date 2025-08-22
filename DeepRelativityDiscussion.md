@@ -12,6 +12,7 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
 * [Metric Signature Conventions: Spacelike-First vs. Timelike-First](#metric-signature-conventions-spacelike-first-vs-timelike-first)  
 * [About the curvature of light](#about-the-curvature-of-light)  
 * [Rethinking the Law of Inertia in Newtonian Mechanics](#rethinking-the-law-of-inertia-in-newtonian-mechanics)  
+* [The Twin Paradox](#the-twin-paradox)  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
 [Back to NAS6LIB Wiki](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
@@ -512,6 +513,56 @@ the binary pulsar PSR B1913+16, then theoretically, over an infinite time,
 they will lose all kinetic energy and become absolutely stationary.  
 In reality, however, they will either collide and explode, or be thrown far away  
 by a gravitational catapult effect.  
+  
+# The Twin Paradox  
+  
+In the space travel of Earth and Andromeda, if we perform triangulation of the sun, earth,  
+and spaceship, we can roughly infer how things moved.  
+In the two-body problem, it's confusing to explain how things moved.  
+Sun and Earth  
+Sun and Spaceship  
+Earth and Spaceship  
+In this problem, we can construct a precise coordinate system to explain how things moved.  
+In the Don Quixote example,  
+In the triangulation of the windmill, Don Quixote, and Sancho,  
+it is objectively shown that the windmill never attacked Don Quixote,  
+Don Quixote simply charged at the windmill.  
+  
+Subjectivity can be attributed to two-body relative problems,  
+and objectivity can be attributed to many-body absolute problems.  
+Lines and triangles It's due to the nature of the shape.  
+  
+Don Quixote claims that the windmill attacked him, but Sancho testifies that Don Quixote ran toward the windmill.  
+While the windmill and Don Quixote alone would leave the truth unclear,  
+Sancho's testimony reveals the objective situation (absolute global coordinates).  
+This is the nature of triangles.  
+  
+At t=0  
+|             | Global coordinates: Windmill reference | Local coordinates: Don Quixote | Local coordinates: Windmill | Local coordinates: Sancho |
+| :---------- | :------------------------------------- | :----------------------------- | :-------------------------- | :------------------------ |
+| Don Quixote | 0,10                                   | 0,0                            | 0,-10                       | 5,-5                      |
+| Windmill    | 0,0                                    | 0,10                           | 0,0                         | 5,5                       |
+| Sancho      | 5,5                                    | -5,5                           | -5,-5                       | 0,0                       |
+  
+At t=5  
+|             | Global coordinates: Windmill reference | Local coordinates: Don Quixote | Local coordinates: Windmill | Local coordinates: Sancho |
+| :---------- | :------------------------------------- | :----------------------------- | :-------------------------- | :------------------------ |
+| Don Quixote | 0.5                                    | 0.0                            | 0.-5                        | 5.0                       |
+| Windmill    | 0.0                                    | 0.5                            | 0.0                         | 5.5                       |
+| Sancho      | 5.5                                    | -5.0                           | -5.-5                       | 0.0                       |
+  
+At t=10  
+|             | Global coordinates: Windmill reference | Local coordinates: Don Quixote | Local coordinates: Windmill | Local coordinates: Sancho |
+| :---------- | :------------------------------------- | :----------------------------- | :-------------------------- | :------------------------ |
+| Don Quixote | 0.0                                    | 0.0                            | 0.0                         | 5.5                       |
+| Windmill    | 0.0                                    | 0,0                            | 0,0                         | 5,5                       |
+| Sancho      | 5,5                                    | -5,-5                          | -5,-5                       | 0,0                       |
+  
+|             | Absolute Speed : Windmill Reference    | Relative Speed : Don Quixote   | Relative Speed : Windmill   | Relative Speed : Sancho   |
+| :---------- | :------------------------------------- | :----------------------------- | :-------------------------- | :------------------------ |
+| Don Quixote | 0,-1                                   | 0,0                            | 0,1                         | 0,1                       |
+| Windmill    | 0,0                                    | 0,-1                           | 0,0                         | 0,0                       |
+| Sancho      | 0,0                                    | 0,-1                           | 0,0                         | 0,0                       |
   
 ---  
   

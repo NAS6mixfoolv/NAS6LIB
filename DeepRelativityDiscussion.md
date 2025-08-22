@@ -468,6 +468,8 @@ its progression through spacetime.
 ---  
 
 # About the curvature of light  
+[Back to Table of contents](#table-of-contents)  
+  
 Arg, the acceleration of gravitational force in a circular orbit taking general relativity into account  
 r, radius, G, the gravitational constant, M, mass, V, orbital velocity, c, the speed of light, S, the relativistic correction term  
 Arg = -(GM/r^2)(1 + S) = -(GM/r^2)(1 + 3(V/c)^2)  

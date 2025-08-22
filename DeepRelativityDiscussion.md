@@ -576,6 +576,11 @@ whose angle and size remain unchanged regardless of the perspective,
 represents an objective physical arrangement.  
 This is a fundamental explanation of triangulation.  
   
+![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq000.gif)  
+  
+Even if all objects are moved randomly, an objective physical arrangement,  
+a triangle, is observed that remains unchanged.  
+  
 ---  
   
 [Back to Table of contents](#table-of-contents)  

@@ -11,6 +11,7 @@ The relativity effect is the perihelion shift $d\phi$ and the inertial drag or i
   * [Understanding the Calculations: Connecting Orbital Mechanics to Spacetime](#understanding-the-calculations-connecting-orbital-mechanics-to-spacetime)  
 * [Metric Signature Conventions: Spacelike-First vs. Timelike-First](#metric-signature-conventions-spacelike-first-vs-timelike-first)  
 * [About the curvature of light](#about-the-curvature-of-light)  
+* [Rethinking the Law of Inertia in Newtonian Mechanics](#rethinking-the-law-of-inertia-in-newtonian-mechanics)  
   
 [Back to NAS6LIB Repository](https://github.com/NAS6mixfoolv/NAS6LIB/)  
 [Back to NAS6LIB Wiki](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
@@ -482,7 +483,32 @@ Since θ is smaller than 1, it can be approximated
 and was correctly calculated.  
   
 ---  
-
+  
+# Rethinking the Law of Inertia in Newtonian Mechanics  
+  
+Relativity effects are the perihelion shift $d\phi$ and the spatial inertial resistance or inertial boost $(\frac{v}{c})^2$.  
+  
+Approximation of relativity in Euclidean geometry (coefficients omitted)  
+  
+$F=-(\frac{GMm}{r^2})(1+S)=-(\frac{GMm}{r^2})(1+d\phi)=-(\frac{GMm}{r^2})(1+(\frac{v}{c})^2)$  
+  
+**Relativity effect S (Schwarzschild correction) (coefficients omitted)**  
+$S=d\phi=(\frac{v}{c})^2$  
+**Special relativity effect SS (Schwarzschild correction + special)**  
+$SS=(\frac{-0.5}{1-e^2})(\frac{v}{c})^2$  
+**General relativity effect SG (Schwarzschild correction + general)**  
+$SG=(\frac{3.0}{1-e^2})(\frac{v}{c})^2$  
+**Composite relativity effect SGS (Schwarzschild correction + general + special)**  
+$SGS=SG+SS=(\frac{2.5}{1-e^2})(\frac{v}{c})^2$  
+  
+I was able to calculate that  
+In a straight-line orbit, the relativistic effect acts as a spatial inertial boost,  
+reaching the speed of light over an infinite period of time.  
+In an elliptical orbit, the relativistic effect acts as a spatial inertial resistance,  
+reaching absolute rest over an infinite period of time.  
+  
+---  
+  
 [Back to Table of contents](#table-of-contents)  
 
 

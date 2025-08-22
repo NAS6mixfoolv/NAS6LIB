@@ -568,6 +568,14 @@ At t=10
   
 ![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq001.gif)  
   
+Each one looks like this, but by combining the information from   
+the three perspectives, an absolute, objective relationship becomes clear.  
+  
+In this simulation, especially at t=x, the unchanging triangle,   
+whose angle and size remain unchanged regardless of the perspective,  
+represents an objective physical arrangement.  
+This is a fundamental explanation of triangulation.  
+  
 ---  
   
 [Back to Table of contents](#table-of-contents)  

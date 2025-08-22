@@ -507,6 +507,12 @@ reaching the speed of light over an infinite period of time.
 In an elliptical orbit, the relativistic effect acts as a spatial inertial resistance,  
 reaching absolute rest over an infinite period of time.  
   
+If we observe a decrease in energy due to gravitational wave emission from  
+the binary pulsar PSR B1913+16, then theoretically, over an infinite time,  
+they will lose all kinetic energy and become absolutely stationary.  
+In reality, however, they will either collide and explode, or be thrown far away  
+by a gravitational catapult effect.  
+  
 ---  
   
 [Back to Table of contents](#table-of-contents)  

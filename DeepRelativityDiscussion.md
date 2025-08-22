@@ -566,7 +566,7 @@ At t=10
 | Windmill    | 0,0                                    | 0,-1                           | 0,0                         | 0,0                       |
 | Sancho      | 0,0                                    | 0,-1                           | 0,0                         | 0,0                       |
   
-![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/donq001.gif)  
+![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq001.gif)  
   
 ---  
   

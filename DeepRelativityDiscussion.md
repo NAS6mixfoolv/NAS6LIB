@@ -581,6 +581,8 @@ This is a fundamental explanation of triangulation.
 Even if all objects are moved randomly, an objective physical arrangement,  
 a triangle, is observed that remains unchanged.  
   
+[Simulation of the Twin Paradox (External Link)](https://nas6.net/rel.htm#twin)  
+  
 ---  
   
 [Back to Table of contents](#table-of-contents)  

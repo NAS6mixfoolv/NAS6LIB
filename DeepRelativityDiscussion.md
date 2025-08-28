@@ -583,7 +583,7 @@ a triangle, is observed that remains unchanged.
   
 [Simulation of the Twin Paradox (External Link)](https://nas6.net/rel.htm#twin)  
   
-![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq002.gif)  
+![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq004.gif)  
   
 ![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq003.gif)  
   

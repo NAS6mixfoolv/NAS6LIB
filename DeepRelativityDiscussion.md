@@ -585,6 +585,8 @@ a triangle, is observed that remains unchanged.
   
 ![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq002.gif)  
   
+![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq003.gif)  
+  
 ---  
   
 [Back to Table of contents](#table-of-contents)  

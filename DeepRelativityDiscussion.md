@@ -506,6 +506,24 @@ In other words, the space-time wave function
 E=s^2=Aexp(ciθ)=Acos^2θ+Acsin^2θ=((ict)^2)+(x^2+y^2+z^2)=hν=mc^2  
 is correct.  
   
+So I guess we have to piece this together somehow.  
+The space-time wave function E=As^2  
+Dimensional analysis is  
+E[kgm^2/s^2]=A[kg/s^2]s^2[m^2]  
+Continuing with the dimensional analysis,  
+1/G[kg^2/Nm^2]=1/G[kg^2/[kgm/s^2]m^2]=1/G[kgs^2/m^3]  
+c^2[m^2/s^2]/G[kgs^2/m^3]=c^2/G[kg/m]  
+c^2/G[kg/m]=A[kg/s^2]B[s^2/m]  
+A[kg/s^2]=c^2[m^2/s^2]a[m/s^2]/(G[kg/m])  
+E[kgm^2/s^2]=A[kg/s^2]s^2[m^2]=(c^2a/G)[kg/s^2]s^2[m^2]  
+Acceleration a is calculated using the Schwarzschild radius rs:  
+a=c^2/rs. Therefore,  
+E[kgm^2/s^2]=A[kg/s^2]s^2[m^2]=(c^4/rsG)[kg/s^2]s^2[m^2]  
+Therefore,  
+the space-time wave function is  
+E=(c^4/rsG)s^2=(c^4/rsG)Aexp(ciθ)=(c^4/rsG)(Acos^2θ+Acsin^2θ)=(c^4/rsG)(((ict)^2)+(x^2+y^2+z^2))=hν=mc^2  
+There's no doubt about it.  
+  
 ---  
 
 # About the curvature of light  

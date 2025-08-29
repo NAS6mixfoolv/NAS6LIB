@@ -530,6 +530,19 @@ E=As^2=(c^4/rsG)s^2
 Since rs=2GM/c^2,  
 E=As^2=(c^6/2MG^2)s^2=hν=mc^2  
   
+So maybe  
+(c^6/2MG^2)(((ict)^2)+(x^2+y^2+z^2))=mc^2  
+m=(c^4/2MG^2)(((ict)^2)+(x^2+y^2+z^2))  
+(c^4/2MmG^2)(((ict)^2)+(x^2+y^2+z^2))=1  
+s^2=r^2  
+(c^4r^2/2MmG^2)=1  
+(2MmG^2/c^4r^2)=1  
+F=-GMm/r^2  
+(-2GF/c^4)=1  
+This is the equation for an ellipse, though it sounds a bit fake.  
+Np Planck force  
+F=-GMm/r^2=-c^4/2G=-(1/2)Np  
+  
 ---  
 
 # About the curvature of light  

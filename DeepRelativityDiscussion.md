@@ -465,6 +465,19 @@ This factor is the cornerstone of relativistic effects such as **time dilation**
 demonstrating that the spacetime metric inherently encodes how an object's speed relative to light influences  
 its progression through spacetime.  
   
+ds^2 = c^2 dt^2 - dx^2 - dy^2 - dz^2  
+ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2  
+The reason ds^2 has this formula is that  
+r^2 = x^2 + y^2  
+is the radius (distance between two points) of a circle of real numbers where the two elements are homogeneous real numbers  
+r^2 = x^2 - y^2  
+is the radius (distance between two points) of a circle of complex numbers where the two elements  
+are heterogeneous real and imaginary numbers  
+In other words,  
+we can also write  
+s = Aexp(iθ),  
+which is very useful when quantum mechanics is also included.  
+  
 ---  
 
 # About the curvature of light  

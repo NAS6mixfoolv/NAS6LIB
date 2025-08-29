@@ -502,6 +502,10 @@ Space-time wave function
 E=s^2=Aexp(ciθ)=Acos^2θ+Acsin^2θ=hν=mc^2  
 Right?  
   
+In other words, the space-time wave function  
+E=s^2=Aexp(ciθ)=Acos^2θ+Acsin^2θ=((ict)^2)+(x^2+y^2+z^2)=hν=mc^2  
+is correct.  
+  
 ---  
 
 # About the curvature of light  

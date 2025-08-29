@@ -483,6 +483,25 @@ isn't it just the quantization of planetary constants,
 such as Jupiter's constants, which tend to gather mass, in the form  
 s=Aexp(iθ)?  
   
+To be precise,  
+If we write s=Aexp(ciθ), isn't it ds itself?  
+That is, specifically  
+s=Acosθ+Aicsinθ  
+Re|u(x,t)|=cosθ  
+In|u(x,t)|=sinθ  
+(Re|u(x,t)|)^2=cos^2θ  
+(In|u(x,t)|)^2=sin^2θ  
+u(x,t)^2=cos^2θ+sin^2θ=1  
+e^cix=cosx+icsinx  
+e^2ix=cos^2x+sin^2x=1  
+And this seems to be the wave function of spacetime.  
+E=s^2=Aexp(ciθ)=Acos^2θ+Acsin^2θ=hν=mc^2  
+Maybe? It's just a guess, but  
+Oh, I got a hunch!  
+Space-time wave function  
+E=s^2=Aexp(ciθ)=Acos^2θ+Acsin^2θ=hν=mc^2  
+Right?  
+  
 ---  
 
 # About the curvature of light  

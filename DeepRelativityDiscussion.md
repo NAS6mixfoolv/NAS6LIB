@@ -478,10 +478,10 @@ we can also write
 s = Aexp(iθ),  
 which is very useful when quantum mechanics is also included.  
   
-So, without searching for a unified theory,  
-ds^2 = Ac^2 dt^2 - dx^2 - dy^2 - dz^2  
-ds^2 = -Ac^2 dt^2 + dx^2 + dy^2 + dz^2  
-It's probably something like this.  
+So, without even searching for a unified theory,  
+isn't it just the quantization of planetary constants,  
+such as Jupiter's constants, which tend to gather mass, in the form  
+s=Aexp(iθ)?  
   
 ---  
 

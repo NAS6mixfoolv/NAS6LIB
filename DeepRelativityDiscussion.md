@@ -585,6 +585,179 @@ a triangle, is observed that remains unchanged.
   
 ![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq004.gif)  
   
+Even if all objects are moved randomly, an unchanging triangle is observed.<br>
+(Condition for determining the three coordinates: A triangle exists.)<br>
+An objective physical arrangement is observed.<br>
+The red line segment is the line segment connecting the distance between the selected viewpoint and the global origin.<br>
+<!--
+The blue gauge is proportional to the distance between the selected viewpoint and the global origin.<br>
+Therefore, it is the spatial component of s^2 of the selected viewpoint.<br>
+The derivative of this is the green gauge, which is the spatial component of ds^2.<br>
+//!-->
+The velocity of the selected viewpoint is the green gauge, which is the spatial component of ds^2.<br>
+Calculating dt from ds^2 The time axis is variable.<br>
+When viewed from a local perspective, the time accelerates, but this is because the local perspective's<br>
+time axis scale is small, so it progresses quickly.<br>
+From a global perspective, the time axis scale is large, so it progresses slowly.<br>
+This is the twin paradox.<br>
+For comparison, a minister traveling back and forth at a constant speed has been added.<br>
+A yellow flash has been implemented in the lower right corner to make the time interval easier to visualize.<br>
+<br>
+Theoretical basis<br>
+<br>
+Consider train B, with a speed V=0.6c as seen from ground observer A.<br>
+A→B is B as seen from A.<br> 
+<table> 
+<thead> 
+<tr> 
+<th>t</th> 
+<th>0</th> 
+<th>1</th> 
+<th>2</th> 
+<th>3</th> 
+<th>4</th> 
+<th>5</th> 
+</tr> 
+</thead> 
+<tbody> 
+<tr> 
+<td>tA</td> 
+<td>0</td> 
+<td>1</td> 
+<td>2</td> 
+<td>3</td> 
+<td>4</td> 
+<td>5</td> 
+</tr> 
+<tr> 
+<td>xA</td> 
+<td>0</td> 
+<td>0</td> 
+<td>0</td> 
+<td>0</td> 
+<td>0</td> 
+<td>0</td> </tr> 
+<tr> 
+<td>xA→B</td> 
+<td>0</td> 
+<td>0.6</td> 
+<td>1.2</td> 
+<td>1.8</td> 
+<td>2.4</td> 
+<td>3.0</td> 
+</tr> 
+</tbody> 
+</table> 
+<table> 
+<thead> 
+<tr> 
+<th>tA→B</th> 
+<th>0</th> 
+<th>0.8</th> 
+<th>1.6</th> 
+<th>2.4</th> 
+<th>3.2</th> 
+<th>4.0</th> 
+</tr> 
+</thead> 
+<tbody> 
+<tr> 
+<td>xB→B</td> 
+<td>0</td> <td>0.48</td>
+<td>0.96</td>
+<td>1.44</td>
+<td>1.92</td>
+<td>2.4</td>
+</tr>
+</tbody>
+</table>
+This is difficult to use, so let's recalculate when tA→B=0, 1, 2, 3, 4, and 5.<br>
+Reorganize the values.<br>
+<table>
+<thead>
+<tr>
+<th>tA→B</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xA→B</td>
+<td>0</td>
+<td>0.6</td>
+<td>1.2</td>
+<td>1.8</td>
+<td>2.4</td>
+<td>3.0</td>
+</tr>
+</tbody>
+</table>
+This should appear as follows:<br>
+dtA=1.0<br>
+dtB=0.8<br>
+
+
+<table>
+<thead>
+<tr>
+<th>tA→B</th>
+<th>0</th>
+<th>0.8</th>
+<th>1.6</th>
+<th>2.4</th>
+<th>3.2</th>
+<th>4.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xB→B</td>
+<td>0</td>
+<td>0.48</td>
+<td>0.96</td>
+<td>1.44</td>
+<td>1.92</td>
+<td>2.4</td>
+</tr>
+</tbody>
+
+</table>
+Divide by dtB to adjust the time.<br>
+<table>
+<thead>
+<tr>
+<th>tA→B</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xA→B</td>
+<td>0</td>
+<td>0.6</td>
+<td>1.2</td>
+<td>1.8</td>
+<td>2.4</td>
+<td>3.0</td>
+</tr>
+</tbody>
+</table>
+So, by this logic,<br>
+dividing the velocity mp[i].v seen from the selected viewpoint by dt<br>
+will align the time, but if we don't multiply it by dt0 from one step before to restore mp[i].v<br>
+to the global reference velocity, a cumulative bug will occur.<br>
+In the end, the velocity seen from a certain viewpoint is mp[i].v*dt0/dt<br>
+  
 ![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq003.gif)  
   
 ---  

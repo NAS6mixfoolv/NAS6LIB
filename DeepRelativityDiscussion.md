@@ -769,7 +769,7 @@ time5[0] += timespeed5 / dt5; //Earth proper time
 time5[1] += timespeed5 / dt5; //Andromeda proper time  
 //Rocket x-coordinate displacement: unit time * screen range * speed / proper time / one-way distance  
 var xx = (timespeed5 * Range5 * mp5[2].v.x[0] / dt5 / AndDis5);  
-The distance is shrinking due to velocity/proper time, accelerating to 2275.3c.  
+The distance is shrinking due to velocity/proper time, accelerating to 22060.9c.  
 Therefore, the round trip distance to Andromeda is 2.537 million light years, making the 5.074 million light-year journey in 230 years.  
   
 ---  

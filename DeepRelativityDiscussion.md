@@ -525,9 +525,10 @@ E=(c^4/rsG)s^2=(c^4/rsG)Aexp(ciθ)=(c^4/rsG)(Acos^2θ+Acsin^2θ)
 =(c^4/rsG)(((ict)^2)+(x^2+y^2+z^2))=hν=mc^2  
 There's no doubt about it.  
   
+The wave function of space-time, or the quantization of space-time, is  
 E=As^2=(c^4/rsG)s^2  
-rs=2GM/c^2, which means  
-E=As^2=(c^6/2MG^2)s^2  
+Since rs=2GM/c^2,  
+E=As^2=(c^6/2MG^2)s^2=hν=mc^2  
   
 ---  
 

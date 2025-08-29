@@ -758,7 +758,7 @@ will align the time, but if we don't multiply it by dt0 from one step before to 
 to the global reference velocity, a cumulative bug will occur.<br>
 In the end, the velocity seen from a certain viewpoint is mp[i].v*dt0/dt<br>
   
-![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq006.gif)  
+![gif of donq](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Donq007.gif)  
   
 var v5 = new N6LVector([mp5[2].v.x[0], mp5[2].v.x[1], 0]);  
 var ds2 = v5.SquareAbs(); //Spatial component of ds^2 only //v5.Abs()=0.999999999c  
@@ -769,8 +769,8 @@ time5[0] += timespeed5 / dt5; //Earth proper time
 time5[1] += timespeed5 / dt5; //Andromeda proper time  
 //Rocket x-coordinate displacement: unit time * screen range * speed / proper time / one-way distance  
 var xx = (timespeed5 * Range5 * mp5[2].v.x[0] / dt5 / AndDis5);  
-The distance decreases due to velocity/proper time, and the apparent velocity is accelerating to 22360.68c.  
-Therefore, the round trip distance to Andromeda is 2.537 million light years, making the 5.074 million light-year journey in 230 years.  
+The distance decreases due to velocity/proper time, and the apparent velocity is accelerating to 22262.6c.  
+Therefore, the round trip distance to Andromeda is 2.537 million light years, making the 5.075 million light-year journey in 230 years.  
   
 ---  
   

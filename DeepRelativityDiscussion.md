@@ -560,6 +560,8 @@ F = -GM m/S^2 = -GM m/(mc^2 * (2G^2M/c^6))
 = -0.5c^4/G = -0.5Np  
   
 ![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Quan000.gif)  
+  
+![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Quan001.gif)  
    
 ---  
 

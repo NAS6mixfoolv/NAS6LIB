@@ -558,6 +558,8 @@ is defined as S^2 = mc^2 * (2G^2M/c^6).
 The gravitational force due to S^2 is defined as -0.5Np.  
 F = -GM m/S^2 = -GM m/(mc^2 * (2G^2M/c^6))  
 = -0.5c^4/G = -0.5Np  
+  
+![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/quan000.gif)  
    
 ---  
 

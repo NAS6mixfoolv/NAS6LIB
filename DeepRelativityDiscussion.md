@@ -543,6 +543,12 @@ This is the equation for an ellipse, though it sounds a bit fake.
 Np Planck force  
 F=-GMm/r^2=-c^4/2G=-(1/2)Np  
   
+In other words, the wave function of space-time,  
+or the quantization of space-time, is  
+E=As^2=(c^6/2MG^2)s^2=(c^6/2MG^2)(((ict)^2)+(x^2+y^2+z^2))=mc^2  
+The above equation satisfies  
+F=-GMm/r^2=-GMm/s^2=-(1/2)Np  
+  
 ---  
 
 # About the curvature of light  

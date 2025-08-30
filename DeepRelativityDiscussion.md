@@ -549,6 +549,10 @@ E=As^2=(c^6/2MG^2)s^2=(c^6/2MG^2)(((ict)^2)+(x^2+y^2+z^2))=mc^2
 The above equation satisfies  
 F=-GMm/r^2=-GMm/s^2=-(1/2)Np  
   
+I tried to verify -(1/2)Np  
+  
+![img of fig](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/touitu004.png)  
+   
 ---  
 
 # About the curvature of light  

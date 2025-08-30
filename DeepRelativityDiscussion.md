@@ -552,6 +552,12 @@ F=-GMm/r^2=-GMm/s^2=-(1/2)Np
 I tried to verify -(1/2)Np  
   
 ![img of fig](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/touitu004.png)  
+  
+In other words, the distance due to the rest mass, S^2,  
+is defined as S^2 = mc^2 * (2G^2M/c^6).  
+The gravitational force due to S^2 is defined as -0.5Np.  
+F = -GM m/S^2 = -GM m/(mc^2 * (2G^2M/c^6))  
+= -0.5c^4/G = -0.5Np  
    
 ---  
 

@@ -563,6 +563,97 @@ F = -GM m/S^2 = -GM m/(mc^2 * (2G^2M/c^6))
   
 ![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Quan001.gif)  
    
+This is how it is expressed when simulating Euler's formula.<br>
+The reason why I claim to have simulated Euler's formula is:<br>
+Under these assumptions,<br>
+t=sinθ<br>
+x=cosθ<br>
+I considered the following:<br>
+<br>
+The values ??are arbitrary, but they are just a concept.<br>
+The apparent velocity of an object, vab, is:<br>
+In the range of 0π.<br>
+<table>
+<thead>
+<tr>
+<th>θ</th>
+<th>0</th>
+<th>0+d</th>
+<th>π/2</th>
+<th>π-d</th>
+<th>π</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sin</td>
+<td>0</td>
+<td>0.1</td>
+<td>1</td>
+<td>0.1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>cos</td>
+<td>1</td>
+<td>0.9</td>
+<td>0</td>
+<td>-0.9</td>
+<td>-1</td>
+</tr>
+</tbody>
+
+</table>
+What if we make the sine of this evenly spaced? <br> 
+<table> 
+<thead> 
+<tr> 
+<th>θ</th> 
+<th>0</th> 
+<th>0+d</th> 
+<th>π/2</th> 
+<th>π-d</th> 
+<th>π</th> 
+</tr> 
+</thead> 
+<tbody> 
+<tr> 
+<td>θ'</td> 
+<td>0</td> 
+<td>π/2-d</td> 
+<td>π/2</td> 
+<td>π/2-d</td> 
+<td>0</td> 
+</tr> 
+<tr> 
+<td>sin'</td> 
+<td>1</td> 
+<td>2</td> 
+<td>3</td> 
+<td>4</td> 
+<td>5</td> 
+</tr> <tr>
+<td>cos</td>
+<td>1</td>
+<td>0.7</td>
+<td>0</td>
+<td>-0.7</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>vabs</td>
+<td>0</td>
+<td>0.3</td>
+<td>1</td>
+<td>0.3</td>
+<td>0</td>
+</tr>
+</tbody>
+
+</table>
+Therefore, we addressed the question of what the apparent velocity<br>
+would be from a stationary observer if the time axis were sinθ.<br>
+  
 ---  
 
 # About the curvature of light  

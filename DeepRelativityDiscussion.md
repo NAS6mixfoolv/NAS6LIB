@@ -668,6 +668,13 @@ t=sinθ,dt=cosθ,x=cosθ,dx=-sinθ
 dt/dt=1  
 dx/dt=-tanθ  
   
+◯AB is A's ◯ as seen from B.  
+tAB=sinθ, dtAB=cosθ, xAB=cosθ, dxAB=-sinθ  
+Let's define tB=t, dtB=1, xB=0, dxB=0 as follows.  
+vAB=dxAB/dtAB=-sinθ/(cosθdθ)=-tanθ  
+xAB=∫(vAB)dtAB=∫(-sinθ/cosθ)(cosθdθ)=cosθ=xAB,  
+which ultimately returns to the original premise.  
+  
 ---  
 
 # About the curvature of light  

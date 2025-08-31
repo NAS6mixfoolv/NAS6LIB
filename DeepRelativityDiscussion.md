@@ -663,6 +663,11 @@ The velocity is v = dx/dt, so
 the velocity is minimum at the outer edge of the motion, accelerates toward the center,  
 reaches a maximum, and begins to decelerate once it passes the center.  
   
+The mathematical explanation for Euler's formula can be simplified as follows:  
+t=sinθ,dt=cosθ,x=cosθ,dx=-sinθ  
+dt/dt=1  
+dx/dt=-tanθ  
+  
 ---  
 
 # About the curvature of light  

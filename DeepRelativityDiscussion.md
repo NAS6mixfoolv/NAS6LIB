@@ -658,6 +658,11 @@ would be from a stationary observer if the time axis were sinθ.<br>
 Since t=sinθ and dt=cosθ, I think the appearance from  
 a stationary observer would be as I understand it.  
   
+dt is maximum at the outer edge of the motion and minimum at the center.  
+The velocity is v = dx/dt, so  
+the velocity is minimum at the outer edge of the motion, accelerates toward the center,  
+reaches a maximum, and begins to decelerate once it passes the center.  
+  
 ---  
 
 # About the curvature of light  

@@ -653,7 +653,8 @@ What if we make the sine of this evenly spaced? <br>
 </table>
 Therefore, we addressed the question of what the apparent velocity<br>
 would be from a stationary observer if the time axis were sinθ.<br>
-  
+      
+        
 Since t=sinθ and dt=cosθ, I think the appearance from  
 a stationary observer would be as I understand it.  
   

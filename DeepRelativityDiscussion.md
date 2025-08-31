@@ -571,7 +571,7 @@ x=cosθ<br>
 I considered the following:<br>
 <br>
 The values are arbitrary, but they are just a concept.<br>
-The apparent velocity of an object, vab, is:<br>
+The apparent velocity of an object, vabs, is:<br>
 In the range of 0π.<br>
 <table>
 <thead>

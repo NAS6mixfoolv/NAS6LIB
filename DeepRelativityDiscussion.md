@@ -675,6 +675,33 @@ vAB=dxAB/dtAB=-sinθ/(cosθdθ)=-tanθ
 xAB=∫(vAB)dtAB=∫(-sinθ/cosθ)(cosθdθ)=cosθ=xAB,  
 which ultimately returns to the original premise.  
   
+I've organized everything and put it all together.  
+  
+Simplifying it as e^it,  
+This motion is a back-and-forth movement in the diameter direction,  
+accelerating toward the center.If it were a single particle,  
+it would be simple harmonic motion, but if it were a mass of multiple particles,  
+it would behave like an atomic cloud.  
+To explain,  
+e^iθ=e^it  
+θ=t=vt-x=dt  
+In other words, θ represents the distance traveled.  
+When this circular motion is projected onto the real axis (x-axis),   
+the position is expressed as cosθ, which is simple harmonic motion.  
+When this circular motion is projected onto the imaginary axis (y-axis),   
+the position is expressed as sinθ This is also simple harmonic motion.  
+If we consider the motion of simple harmonic motion at   
+x=cosθ,  
+v=-sinθ.  
+This is the motion on the real axis of Euler's formula.  
+If we trace only the real axis of a complex number, it is a projection onto the real axis.  
+For example, in relativity, when s^2=(ict)^2+x^2,  
+x^2 on the real axis is the spatial coordinate itself.  
+When considering the motion of simple harmonic motion at x=cosθ,  
+this can be approximated by considering it as acceleration due  
+to a constant centripetal force that is independent of distance.  
+Therefore, F=-mA, A=-F/m.  
+  
 ---  
 
 # About the curvature of light  

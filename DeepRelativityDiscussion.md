@@ -684,7 +684,7 @@ it would be simple harmonic motion, but if it were a mass of multiple particles,
 it would behave like an atomic cloud.  
 To explain,  
 e^iθ=e^it  
-θ=t=vt-x=dt  
+θ=t=vt-x=dt=dx  
 In other words, θ represents the distance traveled.  
 When this circular motion is projected onto the real axis (x-axis),   
 the position is expressed as cosθ, which is simple harmonic motion.  

@@ -704,6 +704,11 @@ Therefore, F=-mA, A=-F/m.
   
 ![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Quan004.gif)  
   
+If the time resolution is coarse, it will be quantized and  
+it will be sitting in a reserved seat on a multi-layered Ferris wheel.  
+  
+![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Quan005.gif)  
+  
 ---  
 
 # About the curvature of light  

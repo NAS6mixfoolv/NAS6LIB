@@ -702,6 +702,8 @@ this can be approximated by considering it as acceleration due
 to a constant centripetal force that is independent of distance.  
 Therefore, F=-mA, A=-F/m.  
   
+![gif of quan](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/Quan004.gif)  
+  
 ---  
 
 # About the curvature of light  

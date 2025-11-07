@@ -111,7 +111,7 @@ proving sufficient for modeling significant relativistic effects like Mercury's 
   
 This library incorporates the following orbital constraint conservation law, which includes a relativistic correction factor $dφ$:  
   
-$$dφ = \frac{3}{1-e^2} \left(\frac{v}{c}\right)^2$$  
+$$dφ = (3)\left(\frac{v}{c}\right)^2$$  
   
 The fundamental relationship between various orbital parameters, including $dφ$, is given by:  
   

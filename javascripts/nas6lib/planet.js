@@ -262,22 +262,10 @@ class N6LPlanet {
         this.m_ono = 0;
         //orbital position from kepler//ケプラー方程式から座標を求める
         var xx = new Array(new N6LVector(3));
-        var f = this.kepler(nday, xx);
+        var vv = new Array(new N6LVector(3));
+        var f = this.kepler(nday, xx, vv);
         this.x0 = new N6LVector([xx[0].x[0], xx[0].x[1], 0]);
-
-        var xyz2 = new Array(new N6LVector(3));
-      
-        //orbital speed from kepler//ケプラー方程式から軌道速度を求める
-        var xxx = new Array(new N6LVector(3));
-        this.kepler(nday + (1.0 / (24.0 * 4.0)), xxx);
-        var vv = new N6LVector();
-        vv = xxx[0].Sub(xx[0]);
-
-        //velocity addjust//速度微調整
-        this.v0 = new N6LVector([
-            (vv.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0)) / this.CNST_C) * this.m_mv,
-            (vv.x[1] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0)) / this.CNST_C) * this.m_mv,
-            0]);
+        this.v0 = new N6LVector([vv[0].x[0], vv[0].x[1], 0]);
 
         //xyz to ecliptic//xyz系を日心黄道直交座標系に変換
         var xyz = new Array(new N6LVector(3));
@@ -293,6 +281,7 @@ class N6LPlanet {
             this.x0.x[2] = xyz[0].x[2];
         }
 
+        var xyz2 = new Array(new N6LVector(3));
         this.ecliptic(this.v0.x[0], this.v0.x[1], this.v0.x[2], xyz2);
         if(isNaN(xyz2[0].x[0]) || isNaN(xyz2[0].x[1]) || isNaN(xyz2[0].x[2])) {
             this.v0.x[0] = 0.0;
@@ -760,9 +749,11 @@ class N6LPlanet {
     //init planet//惑星初期化
     Init(nday) {
         //orbital position from kepler//ケプラー方程式から座標を求める
-        var xx = new N6LVector(3);
-        var f = this.kepler(nday, xx);
+        var xx = [new N6LVector(3)];
+        var vv = [new N6LVector(3)];
+        var f = this.kepler(nday, xx, vv);
         this.x0 = new N6LVector([xx[0].x[0], xx[0].x[1], xx[0].x[2]]);
+        this.v0 = new N6LVector([vv[0].x[0], vv[0].x[1], vv[0].x[2]]);
 
         //xyz to ecliptic//xyz系を日心黄道直交座標系に変換
         var xyz = new N6LVector(3);
@@ -778,6 +769,20 @@ class N6LPlanet {
             this.x0.x[2] = xyz[0].x[2];
         }
 
+
+        var xyz2 = new Array(new N6LVector(3));
+        this.ecliptic(this.v0.x[0], this.v0.x[1], this.v0.x[2], xyz2);
+        if(isNaN(xyz2[0].x[0]) || isNaN(xyz2[0].x[1]) || isNaN(xyz2[0].x[2])) {
+            this.v0.x[0] = 0.0;
+            this.v0.x[1] = 0.0;
+            this.v0.x[2] = 0.0;
+        }
+        else {
+            this.v0.x[0] = xyz2[0].x[0];
+            this.v0.x[1] = xyz2[0].x[1];
+            this.v0.x[2] = xyz2[0].x[2];
+        }
+
         //ゼロクリア
         this.ex = new N6LVector(3);
 
@@ -788,24 +793,14 @@ class N6LPlanet {
     //init planet//惑星初期化//軌道速度も求める
     Init2(nday) {
         //orbital position from kepler//ケプラー方程式から座標を求める
-        var xx = new N6LVector(3);
-        var f = this.kepler(nday, xx);
+        var xx = [new N6LVector(3)];
+        var vv = [new N6LVector(3)];
+        var f = this.kepler(nday, xx, vv);
         this.x0 = new N6LVector([xx[0].x[0], xx[0].x[1], xx[0].x[2]]);
+        this.v0 = new N6LVector([vv[0].x[0], vv[0].x[1], vv[0].x[2]]);
 
         var xyz2 = new Array(new N6LVector(3));
       
-        //orbital speed from kepler//ケプラー方程式から軌道速度を求める
-        var xxx = new Array(new N6LVector(3));
-        this.kepler(nday + (1.0 / (24.0 * 4.0)), xxx);
-        var vv = new N6LVector();
-        vv = xxx[0].Sub(xx[0]);
-
-        //velocity addjust//速度微調整
-        this.v0 = new N6LVector([
-            (vv.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0)) / this.CNST_C) * this.m_mv,
-            (vv.x[1] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0)) / this.CNST_C) * this.m_mv, 
-            0]);
-
         //xyz to ecliptic//xyz系を日心黄道直交座標系に変換
         var xyz = new Array(new N6LVector(3));
         this.ecliptic(this.x0.x[0], this.x0.x[1], this.x0.x[2], xyz);
@@ -820,6 +815,7 @@ class N6LPlanet {
             this.x0.x[2] = xyz[0].x[2];
         }
 
+        var xyz2 = new Array(new N6LVector(3));
         this.ecliptic(this.v0.x[0], this.v0.x[1], this.v0.x[2], xyz2);
         if(isNaN(xyz2[0].x[0]) || isNaN(xyz2[0].x[1]) || isNaN(xyz2[0].x[2])) {
             this.v0.x[0] = 0.0;
@@ -831,13 +827,18 @@ class N6LPlanet {
             this.v0.x[1] = xyz2[0].x[1];
             this.v0.x[2] = xyz2[0].x[2];
         }
+
+
+        //ゼロクリア
+        this.ex = new N6LVector(3);
+
+        this.m_el = 0.0;
+        this.m_d = 0.0;
     };
 
 
     //kepler//ケプラー方程式
-    kepler(nday, xx, num) {
-        xx[0] = new N6LVector(3).ZeroVec();
-
+    kepler(nday, xx, vv, num, x0, fret) {
         if(this.m_pno == this.m_ono) return 0.0;
 
         if(nday < 0.0) { //1996年以前
@@ -900,24 +901,40 @@ class N6LPlanet {
         }
 
         var ree = Math.sqrt(1.0 - e2);
+        var cosu = Math.cos(u);
+        var sinu = Math.sin(u);
+        var x_prime = this.m_a * (cosu - this.m_e);
+        var y_prime = this.m_a * ree * sinu;
+        var f = Math.atan2(y_prime, x_prime); 
+        var cosf = Math.cos(f);
+        var sinf = Math.sin(f);
 
-        var tanf = ree * Math.sin(u) / (Math.cos(u) - this.m_e);
-        var f = Math.atan(tanf);
-        if(Math.cos(u) - this.m_e < 0.0) f += Math.PI;
-        var fd = f / this.CNST_DR;
+        var r0 = this.m_a * (1.0 - e2) / (1.0 + this.m_e * cosf);
+        x = r0 * cosf;
+        y = r0 * sinf;
 
-        //var r0 = this.m_a * (1.0 - this.m_e * Math.cos(u));
-        //x = this.m_a * (Math.cos(u) - this.m_e);
-        //y = this.m_a * ree * Math.sin(u);
+        if(fret == undefined) {
+          if(xx != undefined) xx[0] = new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]);
+          else xx = new Array(new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]));
 
-        var r0 = this.m_a * (1.0 - e2) / (1.0 + this.m_e * Math.cos(f));
-        x = r0 * Math.cos(f);
-        y = r0 * Math.sin(f);
+          if(x0 != undefined) x0[0] = new N6LVector(xx[0]);
+          else x0 = new Array(new N6LVector(xx[0]));
+          
+          return this.kepler(nday + (1.0 / (24.0 * 4.0) * this.m_t), xx, vv, num, x0, f);
+        }
 
-        xx[0] = new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]);
+        var xxx = new Array(new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]));
+        var dx = xxx[0].Sub(xx[0]);
+        if(vv != undefined) vv[0] = new N6LVector(3).ZeroVec();
+        else vv = new Array(new N6LVector(3).ZeroVec());
 
-        return f;
+        //速度微調整
+        vv[0].x[0] = (dx.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * this.m_t) / this.CNST_C) * this.m_mv;
+        vv[0].x[1] = (dx.x[1] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * this.m_t) / this.CNST_C) * this.m_mv;
+        vv[0].x[2] = 0.0;
 
+        if(fret == undefined) return 0;
+        return fret;
     };
 
     //xyz to ecliptic//xyz系を日心黄道直交座標系に変換

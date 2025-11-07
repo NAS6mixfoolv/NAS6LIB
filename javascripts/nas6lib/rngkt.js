@@ -224,7 +224,7 @@ class N6LRngKt {
 
     //schwartz correction term//シュワルツシルト補正項
     ToSchwartz(v, e) {
-        var ret = 3.0 * v * v / ( 1.0 - (e * e)); //楕円一般相対論
+        var ret = 3.0 * v * v / ( 1.0 - (e * e)); //楕円一般相対論//eは一周の積分するときに必要
         if(0.95 < e) ret = -0.5 * v * v;          //直線特殊相対論
         return ret;
     };
@@ -270,6 +270,7 @@ class N6LRngKt {
                             else this.nrm[i][j].x[0] = 1.0;
                         }
                         this.r[i][j] = this.r[i][j] - this.al[i][j];
+                        //this.r[j][i] = this.r[i][j];
 
                         if(this.ap[i][j] == 0) this.pow[i][j] = 1.0;
                         if(this.ap[i][j] == -2) {
@@ -307,8 +308,9 @@ class N6LRngKt {
                                 ov = vv1.ProjectAxis(dx3);
                                 if(isNaN(ov.x[0])) ov = ov.ZeroVec();
                             }
-                            this.mp[j].e = this.GetEccentricity(this.mp[j].x1,ov,this.mp[i].x1);
-                            a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), this.mp[j].e);
+                            //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
+                            //a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), this.mp[i].e);
+                            a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), 0.0);
                             this.pow[i][j] = a1;
                         }
                         if(this.ap[j][i] == -1) {//relative gravity   //相対性理論万有引力
@@ -335,8 +337,9 @@ class N6LRngKt {
                                 ov = vv1.ProjectAxis(dx3);
                                 if(isNaN(ov.x[0])) ov = ov.ZeroVec();
                             }
-                            this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
-                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), this.mp[i].e);
+                            //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
+                            //a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), this.mp[i].e);
+                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0);
                             this.pow[j][i] = a1;
                         }
 
@@ -456,6 +459,7 @@ class N6LRngKt {
             var v2 = new N6LVector(this.dms + 1);
             this.ik[l][i] = this.mp[i].v1.Mul(this.dt * this.CNST_C);
             this.mp[i].x1 = this.mp[i].x.Add((this.mp[i].w.Add(this.ik[l][i])).Div(6.0));
+            //this.mp[i].x1 = this.mp[i].x.Add((this.mp[i].w.Add(this.ik[l][i])));
 
             var av = new N6LVector(0);
             if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, this.dt);
@@ -470,10 +474,12 @@ class N6LRngKt {
             }
             if(this.dms == 2) {
                 for(k = 0; k <= this.dms; k++) v2.x[k] = (v01.x[k] + v1.x[k]) / 6.0;
+                //for(k = 0; k <= this.dms; k++) v2.x[k] = (v01.x[k] + v1.x[k]);
                 this.mp[i].v1 = this.VelocityAdd3D(v02, v2);
             }
             else if(this.dms == 1) {
                 for(k = 0; k <= this.dms; k++) v2.x[k] = (v01.x[k] + v1.x[k]) / 6.0;
+                //for(k = 0; k <= this.dms; k++) v2.x[k] = (v01.x[k] + v1.x[k]);
                 this.mp[i].v1 = this.VelocityAdd2D(v02, v2);
             }
         }

@@ -26,11 +26,14 @@ $F=-(\frac{GMm}{r^2})(1+S)=-(\frac{GMm}{r^2})(1+d\phi)=-(\frac{GMm}{r^2})(1+(\fr
 **relativity effect S(Schwarzschild correction term)(Omitting coefficients)**  
 $S=d\phi=(\frac{v}{c})^2$  
 **Special relativity effect SS(Schwarzschild correction term + special)**  
-$SS=(\frac{-0.5}{1-e^2})(\frac{v}{c})^2$  
+$SS=(-0.5)(\frac{v}{c})^2$  
 **General relativity effect SG(Schwarzschild correction term + general)**  
-$SG=(\frac{3.0}{1-e^2})(\frac{v}{c})^2$  
+$SG=(3.0)(\frac{v}{c})^2$  
 **Combined relativity effect SGS(Schwarzschild correction term + general + special)**  
-$SGS=SG+SS=(\frac{2.5}{1-e^2})(\frac{v}{c})^2$  
+$SGS=SG+SS=(2.5)(\frac{v}{c})^2$  
+  
+Furthermore, there are cases where the (1-e^2) term of the integration constant  
+for a complete elliptical orbit comes into play.
   
 * **G**: Gravitational constant  
 * **M**: Mass of the central body  
@@ -171,8 +174,12 @@ Specifically, the perihelion shift per revolution is proportional to 1/(1-e^2) t
 This factor ensures the correct relativistic correction for the full elliptical path, taking into account the varying speed  
 and distance from the central body.  
   
-Thus, the relativistic correction term for an elliptical orbit becomes:  
+Therefore, the relativistic correction term for one complete orbit in an elliptical trajectory is as follows:  
+However, the (1-e^2) term is not necessary for the instantaneous force  
+For the integral over one complete elliptical orbit  
 $\frac{3}{1-e^2}(\frac{v}{c})^2$  
+Instantaneous forceInstantaneous force  
+$3(\frac{v}{c})^2$  
 This expression represents the relativistic correction term for elliptical orbits in general relativity,  
 A similar shape appears under the more conventional Kerr metric.  
   

@@ -1,4 +1,5 @@
 ﻿var TMan = new N6LTimerMan();  //タイマーマネージャー
+var TimerID = -1;
 var IDTransA = new Array('sph00a', 'sph01a', 'sph02a', 'sph03a', 'sph04a', 'sph05a', 'sph06a', 'sph07a', 'sph08a', 'sph09a', 'sph10a');
 var IDTransZ = new Array('sph00z', 'sph01z', 'sph02z', 'sph03z', 'sph04z', 'sph05z', 'sph06z', 'sph07z', 'sph08z', 'sph09z', 'sph10z');
 var IDT = new Array('ln00t', 'ln01t', 'ln02t', 'ln03t', 'ln04t', 'ln05t', 'ln06t', 'ln07t', 'ln08t', 'ln09t', 'ln10t');
@@ -38,8 +39,8 @@ jQuery(document).ready(function(){
   document.F1.myFormTIME.value = a;
   init(0);
   myMercury();
-  TMan.add();
-  TMan.timer[0].setalerm(function() { GLoop(0); }, intvl);  //メインループセット
+  TimerID = TMan.add();
+  GLoop(TimerID);  //メインループセット
 });
 
 
@@ -73,6 +74,7 @@ function GLoop(id){
   else {
     viewp();
     if(bRunning) onRunning();
+/*
     var i;
     var n = 0;
     for(i = 0; i < planetnum; i++)
@@ -80,9 +82,8 @@ function GLoop(id){
     if(7 < n) intvl = 300;
     else if(3 < n) intvl = 150;
     else intvl = 50;
-    if(intvl == 50 && TMan.interval != intvl) TMan.changeinterval(intvl);
-    if(intvl == 150 && TMan.interval != intvl) TMan.changeinterval(intvl);
-    if(intvl == 300 && TMan.interval != intvl) TMan.changeinterval(intvl);
+    if(TMan.interval != intvl) TMan.changeinterval(intvl);
+*/
   }
 
   TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);  //メインループ再セット
@@ -557,8 +558,54 @@ function PlanetInit(dat) {
       var ddat = (datt - dat0t) / msecPerDay;
       var nday = ddat;
 
+
+
       var xx = new Array(new N6LVector(3));
-      var f = planet[i].kepler(nday, xx);
+      var vvA = new Array(new N6LVector(3));
+      var f = planet[i].kepler(nday, xx, vvA);
+      planet[i].x0 = new N6LVector(3);
+      planet[i].x0.x[0] = xx[0].x[0];
+      planet[i].x0.x[1] = xx[0].x[1];
+      planet[i].x0.x[2] = 0.0;
+      planet[i].v0 = new N6LVector(3);
+      planet[i].v0.x[0] = vvA[0].x[0];
+      planet[i].v0.x[1] = vvA[0].x[1];
+      planet[i].v0.x[2] = 0.0;
+
+
+      var xyz = new Array(new N6LVector(3));
+      planet[i].ecliptic(planet[i].x0.x[0], planet[i].x0.x[1], planet[i].x0.x[2], xyz);
+      if(isNaN(xyz[0].x[0]) || isNaN(xyz[0].x[1]) || isNaN(xyz[0].x[2])) {
+        planet[i].x0.x[0] = 0.0;
+        planet[i].x0.x[1] = 0.0;
+        planet[i].x0.x[2] = 0.0;
+      }
+      else {
+        planet[i].x0.x[0] = xyz[0].x[0];
+        planet[i].x0.x[1] = xyz[0].x[1];
+        planet[i].x0.x[2] = xyz[0].x[2];
+      }
+
+      var xyz2 = new Array(new N6LVector(3));
+      planet[i].ecliptic(planet[i].v0.x[0], planet[i].v0.x[1], planet[i].v0.x[2], xyz2);
+      if(isNaN(xyz2[0].x[0]) || isNaN(xyz2[0].x[1]) || isNaN(xyz2[0].x[2])) {
+        planet[i].v0.x[0] = 0.0;
+        planet[i].v0.x[1] = 0.0;
+        planet[i].v0.x[2] = 0.0;
+      }
+      else {
+        planet[i].v0.x[0] = xyz2[0].x[0];
+        planet[i].v0.x[1] = xyz2[0].x[1];
+        planet[i].v0.x[2] = xyz2[0].x[2];
+      }
+      //mp[i] = new N6LMassPoint(planet[i].x0, planet[i].v0, planet[i].m_m, planet[i].m_r, planet[i].m_e);
+
+
+/*
+
+      var xx = new Array(new N6LVector(3));
+      var vvA = new Array(new N6LVector(3));
+      var f = planet[i].kepler(nday, xx, vvA);
       planet[i].x0 = new N6LVector(3);
       planet[i].x0.x[0] = xx[0].x[0];
       planet[i].x0.x[1] = xx[0].x[1];
@@ -583,7 +630,8 @@ function PlanetInit(dat) {
       var xyz2 = new Array(new N6LVector(3));
 
       var xxx = new Array(new N6LVector(3));
-      planet[i].kepler(nday + (1.0 / (24.0 * 4.0) * planet[i].m_t), xxx);
+      var vvvA = new Array(new N6LVector(3));
+      planet[i].kepler(nday + (1.0 / (24.0 * 4.0) * planet[i].m_t), xxx, vvvA);
       var vv = xxx[0].Sub(xx[0]);
       //速度微調整
       planet[i].v0.x[0] = (vv.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * planet[i].m_t) / planet[i].CNST_C) * planet[i].m_mv;
@@ -601,6 +649,24 @@ function PlanetInit(dat) {
         planet[i].v0.x[1] = xyz2[0].x[1];
         planet[i].v0.x[2] = xyz2[0].x[2];
       }
+
+      var xyz3 = new Array(new N6LVector(3));
+      var ppp = new N6LPlanet(planet[i]);
+      ppp.x0 = new N6LVector(vvA[0]);
+      ppp.ecliptic(ppp.x0.x[0], ppp.x0.x[1], ppp.x0.x[2], xyz3);
+      if(isNaN(xyz3[0].x[0]) || isNaN(xyz3[0].x[1]) || isNaN(xyz3[0].x[2])) {
+        vvA[0].x[0] = 0.0;
+        vvA[0].x[1] = 0.0;
+        vvA[0].x[2] = 0.0;
+      }
+      else {
+        vvA[0].x[0] = xyz3[0].x[0];
+        vvA[0].x[1] = xyz3[0].x[1];
+        vvA[0].x[2] = xyz3[0].x[2];
+      }
+
+*/
+
       mp[i] = new N6LMassPoint(planet[i].x0, planet[i].v0, planet[i].m_m, planet[i].m_r, planet[i].m_e);
     }
 }
@@ -652,7 +718,8 @@ function setline() {
       var days = (dat.getTime() - planet[i].m_dat0.getTime()) / msecPerDay;
       var nday = days + ad;
       var xx = new Array(new N6LVector(3));
-      var f = planet[i].kepler(nday, xx);
+      var vvA = new Array(new N6LVector(3));
+      var f = planet[i].kepler(nday, xx, vvA);
       var eps = Math.PI / 32;
       if(Math.PI - eps < f && f < Math.PI + eps) ndayR = nday;
       var x1 = new N6LVector(3);

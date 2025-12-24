@@ -151,6 +151,10 @@ class N6LMassPoint {
         return false;
     };
 
+    clone() {
+      return new N6LMassPoint(this);
+    };
+
 }
 
 

@@ -240,6 +240,10 @@ class N6LPlanet {
         return false;
     };
 
+    clone() {
+      return new N6LPlanet(this);
+    };
+
     //construction//構築
     Create(pno, pname, nday, dat0, aa, ae, al0, anperday, ara, arb, at, aas, ai, aw, am, ar, amv) {
         this.m_pno = pno;              //planet no.//惑星番号

@@ -90,6 +90,10 @@ class N6LQuaternion {
         return false;
     };
 
+    clone() {
+      return new N6LQuaternion(this);
+    };
+
     Str() {
         var ret = '';
         ret = this.q.Str();
@@ -568,6 +572,10 @@ class N6LLnQuaternion {
         var ret = this.EpsComp(rh, eps);
         if(ret === 0) return true;
         return false;
+    };
+
+    clone() {
+      return new N6LLnQuaternion(this);
     };
 
     Str() {

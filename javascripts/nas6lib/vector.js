@@ -100,6 +100,10 @@ class N6LVector {
         return false;
     };
 
+    clone() {
+      return new N6LVector(this);
+    };
+
     Str() {
         var ret = '';
         var i;

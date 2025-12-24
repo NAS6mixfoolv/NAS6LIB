@@ -80,6 +80,10 @@ class N6LHsv {
         return false;
     };
 
+    clone() {
+      return new N6LHsv(this);
+    };
+
     Stra() {
         var ret = '';
         var i;

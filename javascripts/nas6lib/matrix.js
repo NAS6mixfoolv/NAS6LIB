@@ -114,6 +114,10 @@ class N6LMatrix {
         return false;
     };
 
+    clone() {
+      return new N6LMatrix(this);
+    };
+
     Str() {
         var ret = '';
         var i;

@@ -88,15 +88,13 @@ function recursiveClone(item, seen = new WeakSet()) {
   }
 
   // 循環参照のチェック
-  if (item && typeof item === 'object' && seen.has(item)) {
+  if (seen.has(item)) {
     throw new Error('Circular reference detected');
   }
-  if (item && typeof item === 'object') {
-    seen.add(item);
-  }
+  seen.add(item);
 
   // 1. clone() メソッドを持つ場合
-  if (item && typeof item.clone === 'function') {
+  if (typeof item.clone === 'function') {
     return item.clone();
   }
 
@@ -107,7 +105,7 @@ function recursiveClone(item, seen = new WeakSet()) {
   }
 
   // 3. プレーンなオブジェクトの場合
-  if (item && typeof item === 'object' && item.constructor === Object) {
+  if (item.constructor === Object) {
     const clonedObject = {};
     // --- 軽量化ポイント②: Object.keys() を使用 ---
     const keys = Object.keys(item);

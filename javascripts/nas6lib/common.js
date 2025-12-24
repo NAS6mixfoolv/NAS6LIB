@@ -282,9 +282,12 @@ class MyManagedClass {
         // 自作クラス（N6LVectorなど）を見つけた場合
         if (value && typeof value === 'object'&&value.constructor.name !== 'Object'&&value.constructor.name !== 'Array') {
     
+          // N6LVector のように Str() メソッドを持っている場合はそれを使う
           // toString() を持っているなら実行する
-          const stringRepresentation = typeof value.toString === 'function' ? value.toString() : "[Unknown Class]";
-          // 「中身」と「toStringの結果」を両方持つ新しいオブジェクトを返す
+          const stringRepresentation = typeof value.Str === 'function' ? value.Str() : 
+            (typeof value.toString === 'function' ? value.toString() : "[Unknown]");
+
+          // 「中身」と「Str/toStringの結果」を両方持つ新しいオブジェクトを返す
           return {
             _toString: stringRepresentation, // toString の結果をここに格納
             ...value                        // 本来の中身を展開して表示

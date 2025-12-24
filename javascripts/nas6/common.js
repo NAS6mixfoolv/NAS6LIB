@@ -190,6 +190,15 @@ const MyManagedClassDefaultProperty = Object.freeze({
   profile: Object.freeze({ name: "Default Name", age: 25 }),
   settings: Object.freeze({ theme: "light", notifications: true })
 });
+/*//参考//設計のヒント
+const MyManagedClassDefaultProperty = Object.freeze({
+  variablename: "DefaultInstance",
+  // ここを自分のプロジェクトで使いたい階層名（status, position, items等）に書き換えます
+  property01: Object.freeze({propety11: 1, propety21: 2, ...}),  
+  property02: Object.freeze({propety12: 3, propety22: 4, ...}),...  
+  //必要に応じて property03, property04... と任意の名前で増やしてもOKです
+});
+*/
 
 class MyManagedClass {
   constructor(p, deep = true) {

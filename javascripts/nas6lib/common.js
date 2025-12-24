@@ -233,11 +233,17 @@ class MyManagedClass {
   isThisType(rh){
     return rh instanceof MyManagedClass; 
   }
+
   toString(){
     try {
-      // JSON.stringify(データ, リプレイサー, スペース数)
+      const replacer = (key, value) => {
+        if (value && typeof value.toString === 'function' && value.constructor.name !== 'Object' && value.constructor.name !== 'Array') {
+          return value.toString(); // 自作クラスのtoStringを優先
+        }
+        return value;
+      };
       // スペース数に「2」を指定することで、JSONは2スペースでインデントされます。
-      const jsonString = JSON.stringify(this.property, null, 2); 
+      const jsonString = JSON.stringify(this.property, replacer, 2);      // JSON.stringify(データ, リプレイサー, スペース数)
         
       // JSON文字列の各行の先頭に、カスタムヘッダーに合わせたインデント（ここでは2スペース）を追加
       // 最初の中括弧{は除く

@@ -279,11 +279,37 @@ class MyManagedClass {
   toString(){
     try {
       const replacer = (key, value) => {
+        // 自作クラス（N6LVectorなど）を見つけた場合
+        if (value && typeof value === 'object'&&value.constructor.name !== 'Object'&&value.constructor.name !== 'Array') {
+    
+          // toString() を持っているなら実行する
+          const stringRepresentation = typeof value.toString === 'function' ? value.toString() : "[Unknown Class]";
+          // 「中身」と「toStringの結果」を両方持つ新しいオブジェクトを返す
+          return {
+            _toString: stringRepresentation, // toString の結果をここに格納
+            ...value                        // 本来の中身を展開して表示
+          };
+        }
+        return value;
+      };
+/*
+      const replacer = (key, value) => {
         if (value && typeof value.toString === 'function' && value.constructor.name !== 'Object' && value.constructor.name !== 'Array') {
+          // ここで return value.toString() をしてしまうと中身が消えるので
+          // 中身も見せたいなら、型情報を混ぜた新しいオブジェクトを返す
+          return {
+            __class: value.constructor.name,
+            ...value // 中身を展開して含める
+          };
+
           return value.toString(); // 自作クラスのtoStringを優先
         }
         return value;
       };
+      // スペース数に「2」を指定することで、JSONは2スペースでインデントされます。
+      const jsonString = JSON.stringify(this.property, replacer, 2);      // JSON.stringify(データ, リプレイサー, スペース数)
+      //const jsonString = JSON.stringify(this.property, null, 2);      // JSON.stringify(データ, リプレイサー, スペース数)
+*/
       // スペース数に「2」を指定することで、JSONは2スペースでインデントされます。
       const jsonString = JSON.stringify(this.property, replacer, 2);      // JSON.stringify(データ, リプレイサー, スペース数)
         

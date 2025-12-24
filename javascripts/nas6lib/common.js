@@ -81,6 +81,48 @@ function safeStructuredClone(item) {
 }
 
 function recursiveClone(item, seen = new WeakSet()) {
+// --- 軽量化ポイント①: プリミティブ型は即座に返す ---
+  // null, undefined, 数値, 文字列, booleanなどはコピー不要
+  if (item === null || typeof item !== 'object') {
+    return item;
+  }
+
+  // 循環参照のチェック
+  if (item && typeof item === 'object' && seen.has(item)) {
+    throw new Error('Circular reference detected');
+  }
+  if (item && typeof item === 'object') {
+    seen.add(item);
+  }
+
+  // 1. clone() メソッドを持つ場合
+  if (item && typeof item.clone === 'function') {
+    return item.clone();
+  }
+
+  // 2. 配列の場合
+  if (Array.isArray(item)) {
+    // mapは配列に対して非常に最適化されています
+    return item.map(element => recursiveClone(element, seen));
+  }
+
+  // 3. プレーンなオブジェクトの場合
+  if (item && typeof item === 'object' && item.constructor === Object) {
+    const clonedObject = {};
+    // --- 軽量化ポイント②: Object.keys() を使用 ---
+    const keys = Object.keys(item);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      clonedObject[key] = recursiveClone(item[key], seen);
+    }
+    return clonedObject;
+  }
+
+  // 4. その他（Date, RegExp等、どうしてもクローンが必要な特殊な型のみ）
+  // ここまで来るのは稀なので、安全策として残す
+  return safeStructuredClone(item);
+
+/*old version
   // 循環参照のチェック
   if (item && typeof item === 'object' && seen.has(item)) {
     throw new Error('Circular reference detected');
@@ -110,6 +152,8 @@ function recursiveClone(item, seen = new WeakSet()) {
 
   // 4. その他（プリミティブ値など）
   return safeStructuredClone(item);
+
+*/
 }
 
 function simpleDeepMerge(target, source, seen = new WeakSet(), deep = true) {

@@ -20,7 +20,17 @@ var time;
 var dt;
 var bRead = false;
 var bLAM = false;
-var intvl = 50;
+var intvl = 40;
+
+var PeriAPCs = [];
+var ApheAPCs = [];
+var PowPeriAPCs = [];
+var PowApheAPCs = [];
+var VariableRateDef = 10;
+var VariableRate = 10;
+var bent = false;
+var StDate = null;
+
 
 var CNST_AU = 1.49597870700e+11;
 
@@ -31,7 +41,70 @@ var mpadj = new Array();
 var mp = new Array();
 var rk = new N6LRngKt();
 
+var certification = 'NAS6OrbitData'; //ファイル認証
+
+
 jQuery(document).ready(function(){
+
+  jQuery("#export").click(function(){
+    var id = "download";
+    if((!planet) || (planet[1].typename !== "N6LPlanet")) return;
+    var target = planet[1];
+    var targetO = planet[0];
+    var ov = addlog2();
+    ov = commentOutOverview(ov);
+    var peri = getperilog();
+    peri = commentOutOverview(peri);
+
+    // プロパティ部分の再構築
+    var orbitCsvProperty = "# NAS6 Orbit Data Report\n" +
+        "# MaxLogLine: " + MaxCsvLogLine + "\n" +
+        "# Name: " + target.m_pname + "\n" + 
+        "# [Simulation Overview]\n" + 
+        ov + "\n" +
+        "# [Simulation Settings]\n" +
+        // 計算のステップ幅（deltaT）を秒単位で記録
+        "# DeltaT: " + dt + " [sec]\n" +
+        "# [Central Body Properties]\n" +
+        "# Central_Mass(M): " + targetO.m_m + " [kg]\n" + // 重力源の質量を取得
+        "# [Relativistic Parameters]\n" +
+        "# G: " + target.CNST_G + ", C: " + target.CNST_C + "[m/s]\n" +
+        "# [Theory Values]\n" +
+        "# rs[m] = 2GM/c^2: " + (2 * target.CNST_G * targetO.m_m / target.CNST_C / target.CNST_C) + "[m]\n" +
+        // 1周期あたりの近星点移動角 (rad/rev)
+        "# dphi[rad/rev] = (6πG(M+m))/(c^2a(1-e^2)): " + ((6 * Math.PI * target.CNST_G * (targetO.m_m + target.m_m)) / 
+                         (Math.pow(target.CNST_C, 2) * (target.m_a * target.CNST_AU) * (1 - Math.pow(target.m_e, 2)))) + "[rad/rev]\n" +
+        "# [Orbital Elements]\n" +
+        "# a: " + target.m_a + "[AU], e: " + target.m_e + ", P: " + target.m_t + "[year]\n" +
+        // m_l0は角度なので数値として出力、基準日は別途記載
+        "# L0(deg): " + target.m_l0 + "[deg]\n" + 
+        "# Base_nday: " + target.m_nday + "[days] (from 1996/1/1)\n" +
+　　　　"# perihelion: " + target.m_ra + "[AU], aphelion: " + target.m_rb + "[AU]\n" + 
+　　　　"# s: " + target.m_s + "[deg], i: " + target.m_i + "[deg], w: " + target.m_w + "[deg]\n" + 
+　　　　"# Mass(m): " + target.m_m + "[kg]\n" + 
+        "# --------------------------------------------------\n" +
+        "# ###      Gravitational simulation results      ###\n" +
+        "# --------------------------------------------------\n" +
+        "DateTime,TimeMS,R,PosX,PosY,PosZ,VelX,VelY,VelZ\n" +
+        "# --------------------------------------------------\n" +
+        orbitCsvContent +
+        "# --------------------------------------------------\n" +
+        "# ###             extreme value log              ###\n" +
+        "# --------------------------------------------------\n" +
+        "# [DateTime] on extreme name(id,R,bHomo,ArrayLength,PosX,PosY,PosZ); occurred!\n" +
+        "# --------------------------------------------------\n" +
+        peri + "\n";
+
+    var content = orbitCsvProperty;
+    var blob = new Blob([ content ], { "type" : "text/plain" });
+    // ブラウザ互換性のためのURL生成
+    var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    
+    jQuery("#" + id).attr("href", url);
+    // certification変数が定義されている前提
+    jQuery("#" + id).attr("download", certification + "_" + target.m_pname + ".csv");
+  });
+
   onNow();
   var a = eval(document.F2.T11.value);
   var b = eval(document.F2.T12.value) * 1000.0;
@@ -74,16 +147,7 @@ function GLoop(id){
   else {
     viewp();
     if(bRunning) onRunning();
-/*
-    var i;
-    var n = 0;
-    for(i = 0; i < planetnum; i++)
-      if(0.0 < mp[i].mass) n++;
-    if(7 < n) intvl = 300;
-    else if(3 < n) intvl = 150;
-    else intvl = 50;
     if(TMan.interval != intvl) TMan.changeinterval(intvl);
-*/
   }
 
   TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);  //メインループ再セット
@@ -409,7 +473,7 @@ function onAPP() {
 
 function onSTP() {
   bRunning = false;
-  init(1);
+  init(1, false);
 }
 
 function onREV() {
@@ -424,7 +488,7 @@ function onRUN() {
   init(1);
 }
 
-function init(b) {
+function init(b, bb = true) {
   Speed = Number(document.F1.SPD.value);
   if(b < 0) Speed *= -1;
   Zoom = Number(document.F1.ZOM.value);
@@ -445,6 +509,8 @@ function init(b) {
       mp[i] = new N6LMassPoint(v.ZeroVec(), v.ZeroVec(), -1, -1, -1);
     }
   }
+
+  if(bb) clearLog();
 
   var msecPerMinute = 1000 * 60;
   var msecPerHour = msecPerMinute * 60;
@@ -469,15 +535,28 @@ function InitRelative() {
   var msecPerDay = msecPerHour * 24;
   var days = eval(document.F1.myFormTIME.value) * 365.2425;
   dat = new Date(days * msecPerDay);
-  time = dat.getTime();
+  if (rk.epoch) {
+      time = rk.epoch.getTime() / 1000 + rk.time;
+      dat = new Date(time * 1000);
+  } else {
+      time = dat.getTime() / 1000;
+  }
   PlanetInit(dat);
   setline();
   dt = Speed * 60 * 60;
   var pmp = new Array();
   var i;
   for(i = 0; i < planetnum; i++) pmp[i] = new N6LMassPoint(mp[i]);
-  rk.Init(pmp, dt);
-  settime(dat);
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    rk.Init(pmp, dt, planet, dat, true);
+  }
+  else {
+    rk.Init(pmp, dt, planet, dat, false);
+  }
+
+  settime();
+  VariableRate = VariableRateDef / planet[1].m_t;
 }
 
 function UpdateFrameRelative() {
@@ -485,14 +564,13 @@ function UpdateFrameRelative() {
   var msecPerHour = msecPerMinute * 60;
   var msecPerDay = msecPerHour * 24;
 
-  var dat1;
   var tm = Math.abs(Speed) * msecPerDay / 1000;
   var adt = Math.abs(dt);
   var t;
   var i;
   if(dt != 0.0) {
     for(t = adt; t <= tm; t += adt) {
-      time = time + dt * 1000;
+      time = time + tm; // Accumulate the total elapsed time
       //質点アップデート
       rk.UpdateFrame()
 
@@ -503,22 +581,26 @@ function UpdateFrameRelative() {
       }
       rk.mp[0].x = rk.mp[0].x.ZeroVec();
     }
-    var datt = dat.getTime();
-    var dat1t = datt + time;
-    var dat1 = new Date(dat1t);
+
+    if (rk.epoch) {
+      time = rk.epoch.getTime() / 1000 + rk.time;
+    } else {
+      time = rk.time; 
+    }
+
     setmp();
     settime();
   } 
 }
 
-function settime(dat1) {
+function settime() {
   var msecPerMinute = 1000 * 60;
   var msecPerHour = msecPerMinute * 60;
   var msecPerDay = msecPerHour * 24;
-  var days = time / msecPerDay;
+  var days = time / msecPerDay * 1000;
   document.F1.myFormTIME.value = days / 365.2425;
 
-  dat = new Date(time);
+  dat = new Date(time * 1000);
   document.F1.my1FormTT1.value = dat.getFullYear();
   document.F1.my1FormTT2.value = dat.getMonth() + 1;
   document.F1.my1FormTT3.value = dat.getDate();
@@ -562,6 +644,7 @@ function PlanetInit(dat) {
 
       var xx = new Array(new N6LVector(3));
       var vvA = new Array(new N6LVector(3));
+      planet[i].m_nday = nday;
       var f = planet[i].kepler(nday, xx, vvA);
       planet[i].x0 = new N6LVector(3);
       planet[i].x0.x[0] = xx[0].x[0];
@@ -598,75 +681,6 @@ function PlanetInit(dat) {
         planet[i].v0.x[1] = xyz2[0].x[1];
         planet[i].v0.x[2] = xyz2[0].x[2];
       }
-      //mp[i] = new N6LMassPoint(planet[i].x0, planet[i].v0, planet[i].m_m, planet[i].m_r, planet[i].m_e);
-
-
-/*
-
-      var xx = new Array(new N6LVector(3));
-      var vvA = new Array(new N6LVector(3));
-      var f = planet[i].kepler(nday, xx, vvA);
-      planet[i].x0 = new N6LVector(3);
-      planet[i].x0.x[0] = xx[0].x[0];
-      planet[i].x0.x[1] = xx[0].x[1];
-      planet[i].x0.x[2] = 0.0;
-
-      var xyz = new Array(new N6LVector(3));
-      planet[i].ecliptic(planet[i].x0.x[0], planet[i].x0.x[1], planet[i].x0.x[2], xyz);
-      if(isNaN(xyz[0].x[0]) || isNaN(xyz[0].x[1]) || isNaN(xyz[0].x[2])) {
-        planet[i].x0.x[0] = 0.0;
-        planet[i].x0.x[1] = 0.0;
-        planet[i].x0.x[2] = 0.0;
-      }
-      else {
-        planet[i].x0.x[0] = xyz[0].x[0];
-        planet[i].x0.x[1] = xyz[0].x[1];
-        planet[i].x0.x[2] = xyz[0].x[2];
-      }
-
-      planet[i].v0 = new N6LVector(3);
-      
-      //ケプラー方程式から軌道速度を求める
-      var xyz2 = new Array(new N6LVector(3));
-
-      var xxx = new Array(new N6LVector(3));
-      var vvvA = new Array(new N6LVector(3));
-      planet[i].kepler(nday + (1.0 / (24.0 * 4.0) * planet[i].m_t), xxx, vvvA);
-      var vv = xxx[0].Sub(xx[0]);
-      //速度微調整
-      planet[i].v0.x[0] = (vv.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * planet[i].m_t) / planet[i].CNST_C) * planet[i].m_mv;
-      planet[i].v0.x[1] = (vv.x[1] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * planet[i].m_t) / planet[i].CNST_C) * planet[i].m_mv;
-      planet[i].v0.x[2] = 0.0;
-
-      planet[i].ecliptic(planet[i].v0.x[0], planet[i].v0.x[1], planet[i].v0.x[2], xyz2);
-      if(isNaN(xyz2[0].x[0]) || isNaN(xyz2[0].x[1]) || isNaN(xyz2[0].x[2])) {
-        planet[i].v0.x[0] = 0.0;
-        planet[i].v0.x[1] = 0.0;
-        planet[i].v0.x[2] = 0.0;
-      }
-      else {
-        planet[i].v0.x[0] = xyz2[0].x[0];
-        planet[i].v0.x[1] = xyz2[0].x[1];
-        planet[i].v0.x[2] = xyz2[0].x[2];
-      }
-
-      var xyz3 = new Array(new N6LVector(3));
-      var ppp = new N6LPlanet(planet[i]);
-      ppp.x0 = new N6LVector(vvA[0]);
-      ppp.ecliptic(ppp.x0.x[0], ppp.x0.x[1], ppp.x0.x[2], xyz3);
-      if(isNaN(xyz3[0].x[0]) || isNaN(xyz3[0].x[1]) || isNaN(xyz3[0].x[2])) {
-        vvA[0].x[0] = 0.0;
-        vvA[0].x[1] = 0.0;
-        vvA[0].x[2] = 0.0;
-      }
-      else {
-        vvA[0].x[0] = xyz3[0].x[0];
-        vvA[0].x[1] = xyz3[0].x[1];
-        vvA[0].x[2] = xyz3[0].x[2];
-      }
-
-*/
-
       mp[i] = new N6LMassPoint(planet[i].x0, planet[i].v0, planet[i].m_m, planet[i].m_r, planet[i].m_e);
     }
 }
@@ -748,21 +762,6 @@ function setline() {
       MatWK.x[k].bHomo = false;
     }
     VecWK = MatWK.NormalMat().Vector();
-
-/*遠日点から開始コメントアウト
-    var a;
-    var b = 0;
-    var c;
-    for(a = 0; a < planetnum; a++)
-      if(0.0 < mp[a].mass){b++;c=a;}
-    if(b == 2 && i) {
-      var msecPerMinute = 1000 * 60;
-      var msecPerHour = msecPerMinute * 60;
-      var msecPerDay = msecPerHour * 24;
-      document.F1.myFormTIME.value = (ndayR + planet[c].m_dat0.getTime() / msecPerDay) / 365.2425;
-      dat = new Date(ndayR * msecPerDay + planet[c].m_dat0.getTime());
-    }
-*/
     var elm;
     var sp;
 
@@ -795,6 +794,7 @@ function myMercury(){
   document.F1.my1FormLTT0.value = 338.653;
   document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.2;
+  document.F2.THEO.value = 43.11;
   onAPP();
 }
 
@@ -817,6 +817,7 @@ function myVenus(){
   document.F1.my1FormLTT0.value = 160.49;
   document.F1.SPD.value = 2;
   document.F1.ZOM.value = 0.5;
+  document.F2.THEO.value = 8.62;
   onAPP();
 }
 
@@ -839,6 +840,7 @@ function myEarth(){
   document.F1.my1FormLTT0.value = 176.453;
   document.F1.SPD.value = 2;
   document.F1.ZOM.value = 1;
+  document.F2.THEO.value = 3.84;
   onAPP();
 }
 
@@ -861,6 +863,7 @@ function myMars(){
   document.F1.my1FormLTT0.value = 68.889;
   document.F1.SPD.value = 3;
   document.F1.ZOM.value = 1;
+  document.F2.THEO.value = 1.35;
   onAPP();
 }
 
@@ -883,6 +886,7 @@ function myJupiter(){
   document.F1.my1FormLTT0.value = 273.712;
   document.F1.SPD.value = 10;
   document.F1.ZOM.value = 2.5;
+  document.F2.THEO.value = 0.06;
   onAPP();
 }
 
@@ -905,6 +909,7 @@ function mySaturn(){
   document.F1.my1FormLTT0.value = 274.229;
   document.F1.SPD.value = 20;
   document.F1.ZOM.value = 5;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -927,6 +932,7 @@ function myUranus(){
   document.F1.my1FormLTT0.value = 126.044;
   document.F1.SPD.value = 40;
   document.F1.ZOM.value = 10;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -949,6 +955,7 @@ function myNeptune(){
   document.F1.my1FormLTT0.value = 248.574;
   document.F1.SPD.value = 60;
   document.F1.ZOM.value = 15;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -971,6 +978,7 @@ function myPluto(){
   document.F1.my1FormLTT0.value = 9.236;
   document.F1.SPD.value = 90;
   document.F1.ZOM.value = 20;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -993,6 +1001,7 @@ function myCeres(){
   document.F1.my1FormLTT0.value = 37.9;
   document.F1.SPD.value = 5;
   document.F1.ZOM.value = 1.5;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -1015,6 +1024,7 @@ function myPallas(){
   document.F1.my1FormLTT0.value = 24.0;
   document.F1.SPD.value = 5;
   document.F1.ZOM.value = 1.5;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -1037,6 +1047,7 @@ function myJuno(){
   document.F1.my1FormLTT0.value = 251.4;
   document.F1.SPD.value = 5;
   document.F1.ZOM.value = 1.5;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -1059,6 +1070,7 @@ function myVesta(){
   document.F1.my1FormLTT0.value = 280.7;
   document.F1.SPD.value = 5;
   document.F1.ZOM.value = 1.5;
+  document.F2.THEO.value = 0.01;
   onAPP();
 }
 
@@ -1081,6 +1093,30 @@ function myChiron(){
   document.F1.my1FormLTT0.value = 357.5;
   document.F1.SPD.value = 40;
   document.F1.ZOM.value = 9;
+  document.F2.THEO.value = 0.01;
+  onAPP();
+}
+
+function myHalley(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.9671;
+  document.F1.my1FormRA1.value = 0.586;
+  document.F1.my1FormRA2.value = 35.08;
+  document.F1.my1FormP.value = 75.32;
+  document.F1.my1FormM2.value = 2.2E+14;
+  document.F1.my1FormM1.value = 1.9891e+30;
+  document.F1.my1FormOMG.value = 58.42;
+  document.F1.my1FormINC.value = 162.26;
+  document.F1.my1FormOmg.value = 111.33;
+  document.F1.my1FormTT0.value = 24.129174452589716;
+  document.F1.my1FormLTT0.value = 38.38;
+  document.F1.SPD.value = 60;
+  document.F1.ZOM.value = 15;
+  document.F2.THEO.value = 1.958;
   onAPP();
 }
 
@@ -1103,6 +1139,7 @@ function myPSRB1913(){
   document.F1.my1FormLTT0.value = 0;
   document.F1.SPD.value = 0.01;
   document.F1.ZOM.value = 0.01;
+  document.F2.THEO.value = 1519200;
   onAPP();
 }
 
@@ -1112,7 +1149,7 @@ function myPSRJ0737(){
   radioList = document.getElementsByName("deg");
   radioList[0].checked = true;
   document.F1.my1FormT0.value = 0;
-  document.F1.my1FormE.value = 0;
+  document.F1.my1FormE.value = 0.087777;
   document.F1.my1FormRA1.value = 0.0026738348;
   document.F1.my1FormRA2.value = 0.0026738348;
   document.F1.my1FormP.value = 0.000085978196;
@@ -1125,6 +1162,7 @@ function myPSRJ0737(){
   document.F1.my1FormLTT0.value = 0;
   document.F1.SPD.value = 0.001;
   document.F1.ZOM.value = 0.0025;
+  document.F2.THEO.value = 608400;
   onAPP();
 }
 
@@ -1147,6 +1185,7 @@ function myISS(){
   document.F1.my1FormLTT0.value = 268.6108;
   document.F1.SPD.value = 0.001;
   document.F1.ZOM.value = 0.00003;
+  document.F2.THEO.value = 25000;
   onAPP();
 }
 
@@ -1173,6 +1212,7 @@ function mySwingby() {
   document.F1.myFormTIME.value = 0;
   document.F1.SPD.value = 7;
   document.F1.ZOM.value = 4;
+  document.F2.THEO.value = 0.01;
   dat = new Date(0);
   onAPP();
   radioList = document.getElementsByName("PUTSEL");
@@ -1223,3 +1263,544 @@ function onNow(){
   document.F2.T6.value = second;
   onTCLC();
 }
+
+
+//[2026/11/12 17:52:40] onPerihelion(1, 45976236901.762596, false,3,10011654695.969667,44789362427.724174,2739537719.0180736); occurred!
+var PeriSumDelta = 0, ApheSumDelta = 0, PeriSumDeltaRad = 0, ApheSumDeltaRad = 0, PeriCurrent = 0, ApheCurrent = 0, FstPeriTheta = 0, FstApheTheta = 0, PeriNum = 0, ApheNum = 0;
+//var IdleLaps = 50, bcalc = true, SumLaps = 0;//スライドあり
+var IdleLaps = 50, bcalc = false, SumLaps = 0;//スライドなし
+var FstPeriPos = null, FstAphePos = null, FstSidePos = null, bInit = 0;
+var vx = null, vy = null, vz = null;
+//var nextLogTime = null, lastPos = null, lastTime = null;
+var theory = 0, theoryrad = 0;
+var nextLogTime = null, lastPos = null, lastVel = null, lastTimeMS = null;
+var MaxCsvLogLine = 0;
+var orbitCsvContent = "";
+var lap = 0, PeriAve = 0, ApheAve = 0, PeriAveRad = 0, ApheAveRad = 0, targettheta = null;
+
+
+
+
+function Average(dataArray) {
+  if(dataArray.length < 1) return 0;
+  var ret = 0;
+  var i;
+  for(i = 0; i < dataArray.length; i++){
+    ret += dataArray[i];
+  }
+  return (ret / dataArray.length)
+}
+
+// 例：外れ値を除外して平均を出す関数
+function getRobustAverage(dataArray) {
+    // 1. NaN や undefined を計算対象から完全に除外する
+    let cleanData = dataArray.filter(x => typeof x === 'number' && !isNaN(x));
+
+    // データが空になった場合のガード
+    if (cleanData.length === 0) return 0;
+
+    // 2. 基本平均の計算
+    let avg = cleanData.reduce((a, b) => a + b, 0) / cleanData.length;
+    
+    // データが少ない場合は、外れ値除去をせずに返す
+    if (cleanData.length < 8) return avg;
+
+    // 3. 標準偏差の計算
+    let variance = cleanData.map(x => Math.pow(x - avg, 2)).reduce((a, b) => a + b, 0) / cleanData.length;
+    let stdDev = Math.sqrt(variance);
+
+    // 全データが同じ値（stdDev=0）なら、そのまま平均を返す
+    if (stdDev === 0) return avg;
+
+    // 4. 2σ（シグマ）より外側のデータを省く（異常値除去）
+    let filtered = cleanData.filter(x => Math.abs(x - avg) < 2 * stdDev);
+
+    // 5. フィルタ後の平均を返す（空なら元のavg）
+    if (filtered.length === 0) return avg;
+
+    return filtered.reduce((a, b) => a + b, 0) / filtered.length;
+}
+
+function clearLog() {
+    PeriAPCs = [];
+    ApheAPCs = [];
+    PowPeriAPCs = [];
+    PowApheAPCs = [];
+    PeriSumDelta = 0, ApheSumDelta = 0, PeriSumDeltaRad = 0, ApheSumDeltaRad = 0, PeriCurrent = 0, ApheCurrent = 0, FstPeriTheta = 0, FstApheTheta = 0, PeriNum = 0, ApheNum = 0;
+    lap = 0, PeriAve = 0, ApheAve = 0, PeriAveRad = 0, ApheAveRad = 0, targettheta = null;
+    StDate = null;
+
+    //IdleLaps = 50, bcalc = true, SumLaps = 0;//スライドあり
+    IdleLaps = 50, bcalc = false, SumLaps = 0;//スライドなし
+    FstPeriPos = null, FstAphePos = null, FstSidePos = null, bInit = 0;
+    vx = null, vy = null, vz = null;
+    nextLogTime = null, lastPos = null, lastVel = null, lastTimeMS = null;
+    var pt = planet[1].m_t; //公転周期[年]
+    var target = planet[1];
+    var targetO = planet[0];
+    theoryrad = ((6 * Math.PI * target.CNST_G * (targetO.m_m + target.m_m)) / 
+                         (Math.pow(target.CNST_C, 2) * (target.m_a * target.CNST_AU) * (1 - Math.pow(target.m_e, 2))))
+    theory = convertToArcsecPerCentury(theoryrad, pt, 1);
+    document.F2.THEO.value = theory;
+
+
+// フォームから最新の制限値を取得
+    MaxCsvLogLine = parseInt(document.getElementById('MAXLOGLINE').value) || 1000;
+    orbitCsvContent = "";
+
+    const logEl = document.getElementById('log-output');
+    const logEl2 = document.getElementById('log-output2');
+    const logEl3 = document.getElementById('log-output3');
+
+    logEl.innerHTML = '';
+    logEl2.textContent = 'Log cleared. Waiting for new data...';
+    logEl3.textContent = '';
+    
+    console.log("ログをクリアしました。");
+}
+
+function convertToArcsecPerCentury(rad, pt, lap) {
+    if ((pt === 0)||(lap <= 0)) return 0;
+
+    // 1. ラジアンを秒角に変換
+    const arcsec = rad * (180 / Math.PI) * 3600;
+
+    // 2. 100年あたりに換算 (100[年] / pt[周期] / lap[周])
+    const result = arcsec * (100 / pt / lap);
+
+    return result;
+}
+
+function getCoordinates(logText) {
+    // 括弧内の文字列を抽出
+    const start = logText.indexOf('(') + 1;
+    const end = logText.lastIndexOf(')');
+    const csvContent = logText.substring(start, end);
+    const dataArray = csvContent.split(',').map(item => item.trim());
+
+    const x = parseFloat(dataArray[4]);
+    const y = parseFloat(dataArray[5]);
+    const z = parseFloat(dataArray[6]);
+
+    return new N6LVector([x, y, z], false);
+}
+function NormalizeRad(th) {
+  // 1. まず -2π ～ 2π の範囲に収める
+  var ret = th % (Math.PI * 2.0);
+  
+  // 2. 0 ～ 2π の範囲に持ち上げる（負の数対策）
+  if (ret < 0) ret += Math.PI * 2.0;
+  
+  // 3. -π ～ π の範囲に変換する
+  if (ret > Math.PI) ret -= Math.PI * 2.0;
+  
+  return ret;
+}
+
+function addlog2(str = ""){
+    //abs(理論値 - 実測値) / 理論値 * 100
+    var NowDate = new Date();
+    var ctime = (NowDate.getTime() - StDate.getTime()) / 1000;
+    var pt = planet[1].m_t; //公転周期[年]
+    var dttt = lap * pt;
+    str += "\n計算時間 = " + Number(ctime).toFixed(6) + " [秒]";
+    str += "\ndeltaT = " + Number(dt / 60 / 60 / 24 / 365.2425).toFixed(6) + " [年] ←→ "+ Number(dt).toFixed(6) + " [秒]";
+    str += "\nlaps = " + Number(lap) + " [周]";
+    str += "\n計測期間 = " + Number(dttt).toFixed(6) + " [年]";
+    str = str + "\n現在の角度 = " + targettheta;
+    str = str + "\n基準角度(Peri) = " + FstPeriTheta;
+    str = str + "\n理論値からの平均のずれ(Peri)[秒角/100年] = " + PeriAve;
+    str = str + "\n理論値からの平均のずれ(Peri)[rad/rev] = " + PeriAveRad;
+    str = str + "\n基準角度(Aphe) = " + FstApheTheta;
+    str = str + "\n理論値からの平均のずれ(Aphe)[秒角/100年] = " + ApheAve;
+    str = str + "\n理論値からの平均のずれ(Aphe)[rad/rev] = " + ApheAveRad;
+//if(theory){
+    // 理論値：theory (rad/rev)
+    // 実測値（平均）：PeriAveRad (rad/rev)
+    // 1周期あたりの近星点移動角 (rad/rev)
+    //"# dphi[rad/rev] = (6πG(M+m))/(c^2a(1-e^2)): " +  + "[rad/rev]\n"
+    var deltaperirad = (theoryrad - PeriAveRad) / theoryrad * 100;
+    var accuracyrad = (100 - deltaperirad); // 正解率（再現率）
+    str = str + "\n[近日点の進動角の評価 [rad/rev]]";
+    str = str + "\n理論値 (Theory) = " + theoryrad.toExponential(6);
+    str = str + "\n実測値 (Measured) = " + PeriAveRad.toExponential(6);
+    str = str + "\n再現率 (Accuracy)[%] = " + accuracyrad.toFixed(3);
+    var deltaperi = (theory - PeriAve) / theory * 100;
+    var accuracy = (100 - deltaperi); // 正解率（再現率）
+    str = str + "\n[近日点の進動角の評価 [秒角/100年]]";
+    str = str + "\n理論値 (Theory) = " + theory.toExponential(6);
+    str = str + "\n実測値 (Measured) = " + PeriAve.toExponential(6);
+    str = str + "\n再現率 (Accuracy)[%] = " + accuracy.toFixed(3);
+//}
+    return str;
+}
+
+
+function updateAve(posx) {
+    const logEl = document.getElementById('log-output');
+    const logEl2 = document.getElementById('log-output2');
+
+    // 全体数を取得
+    const totalCount = logEl.children.length;
+
+    var targetChild = logEl.children[totalCount - 1];
+    var logText = targetChild.innerText;
+
+    // 1. カンマ分割してIDを確認
+    const start = logText.indexOf('(') + 1;
+    const end = logText.lastIndexOf(')');
+    const csvContent = logText.substring(start, end);
+    const dataArray = csvContent.split(',').map(item => item.trim());
+
+    // IDが "1" でない場合は無視して次へ
+    if (dataArray[0] !== "1") {
+        return;
+    }
+
+    var pt = planet[1].m_t; //公転周期[年]
+    // 2. 座標と角度を取得
+    var logpos = new N6LVector([parseFloat(dataArray[4]), parseFloat(dataArray[5]), parseFloat(dataArray[6])]);
+
+    if(vx !== null){
+      targettheta = rk.calculateTheta(logpos);
+    }
+
+    //3.近日点と遠日点のふりわけ
+    if(logText.includes("onPerihelion")) {
+        if(bInit < 2) return;
+        if(bInit === 2){
+            bInit++;
+            FstPeriTheta = targettheta;
+
+        }
+        if(rk.bbperi === 2){
+            FstPeriTheta = rk.perith;
+        }
+        if(FstPeriTheta){
+          PeriCurrent = NormalizeRad(targettheta - FstPeriTheta);
+          PeriNum++;
+          lap = PeriNum - 1;
+          if(lap < 1) return;
+          PeriAveRad = PeriCurrent; 
+          // その「1周あたりの平均」を 100年あたりに換算する
+          // convertToArcsecPerCentury(1周あたりのrad, 周期pt, 周回数1)
+          PeriAve = convertToArcsecPerCentury(PeriAveRad, pt, 1);
+       }
+    } else {
+        if(bInit < 3) return;
+        if(bInit === 3){
+            bInit++;
+            FstApheTheta = targettheta;
+        }
+        if(rk.bbaphe === 2){
+            FstApheTheta = rk.apheth;
+        }
+        if(FstApheTheta){
+          ApheCurrent = NormalizeRad(targettheta - FstApheTheta);
+          ApheNum++;
+          lap = ApheNum - 1;
+          if(lap < 1) return;
+          ApheAveRad = ApheCurrent; 
+          // その「1周あたりの平均」を 100年あたりに換算する
+          // convertToArcsecPerCentury(1周あたりのrad, 周期pt, 周回数1)
+          ApheAve = convertToArcsecPerCentury(ApheAveRad, pt, 1);
+        }
+    }
+
+    if((FstPeriTheta === 0)||(FstApheTheta === 0)) return;
+    if((PeriNum < 2)||(ApheNum < 2)) return;
+
+    if(StDate === null) StDate = new Date();
+
+    var str = "";
+    str = addlog2(str);
+
+   logEl2.textContent = str + "\n\n";
+}
+
+// 例：ログが一定数を超えたら古いものを消す処理（もし未実装であれば）
+function updateLog(str, logEl, er = true) {
+    const MLEl = document.getElementById('MAXLINE');
+    const newLog = document.createElement('div');
+    newLog.textContent = str;
+    logEl.appendChild(newLog);
+
+if(er){
+
+    // 最大行数を超えたら古いものから削除
+    while (MLEl.value < logEl.childNodes.length) {
+        logEl.removeChild(logEl.firstChild);
+    }
+
+}
+
+    // 常に最新が見えるようにスクロール
+    logEl.scrollTop = logEl.scrollHeight;
+
+}
+
+//オーバーライドして振る舞いを変更
+//近日点イベント 天体番号、距離、座標を通知
+N6LRngKt.prototype.onPerihelion = function (i, lr, pos, time) {
+    if(i !== 1) return;
+    var checkList = document.getElementsByName("calcPeri");
+    if(checkList[0].checked){
+      var str = "";
+      if(this.epoch){
+        var datt = this.epoch.getTime(); // Get the timestamp of the base date
+        var dat1t = datt + time * 1000; // Calculate the new timestamp
+        var dat1 = new Date(dat1t); // Create a new Date object for the updated time
+        str = "[" + dat1.toLocaleString() + "] onPerihelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!";
+      }
+      else {
+        str = "[NoDateData] onPerihelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!";
+      }
+        var pos3 = new N6LVector([pos.x[0], pos.x[1], pos.x[2]]);
+        if(bInit === 0) {
+            bInit++;
+            FstPeriPos = new N6LVector(pos3);
+        }
+      const logEl = document.getElementById('log-output');
+
+      console.log(str);
+      updateLog(str, logEl);
+      updateAve(pos);
+  }
+};
+//遠日点イベント 天体番号、距離、座標を通知
+N6LRngKt.prototype.onAphelion = function (i, lr, pos, time) {
+    if(i !== 1) return;
+    var checkList = document.getElementsByName("calcPeri");
+    if(checkList[0].checked){
+      var str = "";
+      if(this.epoch){
+        var datt = this.epoch.getTime(); // Get the timestamp of the base date
+        var dat1t = datt + time * 1000; // Calculate the new timestamp
+        var dat1 = new Date(dat1t); // Create a new Date object for the updated time
+        str = "[" + dat1.toLocaleString() + "] onAphelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!";
+      }
+      else {
+        str = "[NoDateData] onAphelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!";
+      }
+        var pos3 = new N6LVector([pos.x[0], pos.x[1], pos.x[2]]);
+        if(bInit === 0) {
+            bInit++;
+            FstAphePos = new N6LVector(pos3);
+        }
+
+      const logEl = document.getElementById('log-output');
+
+      console.log(str);
+      updateLog(str, logEl);
+      updateAve(pos);
+    }
+};
+
+
+N6LRngKt.prototype.onSide = function (i, lr, pos) {
+  if(i !== 1) return;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    var pos3 = new N6LVector([pos.x[0], pos.x[1], pos.x[2]]);
+    if(bInit === 1) {
+      bInit++;
+      FstSidePos = new N6LVector(pos3);
+      vx = new N6LVector(rk.normX);
+      vy = new N6LVector(rk.normY);
+      vz = new N6LVector(rk.normZ);
+    }
+  }
+}
+N6LRngKt.prototype.OnEnterPerihelion = function (i) {
+  if(i !== 1) return;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+// 3600で10、360で2を完璧に通るスケーリング関数
+    // vr = a * log10(dt) + b 
+    // a = (10 - 2) / (log10(3600) - log10(360)) = 8 / 1 = 8
+    // b = 10 - 8 * log10(3600) = 10 - 8 * 3.556 = -18.45
+    
+    var log10dt = Math.log10(Math.max(dt, 1.1));
+    var vr = 8 * log10dt - 18.45; 
+    
+    if(1 < vr) this.dt = dt / vr;
+    else this.dt = dt;
+    
+    bent = true;
+  }
+}
+
+N6LRngKt.prototype.OnExitPerihelion = function (i) {
+  if(i !== 1) return;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    this.dt = dt;
+    bent = false;
+  }
+}
+
+N6LRngKt.prototype.OnEnterAphelion = function (i) {
+  if(i !== 1) return;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+// 3600で10、360で2を完璧に通るスケーリング関数
+    // vr = a * log10(dt) + b 
+    // a = (10 - 2) / (log10(3600) - log10(360)) = 8 / 1 = 8
+    // b = 10 - 8 * log10(3600) = 10 - 8 * 3.556 = -18.45
+    
+    var log10dt = Math.log10(Math.max(dt, 1.1));
+    var vr = 8 * log10dt - 18.45; 
+    
+    if(1 < vr) this.dt = dt / vr;
+    else this.dt = dt;
+    
+    bent = true;
+  }
+}
+
+N6LRngKt.prototype.OnExitAphelion = function (i) {
+  if(i !== 1) return;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    this.dt = dt;
+    bent = false;
+  }
+}
+
+
+N6LRngKt.prototype.OnDispLog = function (i, pos, vel) {
+  if (i !== 1) return;
+
+  // --- 動的インターバル計算 (ミリ秒) ---
+  var orbitLogNum = 3; 
+  // i 番目の惑星の周期を直接参照し、ミリ秒に変換する
+  var orbitPeriodMS = this.planet[i].m_t * 3600 * 24 * 365.2425 * 1000;
+  var minIntervalMS = Math.max(orbitPeriodMS / orbitLogNum, 1000);
+
+  var currentSimTimeMS = this.epoch.getTime() + this.time * 1000;
+
+  if (nextLogTime === null) {
+    nextLogTime = currentSimTimeMS; 
+    lastPos = new N6LVector(pos);
+    lastVel = new N6LVector(vel);
+    lastSimTimeMS = currentSimTimeMS;
+    return;
+  }
+
+  if (nextLogTime <= currentSimTimeMS) {
+    var stepDeltaMS = currentSimTimeMS - lastSimTimeMS;
+    if (stepDeltaMS > 0) {
+      var t = Math.max(0, Math.min(1, (stepDeltaMS - (currentSimTimeMS - nextLogTime)) / stepDeltaMS));
+
+      var adjustedPos = lastPos.Add(pos.Sub(lastPos).Mul(t));
+      var adjustedVel = lastVel.Add(vel.Sub(lastVel).Mul(t));
+      
+      var r = adjustedPos.Abs();
+      var v = adjustedVel.Abs();
+
+
+      // 表示用とCSV記録用のDateオブジェクト
+      var displayDate = new Date(nextLogTime);
+      
+      // CSV用：世界標準のISO形式 (例: 2026-04-03T12:00:00.000Z)
+      var dateStr = displayDate.toISOString(); 
+
+      var csvLine = dateStr + "," + 
+                    nextLogTime + "," +  
+                    r.toFixed(12) + "," +  
+                    adjustedPos.x[0].toFixed(12) + "," +  
+                    adjustedPos.x[1].toFixed(12) + "," +  
+                    adjustedPos.x[2].toFixed(12) + "," +  
+                    adjustedVel.x[0].toFixed(12) + "," +  
+                    adjustedVel.x[1].toFixed(12) + "," +  
+                    adjustedVel.x[2].toFixed(12) + "\n";
+      
+      orbitCsvContent += csvLine;
+      orbitCsvContent = MaxLineLog(orbitCsvContent, MaxCsvLogLine); 
+
+      // 画面表示は人間が見やすい形式で
+      var str = "[" + displayDate.toLocaleString() + "] R:" + r.toFixed(6) + " V:" + v.toFixed(6);
+      updateLog(str, document.getElementById('log-output3'));
+    }
+
+    while (nextLogTime <= currentSimTimeMS) {
+        nextLogTime += minIntervalMS;
+    }
+  }
+
+  lastPos = new N6LVector(pos);
+  lastVel = new N6LVector(vel);
+  lastSimTimeMS = currentSimTimeMS;
+};
+
+function MaxLineLog(str, maxline) {
+  // 文字列を行に分割して制限をチェック
+  var Lines = str.split("\n");
+  // Linesには末尾の空行が含まれるため -1 で判定
+  if ((Lines.length - 1) > maxline) {
+    // 先頭（古いデータ）を1行削除して結合し直す
+    Lines.shift(); 
+    str = Lines.join("\n");
+  }
+  return str;
+}
+
+
+/**
+ * 文字列から空行を削除し、各行の先頭に "# " を追加する
+ * @param {string} text - 処理対象の文字列
+ * @returns {string} - 空行が除去され、各行がコメントアウトされた文字列
+ */
+function commentOutOverview(text) {
+    return text.split('\n')
+        .map(line => line.trim())         // 行前後の空白を削除
+        .filter(line => line.length > 0)   // 空行（長さ0）を除外
+        .map(line => {
+            // すでに "#" で始まっている場合はそのまま、そうでなければ "# " を付与
+            return line.startsWith("#") ? line : "# " + line;
+        })
+        .join('\n');
+}/*
+// 使い方
+var simulationOverview = "計算時間 = 41.811000 [秒]\nlaps = 9 [周]...";
+var commentedOverview = commentOutOverview(simulationOverview);
+*/
+
+/**
+ * log-output内の全ログを取得し、strに追記して返す
+ * @param {string|null} str - 追記対象の文字列
+ * @returns {string} ログが追記された文字列
+ */
+function getperilog(str = null) {
+    const logEl = document.getElementById('log-output');
+    let logData = "";
+
+    // 子要素（各ログ行）をループしてテキストを取得
+    if (logEl && logEl.childNodes) {
+        logEl.childNodes.forEach(node => {
+            // テキストが存在する場合のみ改行付きで追加
+            if (node.textContent) {
+                logData += node.textContent + "\n";
+            }
+        });
+    }
+
+    // 引数 str が null の場合は空文字として扱い、ログを追記
+    return (str || "") + logData;
+}
+
+
+    //schwartz correction term//シュワルツシルト補正項
+N6LRngKt.prototype.ToSchwartz = function (v, e) {
+     var radioList = document.getElementsByName("CALCMODE");
+     if(radioList[0].checked) {
+        var ret = 3.0 * v * v / ( 1.0 - (e * e)); //楕円一般相対論//eは一周の積分するときに必要
+        if(0.95 < e) ret = -0.5 * v * v;          //直線特殊相対論
+        return ret;//相対論
+     }
+     return 0;//古典論
+};
+
+
+
+

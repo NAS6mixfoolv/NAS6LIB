@@ -29,11 +29,11 @@ var Zoom = 1.0; // Zoom level for X3DOM scene
 var CalcWay = 0; // Calculation method (0: Keplerian orbits, 1: N-body simulation)
 var fFst = 1; // First run flag (1: initial setup, -1: after first setup, 0: running)
 var dat; // Current date object for simulation
-var time; // Elapsed time in simulation (milliseconds)
+var time; // Elapsed time in simulation (seconds)
 var dt; // Time step for each simulation frame
 var bRead = false; // Flag to check if planet data has been read from CSV
 var bLAM = false; // Unused variable (possibly for LookAtMatrix, but not used in provided code)
-var intvl = 50; // Interval for the main loop timer (in milliseconds)
+var intvl = 40; // Interval for the main loop timer (in milliseconds)
 
 // Astronomical Unit (AU) in meters for scaling
 var CNST_AU = 1.49597870700e+11;
@@ -197,7 +197,7 @@ function onRunning() {
     time = 0.0; // Reset accumulated simulation time
     // Set the time step (dt) based on the chosen calculation method
     if(CalcWay) dt = Speed * 60 * 60; // For N-body, dt is in seconds (speed * 1 hour in seconds)
-    else dt = Speed * msecPerDay; // For Kepler, dt is in milliseconds (speed * 1 day in ms)
+    else dt = Speed * msecPerDay / 1000; // For Kepler, dt is in milliseconds (speed * 1 day in sec)
   }
   
   // Call the appropriate frame update function based on the calculation method
@@ -227,12 +227,13 @@ function UpdateFrameKepler() {
   var msecPerDay = msecPerHour * 24;
 
   var dat1; // Variable to hold the new calculated date
-  var day = time / msecPerDay; // Calculate elapsed days from simulation start time
+  var day = time / msecPerDay * 1000; // Calculate elapsed days from simulation start time
   var tm = dt; // Current time step for this frame
   if(dt != 0.0) { // Only proceed if the time step is not zero
     time = time + tm; // Accumulate the total elapsed time
+
     var datt = dat.getTime(); // Get the timestamp of the base date
-    var dat1t = datt + time; // Calculate the new timestamp by adding elapsed time
+    var dat1t = datt + time * 1000; // Calculate the new timestamp by adding elapsed time
     var dat1 = new Date(dat1t); // Create a new Date object for the updated time
 
     PlanetInit(dat1);    // Re-initialize planet positions based on the new date
@@ -254,7 +255,7 @@ function InitRelative() {
   var pmp = new Array(); // Temporary array to hold mass points for the Runge-Kutta solver
   var i;
   for(i = 0; i < planetnum; i++) pmp[i] = new N6LMassPoint(mp[i]); // Create copies of current mass points
-  rk.Init(pmp, dt); // Initialize the Runge-Kutta (rk) solver with the mass points and time step
+  rk.Init(pmp, dt, planet, dat, false); // Initialize the Runge-Kutta (rk) solver with the mass points and time step
 }
 
 // Updates the simulation frame using the N-body (relative) calculation method.
@@ -270,12 +271,19 @@ function UpdateFrameRelative() {
   var adt = Math.abs(dt); // Absolute value of the time step
   var t; // Loop counter for sub-steps
   var i; // Loop counter for planets
+  var datt = dat.getTime(); // Get the timestamp of the base date
+  var dat1t = datt + time * 1000; // Calculate the new timestamp
+  var dat1 = new Date(dat1t); // Create a new Date object for the updated time
   if(dt != 0.0) { // Only proceed if the time step is not zero
     // Loop through sub-steps for more accurate N-body integration (Runge-Kutta)
     for(t = adt; t <= tm; t += adt) { 
-      time = time + dt * 1000; // Accumulate the total elapsed time in milliseconds
+      //time = time + dt * 1000; // Accumulate the total elapsed time in milliseconds
       // Update the mass points (planets) using the Runge-Kutta solver
       rk.UpdateFrame();
+
+      // フォームの表示をシミュレーション時間に強制同期させる
+      time = rk.time;
+
 
       // Sun's origin correction: Adjust all planet positions to keep the Sun at the origin
       for(i = 1; i < planetnum; i++) { // Start from index 1 (assuming index 0 is the Sun)
@@ -284,9 +292,8 @@ function UpdateFrameRelative() {
       }
       rk.mp[0].x = rk.mp[0].x.ZeroVec(); // Explicitly set the Sun's position to zero (origin)
     }
-    var datt = dat.getTime(); // Get the timestamp of the base date
-    var dat1t = datt + time; // Calculate the new timestamp
-    var dat1 = new Date(dat1t); // Create a new Date object for the updated time
+    dat1t = datt + time * 1000; // Calculate the new timestamp
+    dat1 = new Date(dat1t); // Create a new Date object for the updated time
     setmp(); // Update X3DOM elements with the new planet positions
     setday(dat1); // Update the date/time input fields in the UI
   }  

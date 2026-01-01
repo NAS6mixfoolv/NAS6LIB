@@ -1,0 +1,636 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QPTP4QSV32');
+</script>
+<title>太陽系惑星軌道計算シミュレーターフォーム by javascript</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+
+<script src="./javascripts/x3dom/jquery-3.7.1.min.js" ></script>
+<script src='./javascripts/x3dom/x3dom-full.js'> </script>
+<link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
+
+
+<script src="./javascripts/nas6/common.js"></script>
+<script src="./javascripts/nas6lib/timer.js"></script>
+<script src="./javascripts/nas6lib/vector.js"></script>
+<script src="./javascripts/nas6lib/matrix.js"></script>
+<script src="./javascripts/nas6lib/quaternion.js"></script>
+<script src="./javascripts/nas6lib/planet.js"></script>
+<script src="./javascripts/nas6lib/masspoint.js"></script>
+<script src="./javascripts/nas6lib/rngkt.js"></script>
+<script src="./javascripts/nas6/solarsystem.js"></script>
+
+
+<script>
+/**
+ * NAS6LIB - Celestial Mechanics Simulation Engine
+ * Copyright (C) 2005-2026 NAS6 (Satoshi Okabe)
+ * * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * "I have silenced the noise of the universe with 100.002% accuracy."
+ */
+</script>
+
+
+<style>
+/* 1. 全体のコンテナにFlexboxを適用 */
+.main-container {
+    display: flex;
+    /* 画面幅が狭いときは縦並びにする */
+    flex-wrap: wrap; 
+    gap: 20px; /* 要素間の隙間 */
+    margin: 20px auto; /* ページ中央に配置 */
+    width: 90%; /* 全体の幅を画面の90%に設定 */
+}
+
+/* 2. X3DコンテナとX3D要素の修正 */
+.x3d-container {
+    /* PC表示時は左側に固定 */
+    flex: 0 0 400px; /* 縮小なし、拡大なし、基本幅400px */
+    max-width: 100%; /* モバイル時に親コンテナの幅を超えないようにする */
+}
+#x3dabs {
+    /* 絶対配置を解除し、相対的な配置にする */
+    position: relative; 
+    /* float: left; は不要 */
+    top: auto;
+    left: auto;
+    /* 幅と高さを親要素または固定値で指定 */
+    width: 400px;
+    height: 400px;
+    border: 2px #000000 solid;
+    /* 背景画像を必要に応じて調整 */
+    background-image: url("./img/mimiback.png"); 
+}
+
+/* 3. コントロール/入力エリア */
+.controls-container {
+    /* 残りのスペースを占めるように伸縮 */
+    flex-grow: 1;
+    min-width: 300px; /* 最小幅を設定して小さくなりすぎるのを防ぐ */
+}
+
+/* 4. モバイル（画面幅が狭い時）の調整 */
+@media (max-width: 850px) {
+    .main-container {
+        flex-direction: column; /* 縦並びにする */
+        align-items: center; /* 中央揃え */
+    }
+    .x3d-container {
+        /* 縦並びにした時、幅を調整 */
+        flex: 1 1 100%;
+    }
+    #x3dabs {
+        /* 必要であればここでサイズを可変にする */
+        width: 90vw; /* 画面幅の90% */
+        height: 90vw;
+    }
+}
+</style>
+</head>
+<body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg">
+
+<font size="3">
+<b>
+<h1>太陽系惑星軌道計算シミュレーターフォーム by javascript</h1>
+テキストボックス変更後、適用するには、←■→ボタンを押してください<br>
+Edgeで閲覧すると処理が重くなってくる時があります　その場合、IEのリセットをしてください<br>
+<br>
+  <div class="main-container">
+    <div class="controls-container">
+
+<form name="F1">
+<input type="text" name="T1" value="2000"> 年　<input type="text" name="T2" value="1"> 月　<input type="text" name="T3" value="1"> 日<br>
+<input type="text" name="T4" value="0"> 時　<input type="text" name="T5" value="0"> 分　<input type="text" name="T6" value="0"> 秒<br>
+<br>
+<input type="button" name="NOW" value="now" onclick="onNOW();">　<input type="button" name="OO" value="0:0:0" onclick="onOO();">　<input type="button" name="IN" value="inner planet" onclick="onIN();">　<input type="button" name="OUT" value="outer planet" onclick="onOUT();">　　　　<input type="radio" name="CALC" value="0" checked>Kepler　<input type="radio" name="CALC" value="1">Relative<br>
+<br>
+<input type="button" name="REV" value="←" onclick="onREV();">　<input type="button" name="STP" value="■" onclick="onSTP();">　<input type="button" name="RUN" value="→" onclick="onRUN();">　
+<select name="VP" onchange="viewp();">
+<option value="SUN">Sun</option>
+<option value="MER">Mercury</option>
+<option value="VEN">Venus</option>
+<option value="EAR">Earth</option>
+<option value="MAR">Mars</option>
+<option value="JUP">Jupiter</option>
+<option value="SAT">Saturn</option>
+<option value="URA">Uranus</option>
+<option value="NEP">Neptune</option>
+<option value="PLU">Pluto</option>
+<option value="CER">ceres</option>
+<option value="PAL">pallas</option>
+<option value="JUN">juno</option>
+<option value="VES">vesta</option>
+<option value="CHI">chiron</option>
+</select>　
+speed(day) : <input type="text" name="SPD" value="1">　zoom : <input type="text" name="ZOM" value="1"><br>
+</form>
+</b>
+</font>
+
+</div>
+
+
+    <div class="x3d-container">
+
+
+<x3d id='x3dabs' width='400px' height='400px'>
+    <scene>  
+        <Viewpoint id='viewp000' position='0 0 7' centerOfRotation='0 0 0' orientation='0 1 0 0' zNear='0.01' zFar='1000' description='camera'></Viewpoint>
+
+        <directionalLight id='directional' direction='1 -1 1' on ='TRUE' intensity='1.0' shadowIntensity='0.0'></directionalLight> 
+	
+                <Transform rotation='0 1 0 0' id='ln01t' DEF='ln01t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.1 4.1, 3.1 4.1, 2.1 4.1, 1.1 4.1, 0.1 4.1, -1.1 4.1, -2.1 4.1, -3.1 4.1, -4.1 4.1, -4.1 3.1, -4.1 2.1, -4.1 1.1, -4.1 0.1, -4.1 -1.1, -4.1 -2.1, -4.1 -3.1, -4.1 -4.1, -3.1 -4.1, -2.1 -4.1, 1.1 -4.1, 0.1 -4.1, 1.1 -4.1, 2.1 -4.1, 3.1 -4.1, 4.1 -4.1, 4.1 -3.1, 4.1 -2.1, 4.1 1.1, 4.1 0.1, 4.1 1.1, 4.1 2.1, 4.1 3.1, 4.1 4.1' id='ln01l' DEF='ln01l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln02t' DEF='ln02t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.2 4.2, 3.2 4.2, 2.2 4.2, 1.2 4.2, 0.2 4.2, -1.2 4.2, -2.1 4.2, -3.2 4.2, -4.2 4.2, -4.2 3.2, -4.2 2.2, -4.2 1.2, -4.2 0.2, -4.2 -1.2, -4.2 -2.2, -4.2 -3.2, -4.2 -4.2, -3.2 -4.2, -2.2 -4.2, 1.2 -4.2, 0.2 -4.2, 1.2 -4.2, 2.2 -4.2, 3.2 -4.2, 4.2 -4.2, 4.2 -3.2, 4.2 -2.2, 4.2 1.2, 4.2 0.2, 4.2 1.2, 4.2 2.2, 4.2 3.2, 4.2 4.2' id='ln02l' DEF='ln02l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln03t' DEF='ln03t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.3 4.3, 3.3 4.3, 2.3 4.3, 1.3 4.3, 0.3 4.3, -1.3 4.3, -2.3 4.3, -3.3 4.3, -4.3 4.3, -4.3 3.3, -4.3 2.3, -4.3 1.3, -4.3 0.3, -4.3 -1.3, -4.3 -2.3, -4.3 -3.3, -4.3 -4.3, -3.3 -4.3, -2.3 -4.3, 1.3 -4.3, 0.3 -4.3, 1.3 -4.3, 2.3 -4.3, 3.3 -4.3, 4.3 -4.3, 4.3 -3.3, 4.3 -2.3, 4.3 1.3, 4.3 0.3, 4.3 1.3, 4.3 2.3, 4.3 3.3, 4.3 4.3' id='ln03l' DEF='ln03l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln04t' DEF='ln04t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.4 4.4, 3.4 4.4, 2.4 4.4, 1.4 4.4, 0.4 4.4, -1.4 4.4, -2.4 4.4, -3.4 4.4, -4.4 4.4, -4.4 3.4, -4.4 2.4, -4.4 1.4, -4.4 0.4, -4.4 -1.4, -4.4 -2.4, -4.4 -3.4, -4.4 -4.4, -3.4 -4.4, -2.4 -4.4, 1.4 -4.4, 0.4 -4.4, 1.4 -4.4, 2.4 -4.4, 3.4 -4.4, 4.4 -4.4, 4.4 -3.4, 4.4 -2.4, 4.4 1.4, 4.4 0.4, 4.4 1.4, 4.4 2.4, 4.4 3.4, 4.4 4.4' id='ln04l' DEF='ln04l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln05t' DEF='ln05t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.5 4.5, 3.5 4.5, 2.5 4.5, 1.5 4.5, 0.5 4.5, -1.5 4.5, -2.5 4.5, -3.5 4.5, -4.5 4.5, -4.5 3.5, -4.5 2.5, -4.5 1.5, -4.5 0.5, -4.5 -1.5, -4.5 -2.5, -4.5 -3.5, -4.5 -4.5, -3.5 -4.5, -2.5 -4.5, 1.5 -4.5, 0.5 -4.5, 1.5 -4.5, 2.5 -4.5, 3.5 -4.5, 4.5 -4.5, 4.5 -3.5, 4.5 -2.5, 4.5 1.5, 4.5 0.5, 4.5 1.5, 4.5 2.5, 4.5 3.5, 4.5 4.5' id='ln05l' DEF='ln05l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln06t' DEF='ln06t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.6 4.6, 3.6 4.6, 2.6 4.6, 1.6 4.6, 0.6 4.6, -1.6 4.6, -2.6 4.6, -3.6 4.6, -4.6 4.6, -4.6 3.6, -4.6 2.6, -4.6 1.6, -4.6 0.6, -4.6 -1.6, -4.6 -2.6, -4.6 -3.6, -4.6 -4.6, -3.6 -4.6, -2.6 -4.6, 1.6 -4.6, 0.6 -4.6, 1.6 -4.6, 2.6 -4.6, 3.6 -4.6, 4.6 -4.6, 4.6 -3.6, 4.6 -2.6, 4.6 1.6, 4.6 0.6, 4.6 1.6, 4.6 2.6, 4.6 3.6, 4.6 4.6' id='ln06l' DEF='ln06l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln07t' DEF='ln07t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.7 4.7, 3.7 4.7, 2.7 4.7, 1.7 4.7, 0.7 4.7, -1.7 4.7, -2.7 4.7, -3.7 4.7, -4.7 4.7, -4.7 3.7, -4.7 2.7, -4.7 1.7, -4.7 0.7, -4.7 -1.7, -4.7 -2.7, -4.7 -3.7, -4.7 -4.7, -3.7 -4.7, -2.7 -4.7, 1.7 -4.7, 0.7 -4.7, 1.7 -4.7, 2.7 -4.7, 3.7 -4.7, 4.7 -4.7, 4.7 -3.7, 4.7 -2.7, 4.7 1.7, 4.7 0.7, 4.7 1.7, 4.7 2.7, 4.7 3.7, 4.7 4.7' id='ln07l' DEF='ln07l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln08t' DEF='ln08t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.8 4.8, 3.8 4.8, 2.8 4.8, 1.8 4.8, 0.8 4.8, -1.8 4.8, -2.8 4.8, -3.8 4.8, -4.8 4.8, -4.8 3.8, -4.8 2.8, -4.8 1.8, -4.8 0.8, -4.8 -1.8, -4.8 -2.8, -4.8 -3.8, -4.8 -4.8, -3.8 -4.8, -2.8 -4.8, 1.8 -4.8, 0.8 -4.8, 1.8 -4.8, 2.8 -4.8, 3.8 -4.8, 4.8 -4.8, 4.8 -3.8, 4.8 -2.8, 4.8 1.8, 4.8 0.8, 4.8 1.8, 4.8 2.8, 4.8 3.8, 4.8 4.8' id='ln08l' DEF='ln08l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln09t' DEF='ln09t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0.3 0.6 0.3'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.9 4.9, 3.9 4.9, 2.9 4.9, 1.9 4.9, 0.9 4.9, -1.9 4.9, -2.9 4.9, -3.9 4.9, -4.9 4.9, -4.9 3.9, -4.9 2.9, -4.9 1.9, -4.9 0.9, -4.9 -1.9, -4.9 -2.9, -4.9 -3.9, -4.9 -4.9, -3.9 -4.9, -2.9 -4.9, 1.9 -4.9, 0.9 -4.9, 1.9 -4.9, 2.9 -4.9, 3.9 -4.9, 4.9 -4.9, 4.9 -3.9, 4.9 -2.9, 4.9 1.9, 4.9 0.9, 4.9 1.9, 4.9 2.9, 4.9 3.9, 4.9 4.9' id='ln09l' DEF='ln09l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln10t' DEF='ln10t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0.3 0.6 0.3'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.11 4.11, 3.11 4.11, 2.11 4.11, 1.11 4.11, 0.11 4.11, -1.11 4.11, -2.11 4.11, -3.11 4.11, -4.11 4.11, -4.11 3.11, -4.11 2.11, -4.11 1.11, -4.11 0.11, -4.11 -1.11, -4.11 -2.11, -4.11 -3.11, -4.11 -4.11, -3.11 -4.11, -2.11 -4.11, 1.11 -4.11, 0.11 -4.11, 1.11 -4.11, 2.11 -4.11, 3.11 -4.11, 4.11 -4.11, 4.11 -3.11, 4.11 -2.11, 4.11 1.11, 4.11 0.11, 4.11 1.11, 4.11 2.11, 4.11 3.11, 4.11 4.11' id='ln10l' DEF='ln10l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln11t' DEF='ln11t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0.3 0.6 0.3'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.12 4.12, 3.12 4.12, 2.12 4.12, 1.12 4.12, 0.12 4.12, -1.12 4.12, -2.12 4.12, -3.12 4.12, -4.12 4.12, -4.12 3.12, -4.12 2.12, -4.12 1.12, -4.12 0.12, -4.12 -1.12, -4.12 -2.12, -4.12 -3.12, -4.12 -4.12, -3.12 -4.12, -2.12 -4.12, 1.12 -4.12, 0.12 -4.12, 1.12 -4.12, 2.12 -4.12, 3.12 -4.12, 4.12 -4.12, 4.12 -3.12, 4.12 -2.12, 4.12 1.12, 4.12 0.12, 4.12 1.12, 4.12 2.12, 4.12 3.12, 4.12 4.12' id='ln11l' DEF='ln11l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln12t' DEF='ln12t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0.3 0.6 0.3'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.13 4.13, 3.13 4.13, 2.13 4.13, 1.13 4.13, 0.13 4.13, -1.13 4.13, -2.13 4.13, -3.13 4.13, -4.13 4.13, -4.13 3.13, -4.13 2.13, -4.13 1.13, -4.13 0.13, -4.13 -1.13, -4.13 -2.13, -4.13 -3.13, -4.13 -4.13, -3.13 -4.13, -2.13 -4.13, 1.13 -4.13, 0.13 -4.13, 1.13 -4.13, 2.13 -4.13, 3.13 -4.13, 4.13 -4.13, 4.13 -3.13, 4.13 -2.13, 4.13 1.13, 4.13 0.13, 4.13 1.13, 4.13 2.13, 4.13 3.13, 4.13 4.13' id='ln12l' DEF='ln12l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln13t' DEF='ln13t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0.3 0.6 0.3'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.14 4.14, 3.14 4.14, 2.14 4.14, 1.14 4.14, 0.14 4.14, -1.14 4.14, -2.14 4.14, -3.14 4.14, -4.14 4.14, -4.14 3.14, -4.14 2.14, -4.14 1.14, -4.14 0.14, -4.14 -1.14, -4.14 -2.14, -4.14 -3.14, -4.14 -4.14, -3.14 -4.14, -2.14 -4.14, 1.14 -4.14, 0.14 -4.14, 1.14 -4.14, 2.14 -4.14, 3.14 -4.14, 4.14 -4.14, 4.14 -3.14, 4.14 -2.14, 4.14 1.14, 4.14 0.14, 4.14 1.14, 4.14 2.14, 4.14 3.14, 4.14 4.14' id='ln13l' DEF='ln13l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln14t' DEF='ln14t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0.3 0.6 0.3'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.15 4.15, 3.15 4.15, 2.15 4.15, 1.15 4.15, 0.15 4.15, -1.15 4.15, -2.15 4.15, -3.15 4.15, -4.15 4.15, -4.15 3.15, -4.15 2.15, -4.15 1.15, -4.15 0.15, -4.15 -1.15, -4.15 -2.15, -4.15 -3.15, -4.15 -4.15, -3.15 -4.15, -2.15 -4.15, 1.15 -4.15, 0.15 -4.15, 1.15 -4.15, 2.15 -4.15, 3.15 -4.15, 4.15 -4.15, 4.15 -3.15, 4.15 -2.15, 4.15 1.15, 4.15 0.15, 4.15 1.15, 4.15 2.15, 4.15 3.15, 4.15 4.15' id='ln14l' DEF='ln14l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+
+
+
+        <Transform translation='0 0 0' id='sph00a' DEF='sph00a'>
+            <Transform rotation='0 1 0 0' id='sph00b' DEF='sph00b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph00z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sun' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+ 
+        <Transform translation='0 0 0' id='sph01a' DEF='sph01a'>
+            <Transform rotation='0 1 0 0' id='sph01b' DEF='sph01b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph01z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Mercury' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph02a' DEF='sph02a'>
+            <Transform rotation='0 1 0 0' id='sph02b' DEF='sph02b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph02z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Venus' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph03a' DEF='sph03a'>
+            <Transform rotation='0 1 0 0' id='sph03b' DEF='sph03b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph03z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Earth' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph04a' DEF='sph04a'>
+            <Transform rotation='0 1 0 0' id='sph04b' DEF='sph04b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph04z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Mars' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph05a' DEF='sph05a'>
+            <Transform rotation='0 1 0 0' id='sph05b' DEF='sph05b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph05z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Jupiter' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph06a' DEF='sph06a'>
+            <Transform rotation='0 1 0 0' id='sph06b' DEF='sph06b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph06z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Saturn' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph07a' DEF='sph07a'>
+            <Transform rotation='0 1 0 0' id='sph07b' DEF='sph07b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph07z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Uranus' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph08a' DEF='sph08a'>
+            <Transform rotation='0 1 0 0' id='sph08b' DEF='sph08b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph08z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Neptune' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph09a' DEF='sph09a'>
+            <Transform rotation='0 1 0 0' id='sph09b' DEF='sph09b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0.7 1 0.7'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph09z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Pluto' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph10a' DEF='sph10a'>
+            <Transform rotation='0 1 0 0' id='sph10b' DEF='sph10b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0.7 1 0.7'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph10z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='ceres' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph11a' DEF='sph11a'>
+            <Transform rotation='0 1 0 0' id='sph11b' DEF='sph11b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0.7 1 0.7'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph11z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='pallas' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph12a' DEF='sph12a'>
+            <Transform rotation='0 1 0 0' id='sph12b' DEF='sph12b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0.7 1 0.7'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph12z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='juno' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph13a' DEF='sph13a'>
+            <Transform rotation='0 1 0 0' id='sph13b' DEF='sph13b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0.7 1 0.7'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph13z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='vesta' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph14a' DEF='sph14a'>
+            <Transform rotation='0 1 0 0' id='sph14b' DEF='sph14b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0.7 1 0.7'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph14z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='chiron' solid='false'>
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+    </scene>
+</x3d>
+</div>
+</div>
+
+<br>
+<br>
+<hr>
+
+<font size="3">
+<b>
+<br>
+<br>
+<p id='debug'>　</p>
+<br>
+<br>
+</b>
+</font>
+
+<hr>
+<font size="3">
+<b>
+<br>
+<br>
+<a href="./htm000.htm">戻る</a><br>
+<br>
+<br>
+</b>
+</font>
+
+</body>
+</html>

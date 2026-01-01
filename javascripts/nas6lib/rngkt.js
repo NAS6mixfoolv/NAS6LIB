@@ -15,7 +15,40 @@ class N6LRngKt {
     this.dms;
     this.n;
     this.mp = new Array();
-    this.dt;
+    this.dt;//[sec]
+
+
+
+    this.epoch;
+    this.blog = false;
+    this.bInit = 0;
+    this.timeInit = 0;
+    this.time = 0;//[sec]
+    this.planet = null;
+
+    this.debugdata = [];
+
+
+    this.vx = null;
+    this.vy = null;
+    this.vz = null;
+    this.normX = null;
+    this.normY = null;
+    this.normZ = null; //軌道法線
+
+
+    this.perith = null;
+    this.bperi = false;
+    this.bbperi = 0;
+    this.bentperi = false;
+    this.bextperi = false;
+    this.apheth = null;
+    this.baphe = false;
+    this.bbaphe = 0;
+    this.bentaphe = false;
+    this.bextaphe = false;
+    this.near = 2.5;
+    this.maxdivcalc = 10000;
 
     this.rdx = new Array();
     this.dx = new Array();
@@ -38,6 +71,103 @@ class N6LRngKt {
     this.swd = true //force certain
   }
 
+getVariableDT(r) {
+  var dt = 2900 * Math.pow(r, 1.5);
+  return dt;
+}
+
+
+/**
+ * 3点の座標ベクトルから近日点/遠日点の精密な座標を補間する
+ * @param {N6LVector[]} p - 3点分の座標配列 [p0(前々回), p1(前回), p2(今回)]
+ * @param {N6LVector[]} r_m - 3点分の中心天体からの距離（スカラ）
+ * @returns {N6LVector} 補間された精密な座標ベクトル
+ */
+interpolateExtremum(p, r_m) {
+    const r0 = r_m[0];
+    const r1 = r_m[1];
+    const r2 = r_m[2];
+
+    // 二次関数 R(t) = at^2 + bt + c における頂点の位置(offset)を求める
+    // t1 を基準(0)としたとき、真の頂点がどのくらいズレているか (-0.5 ? 0.5)
+    // 分母が0（直線）になるのを防ぐための微小値
+    const denom = 2 * (r0 - 2 * r1 + r2);
+    if (Math.abs(denom) < 1e-20) return p[1]; // 補間不能な場合は中央の点を返す
+
+    const offset = (r0 - r2) / denom;
+
+    // offsetを用いて、各成分を二次補間する
+    // P(t) = At^2 + Bt + C
+    const result = new N6LVector(p[0].x.length);
+    for (let k = 0; k < p[0].x.length; k++) {
+        const y0 = p[0].x[k];
+        const y1 = p[1].x[k];
+        const y2 = p[2].x[k];
+
+        // 二次方程式の係数を算出
+        const A = (y0 - 2 * y1 + y2) / 2;
+        const B = (y2 - y0) / 2;
+        const C = y1;
+
+        // 頂点時刻における座標成分を計算
+        result.x[k] = A * (offset * offset) + B * offset + C;
+    }
+
+    return result;
+};
+
+interpolateExtremumWithTime(p, r_m, currentTime, dt) {
+    const r0 = r_m[0];
+    const r1 = r_m[1];
+    const r2 = r_m[2];
+
+    const denom = 2 * (r0 - 2 * r1 + r2);
+    if (Math.abs(denom) < 1e-20) return { pos: p[1], time: currentTime - dt };
+
+    const offset = (r0 - r2) / denom;
+
+    // 1. 座標の補間
+    const precisePos = new N6LVector(p[0].x.length);
+    for (let k = 0; k < p[0].x.length; k++) {
+        const A = (p[0].x[k] - 2 * p[1].x[k] + p[2].x[k]) / 2;
+        const B = (p[2].x[k] - p[0].x[k]) / 2;
+        precisePos.x[k] = A * (offset * offset) + B * offset + p[1].x[k];
+    }
+
+    // 2. 時刻の補間 (currentTime は「今回」の時刻なので、1ステップ戻して offset を加える)
+    const preciseTimeMS = (currentTime - dt * 1000) + (offset * dt * 1000);
+
+    return { pos: precisePos, time: preciseTimeMS };
+};
+
+calculateTheta(precisePos){
+  if(this.vx !== null){
+  var r_rel_au = new N6LVector(precisePos);
+
+  // 3. 物理的なAU座標を投影！
+  var c0 = r_rel_au.Dot(this.normX); // X座標 (AU)
+  var c1 = r_rel_au.Dot(this.normY); // Y座標 (AU)
+  var c2 = this.normZ.Dot(r_rel_au);  // Z座標 (AU) → ここがほぼ0になるはず！
+
+  // 1. 水星の遠日点距離 (約 0.4667 AU)
+  var aphelion = this.planet[1].m_rb; 
+
+  // 2. 現在の座標をその距離で割る
+  var c00 = c0 / aphelion; // これで最大 +1, 最小 -1 付近になる
+  var c11 = c1 / aphelion;
+
+/*DEBUG CODE
+{
+var theta = this.calculateTheta(posx);
+document.FD.T1.value = theta;
+document.FD.T2.value = c0;
+document.FD.T3.value = c1;
+document.FD.T4.value = c2;
+}
+*/
+
+  return Math.atan2(c11,c00);
+}};
 
     //速度加速
     VelocityAccl2D(v, a, dt) {
@@ -420,6 +550,15 @@ class N6LRngKt {
             }
         }
 
+        //遅すぎ回避
+        if(this.blog) {
+          var dc = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.dt;
+          if(this.maxdivcalc < dc) this.dt = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.maxdivcalc;
+        }
+        if((0 < this.mp[1].lastR)&&(this.blog)) this.dt = this.getVariableDT(this.mp[1].lastR);
+
+
+
         //Runge-Kutta method//ルンゲ-クッタ法
         this.accel();//質点毎に加速度を計算
         //質点毎に速度をルンゲ-クッタ法で計算
@@ -484,13 +623,158 @@ class N6LRngKt {
             }
         }
 
+
+        var lastx = new N6LVector(3, false);
+        var posx = new N6LVector(3, false);
+        var velx = new N6LVector(3, false);
         //applly//パラメータ適用
         for(i = 0; i <= this.n; i++) {
             for(k = 0; k <= this.dms; k++) {
+lastx.x[k] = this.mp[1].x.Sub(this.mp[0].x).Div(this.CNST_AU);
+
                 this.mp[i].x.x[k] = this.mp[i].x1.x[k];
                 this.mp[i].v.x[k] = this.mp[i].v1.x[k];
+
+posx = this.mp[1].x.Sub(this.mp[0].x).Div(this.CNST_AU);
+velx = new N6LVector(this.mp[1].v);
+            }
+            if(i === this.mp[i].centerID) continue;
+            if(this.blog === false) continue;
+            if(i !== 1) continue;
+
+            var lr = this.mp[i].lastR;
+            var nr = this.r[this.mp[i].centerID][i] / this.CNST_AU;
+            var id = nr - lr;
+
+
+            this.OnDispLog(i, posx, velx); // 天体番号、座標、速度を通知
+
+
+// 1. 履歴の更新（常に最新3点を保持）
+if (!this.mp[i].posHistory) {
+    this.mp[i].posHistory = [];
+    this.mp[i].distHistory = [];
+    this.mp[i].thHistory = [];
+}
+this.mp[i].posHistory.push(new N6LVector(posx));
+this.mp[i].distHistory.push(nr);
+if(vx) {
+  var theta = this.calculateTheta(posx);
+  this.mp[i].thHistory.push(theta);
+}
+
+if (this.mp[i].posHistory.length > 3) {
+    this.mp[i].posHistory.shift();
+    this.mp[i].distHistory.shift();
+}
+if (this.mp[i].thHistory.length > 2) {
+    this.mp[i].thHistory.shift();
+}
+
+// 2. 十分なデータ(3点)がある場合のみ極値判定
+var inv = 1;
+if (this.mp[i].posHistory.length === 3) {
+    if(((this.mp[i].thHistory.length === 2))&&(this.NormalizeRad(this.mp[i].thHistory[1] - this.mp[i].thHistory[0]) < 0)) inv = -1;
+    
+    // 近日点判定 (減少から増加へ: id > 0 かつ 前回の変化が減少)
+    if ((0 < id * inv) && (this.mp[i].isDecreasing * inv < 0)) {
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        this.onPerihelion(i, precise.pos.Abs(), precise.pos, precise.time);
+        
+        // 角度の保存（軌道面確定後のみ）
+        if (this.bInit >= 2 && this.vx !== null) {
+            this.perith = this.calculateTheta(precise.pos); // 角度計算を関数化するとスッキリします
+            this.bbperi = 2;
+        }
+        
+        if (!this.bperi) {
+            this.bperi = true; this.bentperi = false; this.bextperi = true;
+        }
+    }
+    // 遠日点判定 (増加から減少へ: id < 0 かつ 前回の変化が増加)
+    if ((id * inv < 0) && (0 < this.mp[i].isDecreasing * inv)) {
+        // 最初の遠日点で初期化時刻を設定
+        if (this.bInit === 0) {
+            this.bInit = 1;
+            this.timeInit = this.time;
+            this.debugdata[0] = new N6LVector(posx); // 遠日点Aを記録
+        }
+
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        this.onAphelion(i, precise.pos.Abs(), precise.pos,  precise.time);
+
+        if (this.bInit >= 2 && this.vx !== null) {
+            this.apheth = this.calculateTheta(precise.pos);
+            this.bbaphe = 2;
+        }
+
+        if (!this.baphe) {
+            this.baphe = true; this.bentaphe = false; this.bextaphe = true;
+        }
+    }
+}
+
+// 3. 軌道1/4経過時 (ONSIDE) に座標系を確定させる
+if (this.bInit === 1) {
+    if (this.timeInit + (this.planet[i].m_t * 3600 * 24 * 365.2425) / 4 <= this.time) {
+        this.bInit = 2;
+        this.debugdata[1] = new N6LVector(posx); // 90度付近の点Bを記録
+        
+        // 軌道座標系の算出
+        this.vz = this.debugdata[0].Cross(this.debugdata[1]).NormalVec();
+        this.vx = this.debugdata[0].NormalVec(); // 最初の遠日点をX軸とする
+        this.vy = this.vz.Cross(this.vx).NormalVec();
+
+        this.normZ = new N6LVector(this.vz);
+        this.normX = new N6LVector(this.vx);
+        this.normY = new N6LVector(this.vy);
+
+        this.onSide(i, nr, posx);
+    }
+}
+
+            this.mp[i].lastR = nr;
+            this.mp[i].isDecreasing = id;
+
+            //近日点突入脱出通知
+            if((this.bperi)&&(this.perith !==null)){
+if(this.bbperi == 0) this.bbperi = 1;
+if(this.bbaphe == 0) this.bbaphe = 1;
+
+                var theta = this.calculateTheta(posx);
+                var sub = theta - this.perith;
+                sub = this.NormalizeRad(sub);
+                var subent = theta - (this.perith - this.near * (Math.PI / 180));
+                subent = this.NormalizeRad(subent);
+                var subext = theta - (this.perith + this.near * (Math.PI / 180));
+                subext = this.NormalizeRad(subext);
+                if((this.bentperi)&&(0 < subent * inv)&&(subext * inv < 0)){
+                  this.bentperi = false; this.bextperi = true;
+                  this.OnEnterPerihelion(i);
+                }
+                if((this.bextperi)&&(0 < subext * inv)){
+                  this.bextperi = false; this.bentperi = true;
+                  this.OnExitPerihelion(i);
+                }
+
+                sub = theta - this.apheth;
+                sub = this.NormalizeRad(sub);
+                subent = theta - (this.apheth - this.near * (Math.PI / 180));
+                subent = this.NormalizeRad(subent);
+                subext = theta - (this.apheth + this.near * (Math.PI / 180));
+                subext = this.NormalizeRad(subext);
+                if((this.bentaphe)&&(0 < subent)&&(subext < 0)){
+                  this.bentaphe = false; this.bextaphe = true;
+                  this.OnEnterAphelion(i);
+                }
+                if((this.bextaphe)&&(0 < subext)){
+                  this.bextaphe = false; this.bentaphe = true;
+                  this.OnExitAphelion(i);
+                }
+
             }
         }
+        this.time = this.time + this.dt;
     };
 
     //calc accel2:this.mp[0]とだけ重力相互作用の計算//質点毎の加速度の計算
@@ -547,8 +831,9 @@ class N6LRngKt {
                                 ov = vv1.ProjectAxis(dx3);
                                 if(isNaN(ov.x[0])) ov = ov.ZeroVec();
                             }
-                            this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
-                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(). this.mp[i].e);
+                            //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
+                            //a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), this.mp[i].e);
+                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0);
                             this.pow[j][i] = a1;
                         }
 
@@ -606,6 +891,13 @@ class N6LRngKt {
                 this.mp[i].w1.x[k] = 0.0;
             }
         }
+
+        //遅すぎ回避
+        if(this.blog) {
+          var dc = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.dt;
+          if(this.maxdivcalc < dc) this.dt = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.maxdivcalc;
+        }
+        if((0 < this.mp[1].lastR)&&(this.blog)) this.dt = this.getVariableDT(this.mp[1].lastR);
 
 
         //Runge-Kutta method//ルンゲ-クッタ法
@@ -669,17 +961,163 @@ class N6LRngKt {
             }
         }
 
+
+
+        var lastx = new N6LVector(3, false);
+        var posx = new N6LVector(3, false);
+        var velx = new N6LVector(3, false);
         //applly//パラメータ適用
         for(i = 0; i <= this.n; i++) {
             for(k = 0; k <= this.dms; k++) {
+lastx.x[k] = this.mp[1].x.Sub(this.mp[0].x).Div(this.CNST_AU);
+
                 this.mp[i].x.x[k] = this.mp[i].x1.x[k];
                 this.mp[i].v.x[k] = this.mp[i].v1.x[k];
+
+posx = this.mp[1].x.Sub(this.mp[0].x).Div(this.CNST_AU);
+velx = new N6LVector(this.mp[1].v);
+            }
+            if(i === this.mp[i].centerID) continue;
+            if(this.blog === false) continue;
+            if(i !== 1) continue;
+
+            var lr = this.mp[i].lastR;
+            var nr = this.r[this.mp[i].centerID][i] / this.CNST_AU;
+            var id = nr - lr;
+
+            this.OnDispLog(i, posx, velx); // 天体番号、座標、速度を通知
+
+
+// 1. 履歴の更新（常に最新3点を保持）
+if (!this.mp[i].posHistory) {
+    this.mp[i].posHistory = [];
+    this.mp[i].distHistory = [];
+    this.mp[i].thHistory = [];
+}
+this.mp[i].posHistory.push(new N6LVector(posx));
+this.mp[i].distHistory.push(nr);
+if(vx) {
+  var theta = this.calculateTheta(posx);
+  this.mp[i].thHistory.push(theta);
+}
+
+if (this.mp[i].posHistory.length > 3) {
+    this.mp[i].posHistory.shift();
+    this.mp[i].distHistory.shift();
+}
+if (this.mp[i].thHistory.length > 2) {
+    this.mp[i].thHistory.shift();
+}
+
+// 2. 十分なデータ(3点)がある場合のみ極値判定
+var inv = 1;
+if (this.mp[i].posHistory.length === 3) {
+    if(((this.mp[i].thHistory.length === 2))&&(this.NormalizeRad(this.mp[i].thHistory[1] - this.mp[i].thHistory[0]) < 0)) inv = -1;
+    
+    // 近日点判定 (減少から増加へ: id > 0 かつ 前回の変化が減少)
+    if ((0 < id * inv) && (this.mp[i].isDecreasing * inv < 0)) {
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        this.onPerihelion(i, precise.pos.Abs(), precise.pos, precise.time);
+        
+        // 角度の保存（軌道面確定後のみ）
+        if (this.bInit >= 2 && this.vx !== null) {
+            this.perith = this.calculateTheta(precise.pos); // 角度計算を関数化するとスッキリします
+            this.bbperi = 2;
+        }
+        
+        if (!this.bperi) {
+            this.bperi = true; this.bentperi = false; this.bextperi = true;
+        }
+    }
+
+    // 遠日点判定 (増加から減少へ: id < 0 かつ 前回の変化が増加)
+    if ((id * inv < 0) && (0 < this.mp[i].isDecreasing * inv)) {
+        // 最初の遠日点で初期化時刻を設定
+        if (this.bInit === 0) {
+            this.bInit = 1;
+            this.timeInit = this.time;
+            this.debugdata[0] = new N6LVector(posx); // 遠日点Aを記録
+        }
+
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        this.onAphelion(i, precise.pos.Abs(), precise.pos,  precise.time);
+
+        if (this.bInit >= 2 && this.vx !== null) {
+            this.apheth = this.calculateTheta(precise.pos);
+            this.bbaphe = 2;
+        }
+
+        if (!this.baphe) {
+            this.baphe = true; this.bentaphe = false; this.bextaphe = true;
+        }
+    }
+}
+
+// 3. 軌道1/4経過時 (ONSIDE) に座標系を確定させる
+if (this.bInit === 1) {
+    if (this.timeInit + (this.planet[i].m_t * 3600 * 24 * 365.2425) / 4 <= this.time) {
+        this.bInit = 2;
+        this.debugdata[1] = new N6LVector(posx); // 90度付近の点Bを記録
+        
+        // 軌道座標系の算出
+        this.vz = this.debugdata[0].Cross(this.debugdata[1]).NormalVec();
+        this.vx = this.debugdata[0].NormalVec(); // 最初の遠日点をX軸とする
+        this.vy = this.vz.Cross(this.vx).NormalVec();
+
+        this.normZ = new N6LVector(this.vz);
+        this.normX = new N6LVector(this.vx);
+        this.normY = new N6LVector(this.vy);
+
+        this.onSide(i, nr, posx);
+    }
+}
+
+            this.mp[i].lastR = nr;
+            this.mp[i].isDecreasing = id;
+
+            //近日点突入脱出通知
+            if((this.bperi)&&(this.perith !==null)){
+if(this.bbperi == 0) this.bbperi = 1;
+if(this.bbaphe == 0) this.bbaphe = 1;
+
+                var theta = this.calculateTheta(posx);
+                var sub = theta - this.perith;
+                sub = this.NormalizeRad(sub);
+                var subent = theta - (this.perith - this.near * (Math.PI / 180));
+                subent = this.NormalizeRad(subent);
+                var subext = theta - (this.perith + this.near * (Math.PI / 180));
+                subext = this.NormalizeRad(subext);
+                if((this.bentperi)&&(0 < subent * inv)&&(subext * inv < 0)){
+                  this.bentperi = false; this.bextperi = true;
+                  this.OnEnterPerihelion(i);
+                }
+                if((this.bextperi)&&(0 < subext * inv)){
+                  this.bextperi = false; this.bentperi = true;
+                  this.OnExitPerihelion(i);
+                }
+
+                sub = theta - this.apheth;
+                sub = this.NormalizeRad(sub);
+                subent = theta - (this.apheth - this.near * (Math.PI / 180));
+                subent = this.NormalizeRad(subent);
+                subext = theta - (this.apheth + this.near * (Math.PI / 180));
+                subext = this.NormalizeRad(subext);
+                if((this.bentaphe)&&(0 < subent)&&(subext < 0)){
+                  this.bentaphe = false; this.bextaphe = true;
+                  this.OnEnterAphelion(i);
+                }
+                if((this.bextaphe)&&(0 < subext)){
+                  this.bextaphe = false; this.bentaphe = true;
+                  this.OnExitAphelion(i);
+                }
+
             }
         }
+        this.time = this.time + this.dt;
     };
 
     //init//ルンゲ-クッタ法初期設定
-    Init(pmp, pdt, cc, cg) {
+    Init(pmp, pdt, planet = null, epc = null, blog = false, cc = null, cg = null) {
         var i;
         var j;
         var k = pmp[0].x.x.length;
@@ -698,6 +1136,36 @@ class N6LRngKt {
         if(cc) this.CNST_C = cc;
         if(cg) this.CNST_G = cg;
 
+        this.epoch = epc;
+        this.blog = blog;
+        this.bInit = 0;
+        this.timeInit = 0;
+        this.planet = planet;
+
+        this.debugdata = [];
+
+
+        this.vx = null;
+        this.vy = null;
+        this.vz = null;
+        this.normX = null;
+        this.normY = null;
+        this.normZ = null; //軌道法線
+
+
+        this.perith = null;
+        this.bperi = false;
+        this.bbperi = 0;
+        this.bentperi = false;
+        this.bextperi = false;
+        this.apheth = null;
+        this.baphe = false;
+        this.bbaphe = 0;
+        this.bentaphe = false;
+        this.bextaphe = false;
+
+
+        this.time = 0;
         this.rdx = new Array();
         this.dx = new Array();
         this.nrm = new Array();
@@ -800,7 +1268,58 @@ class N6LRngKt {
 
     };
 
+    //近日点イベント 天体番号、距離、座標を通知
+    onPerihelion(i, lr, pos, time){
+        if(this.epoch){
+          var datt = this.epoch.getTime(); // Get the timestamp of the base date
+          var dat1t = datt + this.time * 1000; // Calculate the new timestamp
+          var dat1 = new Date(dat1t); // Create a new Date object for the updated time
+          console.log("\n[" + dat1.toLocaleString() + "] onPerihelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!\n");
+        }
+        else {
+          console.log("\n[NoDateData] onPerihelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!\n");
+        }
+    };
+
+    //遠日点イベント 天体番号、距離、座標を通知
+    onAphelion(i, lr, pos, time){
+        if(this.epoch){
+          var datt = this.epoch.getTime(); // Get the timestamp of the base date
+          var dat1t = datt + this.time * 1000; // Calculate the new timestamp
+          var dat1 = new Date(dat1t); // Create a new Date object for the updated time
+          console.log("\n[" + dat1.toLocaleString() + "] onAphelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!\n");
+        }
+        else {
+          console.log("\n[NoDateData] onAphelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!\n");
+        }
+    };
+    //ログ
+    OnDispLog(i, pos, vel){ return; }
+    OnSide(i, lr, pos){ return; }
+    //近日点突入イベント
+    OnEnterPerihelion(i){ return; }
+    //近日点脱出イベント
+    OnExitPerihelion(i){ return; }
+    //遠日点突入イベント
+    OnEnterAphelion(i){ return; }
+    //遠日点脱出イベント
+    OnExitAphelion(i){ return; }
+
+NormalizeRad(th) {
+  // 1. まず -2π ～ 2π の範囲に収める
+  var ret = th % (Math.PI * 2.0);
+  
+  // 2. 0 ～ 2π の範囲に持ち上げる（負の数対策）
+  if (ret < 0) ret += Math.PI * 2.0;
+  
+  // 3. -π ～ π の範囲に変換する
+  if (ret > Math.PI) ret -= Math.PI * 2.0;
+  
+  return ret;
+};
+
 }
+
 
 
 //ハイパボリックがMathにあるならばコメントアウトしてください
@@ -829,4 +1348,12 @@ Math.prototype.tanh = function(x) {
     return ret;
 };
 */
+
+//過去の実際のシミュレートの知見
+//水星摂動は１周当たり-0.1035秒だからラジアンにすると-5.01782e-7rad
+//100年415周-43秒、-2.0846988287710047724366306401392e-4rad
+//誤差込み100年415周-43秒+5秒、-1.8422919882162367756416735889602e-4rad
+//誤差込み100年415周-43秒-5秒、-2.3271056693257727692315876913182e-4rad
+//このサンプルでは４１５周-2.24626928054717e-4rad、平均-5.42577120905113e-7radあたりの数字を出します
+//何とか誤差範囲内に収まった
 

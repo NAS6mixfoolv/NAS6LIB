@@ -4,7 +4,7 @@
 //masspoint//質点
 class N6LMassPoint {
 
-  constructor(px, pv, pm, pr, pe) {
+  constructor(px, pv, pm, pr, pe, cid = 0, lr = -1, id = 0) {
 
     this.typename = "N6LMassPoint"; //型名
     this.mass;                      //質点質量
@@ -21,6 +21,12 @@ class N6LMassPoint {
     this.w = new N6LVector();       //内部計算用
     this.w1 = new N6LVector();      //内部計算用
     this.a = new N6LVector();       //質点加速度
+    this.centerID = 0;              //重力源のID
+    this.lastR = -1;                //前回の重力源との距離
+    this.isDecreasing = 0;          // 距離が減少中かどうかのフラグ:0:+:-
+    this.posHistory = [];           //履歴データ座標
+    this.distHistory = [];          //履歴データ中心惑星からの距離
+    this.thHistory = [];            //履歴データ角度
 
     if(px != undefined && px.typename == "N6LMassPoint") {
         this.mass = px.mass;
@@ -37,6 +43,19 @@ class N6LMassPoint {
         this.w = new N6LVector(px.w);
         this.w1 = new N6LVector(px.w1);
         this.a = new N6LVector(px.a);
+        this.centerID = px.centerID;
+        this.lastR = px.lastR;
+        this.isDecreasing = px.isDecreasing;
+        var i;
+        for(i = 0; i < px.posHistory; i++){
+          this.posHistory[i] = new N6LVector(px.posHistory[i]);
+        }
+        for(i = 0; i < px.distHistory; i++){
+          this.distHistory[i] = new N6LVector(px.distHistory[i]);
+        }
+        for(i = 0; i < px.thHistory; i++){
+          this.thHistory[i] = new N6LVector(px.thHistory[i]);
+        }
     }
     else if(px != undefined && px.typename == "N6LVector") {
         this.mass = pm;
@@ -53,6 +72,12 @@ class N6LMassPoint {
         this.w = new N6LVector(px.x.length);
         this.w1 = new N6LVector(px.x.length);
         this.a = new N6LVector(px.x.length);
+        this.centerID = cid;
+        this.lastR = lr;
+        this.isDecreasing = id;
+        this.posHistory = [];
+        this.distHistory = [];
+        this.thHistory = [];
     }
     else if(typeof(px) == "number") {
         this.mass = 0.0;
@@ -69,6 +94,12 @@ class N6LMassPoint {
         this.w = new N6LVector(px);
         this.w1 = new N6LVector(px);
         this.a = new N6LVector(px);
+        this.centerID = cid;
+        this.lastR = lr;
+        this.isDecreasing = id;
+        this.posHistory = [];
+        this.distHistory = [];
+        this.thHistory = [];
     }
 
   }
@@ -90,6 +121,12 @@ class N6LMassPoint {
     static get DIFF_W() { return (1 << 11); } // If w is different // w が異なる場合
     static get DIFF_W1() { return (1 << 12); } // If w1 is different // w1 が異なる場合
     static get DIFF_A() { return (1 << 13); } // If a is different // a が異なる場合
+    static get DIFF_CID() { return (1 << 14); } // If a is different // cid が異なる場合
+    static get DIFF_LR() { return (1 << 15); } // If a is different // lr が異なる場合
+    static get DIFF_ID() { return (1 << 16); } // If a is different // id が異なる場合
+    static get DIFF_PH() { return (1 << 17); } // If a is different // ph が異なる場合
+    static get DIFF_DH() { return (1 << 18); } // If a is different // dh が異なる場合
+    static get DIFF_TH() { return (1 << 19); } // If a is different // th が異なる場合
 
 
     Comp(px) {
@@ -99,17 +136,21 @@ class N6LMassPoint {
             if(this.mass !== px.mass) ret |= N6LMassPoint.DIFF_MASS;
             if(this.e !== px.e) ret |= N6LMassPoint.DIFF_E;
             if(this.r !== px.r) ret |= N6LMassPoint.DIFF_R;
-            if(this.x !== px.x) ret |= N6LMassPoint.DIFF_X;
-            if(this.v !== px.v) ret |= N6LMassPoint.DIFF_V;
+            if(!this.x.Equal(px.x)) ret |= N6LMassPoint.DIFF_X;
+            if(!this.v.Equal(px.v)) ret |= N6LMassPoint.DIFF_V;
             if(this.va !== px.va) ret |= N6LMassPoint.DIFF_VA;
-            if(this.x0 !== px.x0) ret |= N6LMassPoint.DIFF_X0;
-            if(this.x1 !== px.x1) ret |= N6LMassPoint.DIFF_X1;
-            if(this.v1 !== px.v1) ret |= N6LMassPoint.DIFF_V1;
-            if(this.v2 !== px.v2) ret |= N6LMassPoint.DIFF_V2;
-            if(this.vn !== px.vn) ret |= N6LMassPoint.DIFF_VN;
-            if(this.w !== px.w) ret |= N6LMassPoint.DIFF_W;
-            if(this.w1 !== px.w1) ret |= N6LMassPoint.DIFF_W1;
-            if(this.a !== px.a) ret |= N6LMassPoint.DIFF_A;
+            if(!this.x0.Equal(px.x0)) ret |= N6LMassPoint.DIFF_X0;
+            if(!this.x1.Equal(px.x1)) ret |= N6LMassPoint.DIFF_X1;
+            if(!this.v1.Equal(px.v1)) ret |= N6LMassPoint.DIFF_V1;
+            if(!this.v2.Equal(px.v2)) ret |= N6LMassPoint.DIFF_V2;
+            if(!this.vn.Equal(px.vn)) ret |= N6LMassPoint.DIFF_VN;
+            if(!this.w.Equal(px.w)) ret |= N6LMassPoint.DIFF_W;
+            if(!this.w1.Equal(px.w1)) ret |= N6LMassPoint.DIFF_W1;
+            if(!this.a.Equal(px.a)) ret |= N6LMassPoint.DIFF_A;
+            if(this.centerID !== px.centerID) ret |= N6LMassPoint.DIFF_CID;
+            if(this.lastR !== px.lastR) ret |= N6LMassPoint.DIFF_LR;
+            if(this.isDecreasing !== px.isDecreasing) ret |= N6LMassPoint.DIFF_ID;
+//DIFF_PH,DIFF_DH,DIFF_THは工事中
         }
         else ret |= N6LMassPoint.DIFF_TYPE;
         return ret;
@@ -140,12 +181,16 @@ class N6LMassPoint {
             if(!this.w.EpsEqual(px.w, eps)) ret |= N6LMassPoint.DIFF_W;
             if(!this.w1.EpsEqual(px.w1, eps)) ret |= N6LMassPoint.DIFF_W1;
             if(!this.a.EpsEqual(px.a, eps)) ret |= N6LMassPoint.DIFF_A;
+            if(this.centerID != px.centerID) ret |= N6LMassPoint.DIFF_CID;
+            if(this.lastR < px.lastR - eps || px.lastR + eps < this.lastR) ret |= N6LMassPoint.DIFF_LR;
+            if(this.isDecreasing < px.isDecreasing - eps || px.isDecreasing + eps < this.isDecreasing) ret |= N6LMassPoint.DIFF_ID;
+//DIFF_PH,DIFF_DH,DIFF_THは工事中
         }
         else ret |= N6LMassPoint.DIFF_TYPE;
         return ret;
     };
  
-    Equal(px, eps) {
+    EpsEqual(px, eps) {
         var ret = this.EpsComp(px, eps);
         if(ret === 0) return true;
         return false;

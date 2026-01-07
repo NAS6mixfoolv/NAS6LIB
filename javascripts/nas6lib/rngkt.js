@@ -16,11 +16,13 @@ class N6LRngKt {
     this.n;
     this.mp = new Array();
     this.dt;//[sec]
+    this.SpdRate = 1;
 
 
 
     this.epoch;
     this.blog = false;
+    this.bvdt = false;
     this.bInit = 0;
     this.timeInit = 0;
     this.time = 0;//[sec]
@@ -48,7 +50,8 @@ class N6LRngKt {
     this.bentaphe = false;
     this.bextaphe = false;
     this.near = 2.5;
-    this.maxdivcalc = 10000;
+    this.maxdivcalc = 100000;
+    this.mindivcalc = 1500;
 
     this.rdx = new Array();
     this.dx = new Array();
@@ -71,11 +74,103 @@ class N6LRngKt {
     this.swd = true //force certain
   }
 
-getVariableDT(r) {
-  var dt = 2900 * Math.pow(r, 1.5);
-  return dt;
-}
+getVariableDT(r, e, a, ra, rb, t) {
+  // t: 公転周期(年)と仮定
+  var st = t * 3600 * 24 * 365.2425; 
+  // パルサーのような超短周期（stが極小）の場合の特例措置
+  if (st < 10000) { 
+    // どんなに現場が「大丈夫」と言っても、強制的に超高解像度で計算させる
+    this.maxdivcalc = 1000000; // 引き上げる
+  }
+  else {
+    this.maxdivcalc = 100000;
+  }
 
+
+  var minra = 1e-4;
+  if(r < minra) return this.dt;
+
+  //現場主義
+  var vabs = this.mp[1].lastV * this.CNST_C;
+  var rabs = this.mp[1].lastR * this.CNST_AU;
+  var circumferencelength = 2 * Math.PI * rabs;
+  var predictiontime = circumferencelength / vabs;
+  var discrepancyfromprediction = predictiontime / st;
+  //現場の権限の限界
+  // weightの計算を整理（地球基準の指数ブースト版）
+  var baseST = 32000000;
+  var diffLog = Math.log10(st / baseST);
+  var weight = (diffLog < 0) ? Math.pow(2, -diffLog) : Math.log10(st / 1000) + 1;
+
+  // 現場判断の掛け合わせ
+  var discrepancy = Math.max(predictiontime / st, 0.1);
+  var discrepancy2 = Math.min(discrepancy * weight, 1000);
+
+/*
+  // 地球を基準（重み1.0）として、そこからの「桁数の離れ具合」で倍率を決める
+  var baseST = 32000000; // 地球の周期（約1年）
+  var diffLog = Math.log10(st / baseST); 
+  // st=3000 のとき、diffLog は約 -4
+  // この「-4」を使って、指数関数的に倍率をドカンと上げる
+  var weight = 1;
+  if(diffLog < 0) Math.pow(2, -diffLog); // 2の4乗 = 16倍！
+
+  var minST = 1000; // 最小単位
+  var normalizedST = Math.max(st, minST); // 最小値を下回らないようにガード
+  var weight = Math.log10(normalizedST / minST) + 1; // minPのとき重み1、そこから桁数に応じて増える
+  var discrepancy = Math.max(predictiontime / st, 0.1);
+  discrepancy = Math.min(discrepancy, 10);
+  var discrepancy2 = Math.max(discrepancy * weight, 0.001);
+  discrepancy2 = Math.max(discrepancy2 * weight, 1000);
+*/
+
+  var maxdt = st / this.mindivcalc * discrepancy2; // 遠日点付近の大きなdt
+  var mindt = st / this.maxdivcalc * discrepancy2; // 理論上の最小dt
+  var range = maxdt - mindt;
+
+
+  // --- 調整ポイント ---
+  if(r < ra) r = ra;
+  // rr は 近日点で 0、遠日点で 1
+  var rr = (r - ra) / (rb - ra);
+  
+  // 指数 p を大きくすると、近日点（rr=0）の周辺だけで急激に dt が変化します。
+  // 1に近づくほど急峻にする（＝0付近で急峻に変化させる）ために、
+  // 近日点付近を強調するカーブを作ります。
+  var p = 0.5; // 近日点付近で急激に変化させるために小さめの値、あるいは
+               // 逆に「遠日点までずっと大きいまま」なら p を大きくします。
+  
+  // ターゲット: 
+  // ハレー (e=0.967) => dt=2000
+  // 水星 (e=0.205) => dt=4000
+  // これを逆算すると、近日点(rr=0)での vdt が 1.0 になるように調整するのがシンプルです。
+  
+  var vdt = Math.pow(1 - rr, 6); // 1-rr を使うことで「近日点(0)で最大値1」になる
+  
+  // dt = maxdt - (係数 * e * vdt)
+  // ここで、eの影響力を調整する係数 K を導入します
+  // ハレーと水星の差を埋めるためのスケーリングです。
+  var K = 2; // この値を調整して感度を決めます
+  
+  var dt = maxdt - maxdt * (K * e * vdt);
+
+
+  // 下限リミッター（念のため）
+  dt = Math.max(dt, mindt); 
+
+  if (st < 10000) { 
+    // --- 最終防衛ライン ---
+    // 1ステップで進む距離(v * dt)が、現在の半径(r)比率を超えないように縛る
+    var physicalLimitDT = (r * this.CNST_AU * 1e-3) / vabs; 
+    dt = Math.min(dt, physicalLimitDT);
+  }
+
+  return dt;
+
+//  var finalDT = dt; // 可変DT
+  // 微小数なると計算が不安定になる現場の特性を考慮
+//  return Math.max(finalDT, 3.6);
+}
 
 /**
  * 3点の座標ベクトルから近日点/遠日点の精密な座標を補間する
@@ -135,9 +230,9 @@ interpolateExtremumWithTime(p, r_m, currentTime, dt) {
     }
 
     // 2. 時刻の補間 (currentTime は「今回」の時刻なので、1ステップ戻して offset を加える)
-    const preciseTimeMS = (currentTime - dt * 1000) + (offset * dt * 1000);
+    const preciseTime = (currentTime - dt) + (offset * dt);
 
-    return { pos: precisePos, time: preciseTimeMS };
+    return { pos: precisePos, time: preciseTime };
 };
 
 calculateTheta(precisePos){
@@ -338,6 +433,20 @@ document.FD.T4.value = c2;
         return ret;
     };
 
+    OrbitElementCalc(q, t, m1, m2){
+    // t (年) を秒に変換
+      var t_sec = t * 365.2425 * 24 * 3600;
+  
+      // a^3 = (G * (m1 + m2) * t_sec^2) / (4 * PI^2)    
+      var a_meter = Math.cbrt((rk.CNST_G * (m1 + m2) * Math.pow(t_sec, 2)) / (4 * Math.pow(Math.PI, 2)));
+  
+      // メートルを AU に変換
+      var a = a_meter / rk.CNST_AU;
+      var e = 1 - (q / a);
+  
+      return {a : a, e : e};
+    };
+
     //schwartz radius//シュワルツシルト半径
     GetSRadius(mass, cc, cg) {
         return ((2.0 * cg * mass) / (cc * cc));
@@ -352,26 +461,51 @@ document.FD.T4.value = c2;
       return ret;
     }
 
+    //2.5PN重力放射減衰
+    ToGravityRadiationLoss(v, m1, m2, r){
+      //NAS6定数//解析的デバッグにより推定
+      const VAL_NAS6 = 1.35 - 3.3e+8 / r;
+      const CNST_NAS6 = -4.5e-1;
+      const CNST = this.CNST_C * CNST_NAS6 * VAL_NAS6;
+      var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 3) * m1 * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 5) * Math.pow(r, 4))) * v * this.CNST_C;
+      return ret;
+    };
+
+    //1PN
     //schwartz correction term//シュワルツシルト補正項
     ToSchwartz(v, e) {
         var ret = 3.0 * v * v / ( 1.0 - (e * e)); //楕円一般相対論//eは一周の積分するときに必要
-        if(0.95 < e) ret = -0.5 * v * v;          //直線特殊相対論
+        if(1.0 <= e) ret = -0.5 * v * v;          //直線特殊相対論
         return ret;
     };
 
-    //NAS6 correction term//NAS6補正項
-    ToNAS6() {
-        return 1 / 4e60;
-    };
-
     //calc accel//加速度の計算
-    GetA(r, m, mr, v, e) {
+    GetA(r, m, mr, v, e, m0 = 1) {
         if(r == 0.0) return 0.0;
         var a = 1.0;
         if(mr <= r) mr = r;
         else a = r / mr;
-        var g = this.CNST_G * (m / mr / mr) * a;
-        g = g * (1.0 + this.ToSchwartz(v, e)/* - this.ToNAS6() */);
+/*
+        // 1. リアルタイムの軌道長半径 a をエネルギーから求める
+        // エネルギー E = v^2 / 2 - G*M / r
+        // a = -G*M / (2 * E)
+        var mu = this.CNST_G * m;
+        var energy = (v * v) / 2.0 - mu / mr;
+        var a_realtime = -mu / (2.0 * energy);
+    
+        // 2. 離心率 e を求める (q = a * (1 - e) より)
+        // ここでの q は「現在の近日点距離」として保持している値、
+        // または e = sqrt(1 + 2*energy*L^2 / mu^2) ですが、
+        // 教わった「aとqの関係式」を応用すると：
+        var e_realtime = 1.0 - (this.perihelion_target / a_realtime);
+
+        // 3. この e_realtime を ToSchwartz に渡す
+        var g = this.CNST_G * (m / mr / mr); 
+        g = g * (1.0 + this.ToSchwartz(v, e_realtime));
+*/
+        var g = this.CNST_G * (m / mr / mr); 
+        g = g * (1.0 + this.ToSchwartz(v, e));
+        g = g + this.ToGravityRadiationLoss(v, m, m0, r);
         if(g < 0.0 || isNaN(g)) return 0.0;
         return g / this.CNST_C;
     };
@@ -438,10 +572,30 @@ document.FD.T4.value = c2;
                                 ov = vv1.ProjectAxis(dx3);
                                 if(isNaN(ov.x[0])) ov = ov.ZeroVec();
                             }
-                            //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
-                            //a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), this.mp[i].e);
-                            a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), 0.0);
-                            this.pow[i][j] = a1;
+/*
+                            if((this.blog)&&(j == 1)&&(i == 0)){
+                              //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
+                              //a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), this.mp[i].e);
+                              // 1. 最新の観測データから軌道要素を再計算する
+                              var q = this.mp[1].lastQ;
+                              var t = this.mp[1].lastT;
+                              var m2 = this.planet[1].m_m;
+                              var m1 = this.planet[0].m_m;
+
+                              // ジェミニ直伝の計算式で最新の e を取得
+                              var currentOrbit = thisOrbitElementCalc(q, t, m1, m2);
+                              var e_latest = currentOrbit.e; // これが「今の宇宙」の離心率
+
+                              // 2. 修正された GetA の呼び出し
+                              // ここで e_latest を渡すことで、相対論補正項が最新の状態に更新される
+                              a1 = GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), e_latest, m1);
+                            }
+                            else {
+                              a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), 0.0, this.mp[i].mass);
+                            }
+  */
+                          a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), 0.0, this.mp[i].mass);
+                          this.pow[i][j] = a1;
                         }
                         if(this.ap[j][i] == -1) {//relative gravity   //相対性理論万有引力
                             var a1;
@@ -467,9 +621,29 @@ document.FD.T4.value = c2;
                                 ov = vv1.ProjectAxis(dx3);
                                 if(isNaN(ov.x[0])) ov = ov.ZeroVec();
                             }
-                            //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
-                            //a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), this.mp[i].e);
-                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0);
+/*
+                            if((this.blog)&&(j == 1)&&(i == 0)){
+                              //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
+                              //a1 = this.GetA(this.r[i][j], this.mp[j].mass, this.mp[j].r, ov.Abs(), this.mp[i].e);
+                              // 1. 最新の観測データから軌道要素を再計算する
+                              var q = this.mp[1].lastQ;
+                              var t = this.mp[1].lastT;
+                              var m2 = this.planet[1].m_m;
+                              var m1 = this.planet[0].m_m;
+
+                              // ジェミニ直伝の計算式で最新の e を取得
+                              var currentOrbit = thisOrbitElementCalc(q, t, m1, m2);
+                              var e_latest = currentOrbit.e; // これが「今の宇宙」の離心率
+
+                              // 2. 修正された GetA の呼び出し
+                              // ここで e_latest を渡すことで、相対論補正項が最新の状態に更新される
+                              a1 = GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), e_latest, m2);
+                            }
+                            else {
+                              a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0, this.mp[j].mass);
+                            }
+*/
+                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0, this.mp[j].mass);
                             this.pow[j][i] = a1;
                         }
 
@@ -550,15 +724,10 @@ document.FD.T4.value = c2;
             }
         }
 
-        //遅すぎ回避
-        if(this.blog) {
-          var dc = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.dt;
-          if(this.maxdivcalc < dc) this.dt = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.maxdivcalc;
-        }
-        if((0 < this.mp[1].lastR)&&(this.blog)) this.dt = this.getVariableDT(this.mp[1].lastR);
+        if((0 < this.mp[1].lastR)&&(this.blog)&&(this.bvdt)) this.dt = this.getVariableDT(this.mp[1].lastR, this.planet[1].m_e, this.planet[1].m_a, this.planet[1].m_ra, this.planet[1].m_rb, this.planet[1].m_t);
 
 
-
+        var nowdt = this.dt * this.SpdRate;
         //Runge-Kutta method//ルンゲ-クッタ法
         this.accel();//質点毎に加速度を計算
         //質点毎に速度をルンゲ-クッタ法で計算
@@ -569,14 +738,14 @@ document.FD.T4.value = c2;
                 var v02 = new N6LVector(this.dms + 1);
                 var v1 = new N6LVector(this.dms + 1);
                 var v2 = new N6LVector(this.dms + 1);
-                this.ik[l][i] = this.mp[i].v1.Mul(this.dt * this.CNST_C);
+                this.ik[l][i] = this.mp[i].v1.Mul(nowdt * this.CNST_C);
                 this.mp[i].x1 = this.mp[i].x.Add(this.ik[l][i].Div(this.coef[l + 1]));
                 this.mp[i].x0 = new N6LVector(this.mp[i].x1);
                 this.mp[i].w = this.mp[i].w.Add(this.ik[l][i].Mul(this.coef[l]));
 
                 var av = new N6LVector(0);
-                if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, this.dt);
-                else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, this.dt);
+                if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, nowdt);
+                else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, nowdt);
                 
                 for(k = 0; k <= this.dms; k++) this.im[l][i].x[k] = av.x[k];
 
@@ -596,13 +765,13 @@ document.FD.T4.value = c2;
             var v02 = new N6LVector(this.dms + 1);
             var v1 = new N6LVector(this.dms + 1);
             var v2 = new N6LVector(this.dms + 1);
-            this.ik[l][i] = this.mp[i].v1.Mul(this.dt * this.CNST_C);
+            this.ik[l][i] = this.mp[i].v1.Mul(nowdt * this.CNST_C);
             this.mp[i].x1 = this.mp[i].x.Add((this.mp[i].w.Add(this.ik[l][i])).Div(6.0));
             //this.mp[i].x1 = this.mp[i].x.Add((this.mp[i].w.Add(this.ik[l][i])));
 
             var av = new N6LVector(0);
-            if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, this.dt);
-            else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, this.dt);
+            if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, nowdt);
+            else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, nowdt);
                 
             for(k = 0; k <= this.dms; k++) this.im[l][i].x[k] = av.x[k];
 
@@ -678,8 +847,14 @@ if (this.mp[i].posHistory.length === 3) {
     
     // 近日点判定 (減少から増加へ: id > 0 かつ 前回の変化が減少)
     if ((0 < id * inv) && (this.mp[i].isDecreasing * inv < 0)) {
-        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, nowdt);
         this.onPerihelion(i, precise.pos.Abs(), precise.pos, precise.time);
+        this.mp[i].lastQ = nr;
+        this.mp[i].lastT = (precise.time - this.mp[i].lastTime) / 3600 / 24 / 365.2425;
+//        var gm = 1 / Math.sqrt(1 - this.mp[i].v.Abs() * this.mp[i].v.Abs());
+//        this.mp[i].lastT = this.mp[i].lastT * gm;
+        this.mp[i].lastTime = precise.time;
+
         
         // 角度の保存（軌道面確定後のみ）
         if (this.bInit >= 2 && this.vx !== null) {
@@ -700,7 +875,7 @@ if (this.mp[i].posHistory.length === 3) {
             this.debugdata[0] = new N6LVector(posx); // 遠日点Aを記録
         }
 
-        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, nowdt);
         this.onAphelion(i, precise.pos.Abs(), precise.pos,  precise.time);
 
         if (this.bInit >= 2 && this.vx !== null) {
@@ -734,7 +909,9 @@ if (this.bInit === 1) {
 }
 
             this.mp[i].lastR = nr;
+            this.mp[i].lastV = this.mp[i].v.Abs();
             this.mp[i].isDecreasing = id;
+
 
             //近日点突入脱出通知
             if((this.bperi)&&(this.perith !==null)){
@@ -774,7 +951,7 @@ if(this.bbaphe == 0) this.bbaphe = 1;
 
             }
         }
-        this.time = this.time + this.dt;
+        this.time = this.time + nowdt;
     };
 
     //calc accel2:this.mp[0]とだけ重力相互作用の計算//質点毎の加速度の計算
@@ -833,7 +1010,7 @@ if(this.bbaphe == 0) this.bbaphe = 1;
                             }
                             //this.mp[i].e = this.GetEccentricity(this.mp[i].x1,ov,this.mp[j].x1);
                             //a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), this.mp[i].e);
-                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0);
+                            a1 = this.GetA(this.r[i][j], this.mp[i].mass, this.mp[i].r, ov.Abs(), 0.0, this.mp[j].mass);
                             this.pow[j][i] = a1;
                         }
 
@@ -892,14 +1069,9 @@ if(this.bbaphe == 0) this.bbaphe = 1;
             }
         }
 
-        //遅すぎ回避
-        if(this.blog) {
-          var dc = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.dt;
-          if(this.maxdivcalc < dc) this.dt = (this.planet[1].m_t * 3600 * 24 * 365.2425) / this.maxdivcalc;
-        }
-        if((0 < this.mp[1].lastR)&&(this.blog)) this.dt = this.getVariableDT(this.mp[1].lastR);
+        if((0 < this.mp[1].lastR)&&(this.blog)&&(this.bvdt)) this.dt = this.getVariableDT(this.mp[1].lastR, this.planet[1].m_e, this.planet[1].m_a, this.planet[1].m_ra, this.planet[1].m_rb, this.planet[1].m_t);
 
-
+        var nowdt = this.dt * this.SpdRate;
         //Runge-Kutta method//ルンゲ-クッタ法
         this.accel2();//質点毎に加速度を計算
         //質点毎に速度をルンゲ-クッタ法で計算
@@ -910,14 +1082,14 @@ if(this.bbaphe == 0) this.bbaphe = 1;
                 var v02 = new N6LVector(this.dms + 1);
                 var v1 = new N6LVector(this.dms + 1);
                 var v2 = new N6LVector(this.dms + 1);
-                this.ik[l][i] = this.mp[i].v1.Mul(this.dt * this.CNST_C);
+                this.ik[l][i] = this.mp[i].v1.Mul(nowdt * this.CNST_C);
                 this.mp[i].x1 = this.mp[i].x.Add(this.ik[l][i].Div(this.coef[l + 1]));
                 this.mp[i].x0 = new N6LVector(this.mp[i].x1);
                 this.mp[i].w = this.mp[i].w.Add(this.ik[l][i].Mul(this.coef[l]));
 
                 var av = new N6LVector(0);
-                if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, this.dt);
-                else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, this.dt);
+                if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, nowdt);
+                else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, nowdt);
                 
                 for(k = 0; k <= this.dms; k++) this.im[l][i].x[k] = av.x[k];
 
@@ -937,12 +1109,12 @@ if(this.bbaphe == 0) this.bbaphe = 1;
             var v02 = new N6LVector(this.dms + 1);
             var v1 = new N6LVector(this.dms + 1);
             var v2 = new N6LVector(this.dms + 1);
-            this.ik[l][i] = this.mp[i].v1.Mul(this.dt * this.CNST_C);
+            this.ik[l][i] = this.mp[i].v1.Mul(nowdt * this.CNST_C);
             this.mp[i].x1 = this.mp[i].x.Add((this.mp[i].w.Add(this.ik[l][i])).Div(6.0));
 
             var av = new N6LVector(0);
-            if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, this.dt);
-            else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, this.dt);
+            if(this.dms == 2) av = this.VelocityAccl3D(new N6LVector(3), this.mp[i].a, nowdt);
+            else if(this.dms == 1) av = this.VelocityAccl2D(new N6LVector(2), this.mp[i].a, nowdt);
                 
             for(k = 0; k <= this.dms; k++) this.im[l][i].x[k] = av.x[k];
 
@@ -1016,8 +1188,11 @@ if (this.mp[i].posHistory.length === 3) {
     
     // 近日点判定 (減少から増加へ: id > 0 かつ 前回の変化が減少)
     if ((0 < id * inv) && (this.mp[i].isDecreasing * inv < 0)) {
-        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, nowdt);
         this.onPerihelion(i, precise.pos.Abs(), precise.pos, precise.time);
+        this.mp[i].lastQ = nr;
+        this.mp[i].lastT = (time - this.mp[i].lastTime) / 3600 / 24 / 365.2425;
+        this.mp[i].lastTime = time;
         
         // 角度の保存（軌道面確定後のみ）
         if (this.bInit >= 2 && this.vx !== null) {
@@ -1039,7 +1214,7 @@ if (this.mp[i].posHistory.length === 3) {
             this.debugdata[0] = new N6LVector(posx); // 遠日点Aを記録
         }
 
-        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, this.dt);
+        const precise = this.interpolateExtremumWithTime(this.mp[i].posHistory, this.mp[i].distHistory, this.time, nowdt);
         this.onAphelion(i, precise.pos.Abs(), precise.pos,  precise.time);
 
         if (this.bInit >= 2 && this.vx !== null) {
@@ -1113,11 +1288,11 @@ if(this.bbaphe == 0) this.bbaphe = 1;
 
             }
         }
-        this.time = this.time + this.dt;
+        this.time = this.time + nowdt;
     };
 
     //init//ルンゲ-クッタ法初期設定
-    Init(pmp, pdt, planet = null, epc = null, blog = false, cc = null, cg = null) {
+    Init(pmp, pdt, planet = null, epc = null, sr = 1, blog = false, bvdt = false, cc = null, cg = null) {
         var i;
         var j;
         var k = pmp[0].x.x.length;
@@ -1131,6 +1306,7 @@ if(this.bbaphe == 0) this.bbaphe = 1;
             this.mp[i].v = new N6LVector(pmp[i].v);
             this.mp[i].e = pmp[i].e;
         }
+        this.SpdRate = sr;
         this.dt = pdt;
 
         if(cc) this.CNST_C = cc;
@@ -1138,6 +1314,7 @@ if(this.bbaphe == 0) this.bbaphe = 1;
 
         this.epoch = epc;
         this.blog = blog;
+        this.bvdt = bvdt;
         this.bInit = 0;
         this.timeInit = 0;
         this.planet = planet;

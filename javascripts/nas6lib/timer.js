@@ -13,6 +13,8 @@ class N6LTimer {
     this.starttime = dt.getTime();
     this.alerm = -1;
     this.alermfunc = 0;
+    this.isUpdating = false; // ★実行中かどうかを管理するフラグ
+    this.interval = 25;
   }
 
   start() {
@@ -42,6 +44,7 @@ class N6LTimer {
     }
   };
   setalerm(func,alm) {
+    if(this.isUpdating) alm += this.interval;
     this.start();
     this.alerm = alm;
     this.alermfunc = func;
@@ -50,16 +53,15 @@ class N6LTimer {
 
 }
 
-
 class N6LTimerMan {
-
   constructor() {
     this.typename = "N6LTimerMan";
     this.interval = 25;
     this.enable = true;
     this.timer = new Array();
+    this.hnd = null; // ★予約を管理するハンドルを追加
+    this.isUpdating = false; // ★実行中かどうかを管理するフラグ
   }
-
   add() {
     var l = this.timer.length;
     if(l == 0) this.start();
@@ -70,40 +72,67 @@ class N6LTimerMan {
   changeinterval(int) {
     this.interval = int;
     var me = this;
-    setTimeout(function() { TMUpdate(me); }, this.interval);
+    var i;
+    for(i = 0; i < this.timer,length; i++) this.timer[i].interval = int;
   };
   start() {
     this.enable = true;
-    var me = this;
-    setTimeout(function() { TMUpdate(me); }, this.interval);
+    // ★重要：readyなどから重複して呼ばれた際、古い「予約」をここで確実に抹殺する
+    if (this.hnd) {
+      clearTimeout(this.hnd);
+      this.hnd = null;
+    }
+    // フラグもリセットして、新しい一本の道を作る
+    this.isUpdating = false; 
+    TMUpdate(this);
   };
   stop() {
     this.enable = false;
+    // ★停止時にも予約をクリアする
+    if (this.hnd) {
+      clearTimeout(this.hnd);
+      this.hnd = null;
+    }
+    // フラグもリセットして、新しい一本の道を作る
+    this.isUpdating = false; 
   };
-
 }
 
-
-
-
 function TMUpdate(timerman) {
+// 1. すでに別の TMUpdate が実行中なら、即座に終了して重複を防ぐ
+  if (timerman.isUpdating) return;
+  // 2. 「実行中」のカギをかける
+  timerman.isUpdating = true;
   if(DISP_NAS6LIB_COPYRIGHT){
     window.alert("powerd by NAS6LIB : licence : GPL-3.0\ncopyright : NAS6 : contact : nas6@nas6.net");
     DISP_NAS6LIB_COPYRIGHT = false;
   }
-  if(timerman.enable == true){
-    for(var m in timerman.timer){
+  // 1. 物理的な多重起動を根絶する
+  // どのルートから TMUpdate が呼ばれても、既存の予約(hnd)をまず殺す
+  if (timerman.hnd) {
+    clearTimeout(timerman.hnd);
+    timerman.hnd = null;
+  }
+  if (timerman.enable == true) {
+    // 2. 各タイマーのアラームチェック
+    for (var m in timerman.timer) {
       var tm = timerman.timer[m];
-      if(tm.enable == true && 0 <= tm.alerm){
+      if (tm.enable == true && 0 <= tm.alerm) {
         var now = tm.now();
-        if(tm.alerm <= now){
+        if (tm.alerm <= now) {
           tm.alerm = -1;
-          tm.alermfunc(tm.ID);
+          tm.isUpdating = true;
+          tm.alermfunc(tm.ID); // GLoopなどが呼ばれる
+          tm.isUpdating = false;
         }
       }
     }
-    setTimeout(function() { TMUpdate(timerman); }, timerman.interval);
+    // 3. 全ての処理が終わったら「カギ」を開け、次の予約を入れる
+    timerman.isUpdating = false; 
+    timerman.hnd = setTimeout(function() { 
+      TMUpdate(timerman);
+    }, timerman.interval);
+  } else {
+    timerman.isUpdating = false;
   }
 }
-
-

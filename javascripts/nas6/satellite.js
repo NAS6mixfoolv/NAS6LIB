@@ -2,6 +2,7 @@
 var TimerID = -1;
 var IDTransA = new Array('sph00a', 'sph01a', 'sph02a', 'sph03a', 'sph04a', 'sph05a', 'sph06a', 'sph07a', 'sph08a', 'sph09a', 'sph10a');
 var IDTransZ = new Array('sph00z', 'sph01z', 'sph02z', 'sph03z', 'sph04z', 'sph05z', 'sph06z', 'sph07z', 'sph08z', 'sph09z', 'sph10z');
+var IDText = new Array('sph00t', 'sph01t', 'sph02t', 'sph03t', 'sph04t', 'sph05t', 'sph06t', 'sph07t', 'sph08t', 'sph09t', 'sph10t');
 var IDT = new Array('ln00t', 'ln01t', 'ln02t', 'ln03t', 'ln04t', 'ln05t', 'ln06t', 'ln07t', 'ln08t', 'ln09t', 'ln10t');
 var IDL = new Array('ln00l', 'ln01l', 'ln02l', 'ln03l', 'ln04l', 'ln05l', 'ln06l', 'ln07l', 'ln08l', 'ln09l', 'ln10l');
 
@@ -9,6 +10,7 @@ var x3domRuntime;
 
 var planetnum = 11;
 
+var bEXIT = false;
 var bBBB;
 var bRunning = false;
 var bWaiting = false;
@@ -21,6 +23,8 @@ var dt;
 var bRead = false;
 var bLAM = false;
 var intvl = 40;
+var bAPHE = false;
+var sVDT = null;
 
 var PeriAPCs = [];
 var ApheAPCs = [];
@@ -31,6 +35,7 @@ var VariableRate = 10;
 var bent = false;
 var StDate = null;
 
+var logcheck = false;
 
 var CNST_AU = 1.49597870700e+11;
 
@@ -57,8 +62,15 @@ jQuery(document).ready(function(){
     peri = commentOutOverview(peri);
 
     // プロパティ部分の再構築
-    var orbitCsvProperty = "# NAS6 Orbit Data Report\n" +
-        "# MaxLogLine: " + MaxCsvLogLine + "\n" +
+    var orbitCsvProperty = "# NAS6 Orbit Data Report\n";
+    var radioList = document.getElementsByName("CALCMODE");
+    if(radioList[0].checked) {
+        orbitCsvProperty = orbitCsvProperty + "# 相対論モード\n";
+    }
+    else {
+        orbitCsvProperty = orbitCsvProperty + "# 古典論モード\n";
+    }
+        orbitCsvProperty = orbitCsvProperty + "# MaxLogLine: " + MaxCsvLogLine + "\n" +
         "# Name: " + target.m_pname + "\n" + 
         "# [Simulation Overview]\n" + 
         ov + "\n" +
@@ -105,6 +117,23 @@ jQuery(document).ready(function(){
     jQuery("#" + id).attr("download", certification + "_" + target.m_pname + ".csv");
   });
 
+// --- ここでURLパラメータを読み取る ---
+  var urlParams = new URLSearchParams(window.location.search);
+  var logcheck = urlParams.get('logcheck') === 'true';
+  // 1. まず要素が存在するか確認
+  var checkList = document.getElementsByName("calcPeri");
+  
+  if(logcheck && checkList.length > 0){
+    // 2. チェックを入れる
+    checkList[0].checked = true;
+    
+    // 3. 【重要】もし onClick や onChange イベントに連動して 
+    //    内部変数が変わる仕組みなら、手動でイベントを発火させる
+    if (typeof checkList[0].onclick == "function") {
+        checkList[0].onclick();
+    }
+  }
+
   onNow();
   var a = eval(document.F2.T11.value);
   var b = eval(document.F2.T12.value) * 1000.0;
@@ -113,9 +142,8 @@ jQuery(document).ready(function(){
   init(0);
   myMercury();
   TimerID = TMan.add();
-  GLoop(TimerID);  //メインループセット
-});
-
+  TMan.timer[TimerID].setalerm(function() { GLoop(TimerID); }, intvl);}
+);
 
 
 function viewp() {
@@ -150,7 +178,14 @@ function GLoop(id){
     if(TMan.interval != intvl) TMan.changeinterval(intvl);
   }
 
-  TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);  //メインループ再セット
+// --- 修正ポイント：二重予約を物理的に防ぐ ---
+  
+  // 1. このタイマーに既にセットされているアラーム（予約）を一度クリアする
+  // (N6LTimer側で alerm = -1 にすることで TMUpdate での実行を阻止する)
+  TMan.timer[id].alerm = -1; 
+
+  // 2. 新しく「唯一の予約」を入れる
+  TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);
 }
 
 function mySet1(){
@@ -162,6 +197,8 @@ function mySet1(){
      document.F1.my1FormM2.value = my1M2;
      document.F1.my1FormM1.value = my1M1;
      document.F1.my1FormTT0.value = my1TT0 / my1AU3;
+     var id = getSatId();
+     planet[id].m_dat0 = new Date(my1TT0 / my1AU3 * 1000);
      document.F1.my12FormT0.value = my1T0;
      document.F1.my12FormE.value = my1E;
      document.F1.my12FormRA1.value = my1RA1;
@@ -349,6 +386,8 @@ function mySetMP(id) {
   var dat0 = new Date(my1TT0 * 1000.0);
   var pname1 = "Sat0"
   var pname0 = "Sat" + id.toString();
+  if(planet[id].m_pname) pname0 = planet[id].m_pname;
+  if(planet[0].m_pname) pname1 = planet[0].m_pname;
 
   if(0 < m) { 
     planet[0] = new N6LPlanet();
@@ -360,9 +399,42 @@ function mySetMP(id) {
   }
 }
 
+function onAPHE() {
+var checkList = document.getElementsByName("calcPeri");
+if(checkList[0].checked){
+    var checkList2 = document.getElementsByName("VDT");
+    if(checkList2[0].checked){
+      sVDT = true;
+      checkList2[0].checked = false;
+      if (typeof checkList[0].onclick == "function") {
+        checkList2[0].onclick();
+      }
+    }
+    else sVDT = false;
+    bAPHE = true;
+    onRUN();
+}
+}
+
+
+function onZAP() {
+  Speed = eval(document.F1.SPD.value);
+  Zoom = eval(document.F1.ZOM.value);
+  setmp();
+  setline();
+
+}
+
+
 function onLOOK() {
-  document.F1.SPD.value = document.F1.my1FormP.value * 2;
+//  document.F1.SPD.value = document.F1.my1FormP.value * 2;
+  BankSpd = document.F1.my1FormP.value * 2;
   document.F1.ZOM.value = document.F1.my1FormRA2.value / 2;
+}
+
+function onPOS() {
+  bRunning = !bRunning;
+  bAPHE = false;
 }
 
 function onCLS() {
@@ -446,6 +518,24 @@ function onCAL() {
   init(1);  
 }
 
+function getSatId() {
+  var radioList = document.getElementsByName("PUTSEL");
+  var id;
+  var id2;
+  var i;
+  var n = 0;
+  for(i = 0; i < planetnum; i++)
+    if(0.0 < mp[i].mass){n++;id2=i;}
+  for(i = 0; i<radioList.length; i++){
+      if(radioList[i].checked){
+          id = Number(radioList[i].value) + 1;
+          break;
+      }
+  }
+  return id;
+}
+
+
 function onAPP() {
   bRunning = false;
   var radioList = document.getElementsByName("PUTSEL");
@@ -473,24 +563,46 @@ function onAPP() {
 
 function onSTP() {
   bRunning = false;
-  init(1, false);
+  bAPHE = false;
+  //init(1, false);
 }
 
 function onREV() {
   bRunning = true;
   Speed = Number(document.F1.SPD.value) * -1;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    rk.SpdRate = Speed;
+  }
+  else {
+    rk.SpdRate = Speed * BankSpd;
+  }
   init(-1);
 }
 
 function onRUN() {
   bRunning = true;
   Speed = Number(document.F1.SPD.value);
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    rk.SpdRate = Speed;
+  }
+  else {
+    rk.SpdRate = Speed * BankSpd;
+  }
   init(1);
 }
 
-function init(b, bb = true) {
+function init(b, bb = true, bbb = false) {
   Speed = Number(document.F1.SPD.value);
   if(b < 0) Speed *= -1;
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    rk.SpdRate = Speed;
+  }
+  else {
+    rk.SpdRate = Speed * BankSpd;
+  }
   Zoom = Number(document.F1.ZOM.value);
   if(Zoom < 0.0) Zoom *= -1.0;
 
@@ -519,9 +631,18 @@ function init(b, bb = true) {
   dat = new Date(days * msecPerDay);
   setmp();
   setline();
-  InitRelative();
+  InitRelative(true);
   setmp();
   setline();
+
+  if(bbb) return;
+  var id;
+  for(id = 0; id < planet.length; id++){
+    var idt = document.getElementById(IDText[id]);
+    var pname0 = "";
+    if(planet[id].m_pname) pname0 = planet[id].m_pname;
+    idt.setAttribute('string', pname0);
+  }
 }
 
 function onRunning() {
@@ -529,13 +650,13 @@ function onRunning() {
   UpdateFrameRelative();
 }
 
-function InitRelative() {
+function InitRelative(b = false) {
   var msecPerMinute = 1000 * 60;
   var msecPerHour = msecPerMinute * 60;
   var msecPerDay = msecPerHour * 24;
   var days = eval(document.F1.myFormTIME.value) * 365.2425;
   dat = new Date(days * msecPerDay);
-  if (rk.epoch) {
+  if((b === false)&&(rk.epoch)) {
       time = rk.epoch.getTime() / 1000 + rk.time;
       dat = new Date(time * 1000);
   } else {
@@ -543,16 +664,22 @@ function InitRelative() {
   }
   PlanetInit(dat);
   setline();
-  dt = Speed * 60 * 60;
+  dt = 60 * 60;
   var pmp = new Array();
   var i;
   for(i = 0; i < planetnum; i++) pmp[i] = new N6LMassPoint(mp[i]);
   var checkList = document.getElementsByName("calcPeri");
   if(checkList[0].checked){
-    rk.Init(pmp, dt, planet, dat, true);
+    var checkList2 = document.getElementsByName("VDT");
+    if(checkList2[0].checked){
+      rk.Init(pmp, 1, planet, dat, Speed, true, true);
+    }
+    else{
+      rk.Init(pmp, dt, planet, dat, Speed * BankSpd, true, false);
+    }
   }
   else {
-    rk.Init(pmp, dt, planet, dat, false);
+    rk.Init(pmp, dt, planet, dat, Speed * BankSpd, false, false);
   }
 
   settime();
@@ -564,13 +691,15 @@ function UpdateFrameRelative() {
   var msecPerHour = msecPerMinute * 60;
   var msecPerDay = msecPerHour * 24;
 
-  var tm = Math.abs(Speed) * msecPerDay / 1000;
-  var adt = Math.abs(dt);
+  var tm = Math.abs(Math.abs(rk.dt) * Math.abs(rk.SpdRate)) * msecPerDay / 1000;
+  var sdt = rk.dt * rk.SpdRate * msecPerHour / 1000;
+  var adt = Math.abs(sdt);
   var t;
   var i;
   if(dt != 0.0) {
     for(t = adt; t <= tm; t += adt) {
-      time = time + tm; // Accumulate the total elapsed time
+      if(bEXIT){bEXIT = false; break;}
+      time = time + sdt; // Accumulate the total elapsed time
       //質点アップデート
       rk.UpdateFrame()
 
@@ -593,7 +722,8 @@ function UpdateFrameRelative() {
   } 
 }
 
-function settime() {
+function settime(rtime = null) {
+  if(rtime) time = rtime;
   var msecPerMinute = 1000 * 60;
   var msecPerHour = msecPerMinute * 60;
   var msecPerDay = msecPerHour * 24;
@@ -774,6 +904,8 @@ function setline() {
   }
 }
 
+var BankSpd = 1;
+
 
 function myMercury(){
   var radioList = document.getElementsByName("calc1");
@@ -792,9 +924,12 @@ function myMercury(){
   document.F1.my1FormOmg.value = 29.023967;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 338.653;
-  document.F1.SPD.value = 1;
+  var id = getSatId();
+  if(id === 1) BankSpd = 1;
   document.F1.ZOM.value = 0.2;
   document.F2.THEO.value = 43.11;
+  planet[id].m_pname = "Mercury";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -815,9 +950,12 @@ function myVenus(){
   document.F1.my1FormOmg.value = 54.720439;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 160.49;
-  document.F1.SPD.value = 2;
+  var id = getSatId();
+  if(id === 1) BankSpd = 2;
   document.F1.ZOM.value = 0.5;
   document.F2.THEO.value = 8.62;
+  planet[id].m_pname = "Venus";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -838,9 +976,12 @@ function myEarth(){
   document.F1.my1FormOmg.value = 287.825581;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 176.453;
-  document.F1.SPD.value = 2;
+  var id = getSatId();
+  if(id === 1) BankSpd = 2;
   document.F1.ZOM.value = 1;
   document.F2.THEO.value = 3.84;
+  planet[id].m_pname = "Earth";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -861,9 +1002,12 @@ function myMars(){
   document.F1.my1FormOmg.value = 286.184381;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 68.889;
-  document.F1.SPD.value = 3;
+  var id = getSatId();
+  if(id === 1) BankSpd = 3;
   document.F1.ZOM.value = 1;
   document.F2.THEO.value = 1.35;
+  planet[id].m_pname = "Mars";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -884,9 +1028,12 @@ function myJupiter(){
   document.F1.my1FormOmg.value = 273.511644;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 273.712;
-  document.F1.SPD.value = 10;
+  var id = getSatId();
+  if(id === 1) BankSpd = 10;
   document.F1.ZOM.value = 2.5;
   document.F2.THEO.value = 0.06;
+  planet[id].m_pname = "Jupiter";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -907,9 +1054,12 @@ function mySaturn(){
   document.F1.my1FormOmg.value = 338.052139;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 274.229;
-  document.F1.SPD.value = 20;
+  var id = getSatId();
+  if(id === 1) BankSpd = 20;
   document.F1.ZOM.value = 5;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Saturn";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -930,9 +1080,12 @@ function myUranus(){
   document.F1.my1FormOmg.value = 98.308736;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 126.044;
-  document.F1.SPD.value = 40;
+  var id = getSatId();
+  if(id === 1) BankSpd = 40;
   document.F1.ZOM.value = 10;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Uranus";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -953,9 +1106,12 @@ function myNeptune(){
   document.F1.my1FormOmg.value = 275.0;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 248.574;
-  document.F1.SPD.value = 60;
+  var id = getSatId();
+  if(id === 1) BankSpd = 60;
   document.F1.ZOM.value = 15;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Neptune";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -976,9 +1132,12 @@ function myPluto(){
   document.F1.my1FormOmg.value = 112.6;
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 9.236;
-  document.F1.SPD.value = 90;
+  var id = getSatId();
+  if(id === 1) BankSpd = 90;
   document.F1.ZOM.value = 20;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Pluto";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -999,9 +1158,12 @@ function myCeres(){
   document.F1.my1FormOmg.value = 71.5;
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 37.9;
-  document.F1.SPD.value = 5;
+  var id = getSatId();
+  if(id === 1) BankSpd = 5;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Ceres";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -1022,9 +1184,12 @@ function myPallas(){
   document.F1.my1FormOmg.value = 309.7;
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 24.0;
-  document.F1.SPD.value = 5;
+  var id = getSatId();
+  if(id === 1) BankSpd = 5;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Pallas";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -1045,9 +1210,12 @@ function myJuno(){
   document.F1.my1FormOmg.value = 247.8;
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 251.4;
-  document.F1.SPD.value = 5;
+  var id = getSatId();
+  if(id === 1) BankSpd = 5;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Juno";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -1068,9 +1236,12 @@ function myVesta(){
   document.F1.my1FormOmg.value = 150.3;
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 280.7;
-  document.F1.SPD.value = 5;
+  var id = getSatId();
+  if(id === 1) BankSpd = 5;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Vesta";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -1091,9 +1262,12 @@ function myChiron(){
   document.F1.my1FormOmg.value = 339.5;
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 357.5;
-  document.F1.SPD.value = 40;
+  var id = getSatId();
+  if(id === 1) BankSpd = 40;
   document.F1.ZOM.value = 9;
   document.F2.THEO.value = 0.01;
+  planet[id].m_pname = "Chiron";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
@@ -1114,13 +1288,46 @@ function myHalley(){
   document.F1.my1FormOmg.value = 111.33;
   document.F1.my1FormTT0.value = 24.129174452589716;
   document.F1.my1FormLTT0.value = 38.38;
-  document.F1.SPD.value = 60;
+  var id = getSatId();
+  if(id === 1) BankSpd = 60;
   document.F1.ZOM.value = 15;
   document.F2.THEO.value = 1.958;
+  planet[id].m_pname = "Halley";
+  planet[0].m_pname = "Sun";
   onAPP();
 }
 
-function myPSRB1913(){
+function mySolar(){
+  onCLS();
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("PUTSEL");
+  radioList[0].checked = true;
+  myMercury();
+  radioList[1].checked = true;
+  myVenus();
+  radioList[2].checked = true;
+  myEarth();
+  radioList[3].checked = true;
+  myMars();
+  radioList[4].checked = true;
+  myJupiter();
+  radioList[5].checked = true;
+  mySaturn();
+  radioList[6].checked = true;
+  myUranus();
+  radioList[7].checked = true;
+  myNeptune();
+  radioList[8].checked = true;
+  myPluto();
+  radioList[0].checked = true;
+  document.F1.ZOM.value = 1;
+  onZAP();
+}
+
+function myPSRB1913A(){
   var radioList = document.getElementsByName("calc1");
   radioList[0].checked = true;
   radioList = document.getElementsByName("deg");
@@ -1137,13 +1344,42 @@ function myPSRB1913(){
   document.F1.my1FormOmg.value = 0;
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
-  document.F1.SPD.value = 0.01;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.001;
   document.F1.ZOM.value = 0.01;
   document.F2.THEO.value = 1519200;
+  planet[id].m_pname = "PSRB1913+16";
+  planet[0].m_pname = "Attractor";
   onAPP();
 }
 
-function myPSRJ0737(){
+function myPSRB1913B(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.6171;
+  document.F1.my1FormRA1.value = 0.006;
+  document.F1.my1FormRA2.value = 0.025;
+  document.F1.my1FormP.value = 0.00088;
+  document.F1.my1FormM2.value = 2.76e+30;
+  document.F1.my1FormM1.value = 2.86e+30;
+  document.F1.my1FormOMG.value = 0;
+  document.F1.my1FormINC.value = 47.2;
+  document.F1.my1FormOmg.value = 226.57;
+  document.F1.my1FormTT0.value = 0;
+  document.F1.my1FormLTT0.value = 0;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.001;
+  document.F1.ZOM.value = 0.01;
+  document.F2.THEO.value = 1519200;
+  planet[id].m_pname = "PSRB1913B";
+  planet[0].m_pname = "Attractor";
+  onAPP();
+}
+
+function myPSRJ0737A(){
   var radioList = document.getElementsByName("calc1");
   radioList[0].checked = true;
   radioList = document.getElementsByName("deg");
@@ -1151,8 +1387,11 @@ function myPSRJ0737(){
   document.F1.my1FormT0.value = 0;
   document.F1.my1FormE.value = 0.087777;
   document.F1.my1FormRA1.value = 0.0026738348;
+//  document.F1.my1FormRA1.value = 0.03155140335628578
   document.F1.my1FormRA2.value = 0.0026738348;
+//  document.F1.my1FormRA2.value = 0.037623356228346;
   document.F1.my1FormP.value = 0.000085978196;
+//  document.F1.my1FormP.value = 0.004;
   document.F1.my1FormM2.value = 2.486375e+30;
   document.F1.my1FormM1.value = 2.6594267e+30;
   document.F1.my1FormOMG.value = 0;
@@ -1160,9 +1399,119 @@ function myPSRJ0737(){
   document.F1.my1FormOmg.value = 0;
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
-  document.F1.SPD.value = 0.001;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.0001;
   document.F1.ZOM.value = 0.0025;
   document.F2.THEO.value = 608400;
+  planet[id].m_pname = "PSRJ0737-3039";
+  planet[0].m_pname = "Attractor";
+  onAPP();
+}
+
+function myPSRJ0737B(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.0088;
+  document.F1.my1FormRA1.value = 0.005;
+  //document.F1.my1FormRA1.value = 0.03429233179744513
+  document.F1.my1FormRA2.value = 0.007;
+  //document.F1.my1FormRA2.value = 0.034901235186907444;
+  document.F1.my1FormP.value = 0.00028;
+  //document.F1.my1FormP.value = 0.004;
+  document.F1.my1FormM2.value = 2.49e+30;
+  document.F1.my1FormM1.value = 2.66e+30;
+  document.F1.my1FormOMG.value = 0;
+  document.F1.my1FormINC.value = 88.7;
+  document.F1.my1FormOmg.value = 73.8;
+  document.F1.my1FormTT0.value = 0;
+  document.F1.my1FormLTT0.value = 0;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.0001;
+  document.F1.ZOM.value = 0.0025;
+  document.F2.THEO.value = 608400;
+  planet[id].m_pname = "PSRJ0737B";
+  planet[0].m_pname = "Attractor";
+  onAPP();
+}
+
+function mySgrAStar(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.884;
+  document.F1.my1FormRA1.value = 120;
+  document.F1.my1FormRA2.value = 1920;
+  document.F1.my1FormP.value = 16.05;
+  document.F1.my1FormM2.value = 2.8e+31;
+  document.F1.my1FormM1.value = 8.2e+36;
+  document.F1.my1FormOMG.value = 228;
+  document.F1.my1FormINC.value = 134;
+  document.F1.my1FormOmg.value = 66;
+  document.F1.my1FormTT0.value = 0;
+  document.F1.my1FormLTT0.value = 0;
+  var id = getSatId();
+  if(id === 1) BankSpd = 10;
+  document.F1.ZOM.value = 500;
+  document.F2.THEO.value = 608400;
+  planet[id].m_pname = "SgrAStar";
+  planet[0].m_pname = "Attractor";
+  onAPP();
+}
+
+function myBHPrimaryA(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.1;
+  document.F1.my1FormRA1.value = 0.00009;
+  document.F1.my1FormRA2.value = 0.00011;
+  document.F1.my1FormP.value = 0.000002;
+  document.F1.my1FormM2.value = 5.9e+31;
+  document.F1.my1FormM1.value = 7.1e+31;
+  document.F1.my1FormOMG.value = 0;
+  document.F1.my1FormINC.value = 0;
+  document.F1.my1FormOmg.value = 0;
+  document.F1.my1FormTT0.value = 0;
+  document.F1.my1FormLTT0.value = 0;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.00001;
+  document.F1.ZOM.value = 0.0003;
+  document.F2.THEO.value = 608400;
+  planet[id].m_pname = "BHPrimaryA";
+  planet[0].m_pname = "Attractor";
+  onAPP();
+}
+
+function myBHPrimaryB(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.1;
+  document.F1.my1FormRA1.value = 0.007809387028322582;
+  document.F1.my1FormRA2.value = 0.009544806367949821;
+  document.F1.my1FormP.value = 0.0001;
+  document.F1.my1FormM2.value = 5.9e+31;
+  document.F1.my1FormM1.value = 7.1e+31;
+  document.F1.my1FormOMG.value = 0;
+  document.F1.my1FormINC.value = 0;
+  document.F1.my1FormOmg.value = 0;
+  document.F1.my1FormTT0.value = 0;
+  document.F1.my1FormLTT0.value = 0;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.0001;
+  document.F1.ZOM.value = 0.005;
+  document.F2.THEO.value = 608400;
+  planet[id].m_pname = "BHPrimaryB";
+  planet[0].m_pname = "Attractor";
   onAPP();
 }
 
@@ -1183,9 +1532,12 @@ function myISS(){
   document.F1.my1FormOmg.value = 91.5236;
   document.F1.my1FormTT0.value = 44.156034388347386;
   document.F1.my1FormLTT0.value = 268.6108;
-  document.F1.SPD.value = 0.001;
+  var id = getSatId();
+  if(id === 1) BankSpd = 0.001;
   document.F1.ZOM.value = 0.00003;
   document.F2.THEO.value = 25000;
+  planet[id].m_pname = "ISS";
+  planet[0].m_pname = "Earth";
   onAPP();
 }
 
@@ -1204,15 +1556,18 @@ function mySwingby() {
   document.F1.my1FormP.value = 11.862;
   document.F1.my1FormM2.value = 1.8986e+27;
   document.F1.my1FormM1.value = 1.9891e+30;
+//  document.F1.my1FormOMG.value = 30.3;
   document.F1.my1FormOMG.value = 0;
   document.F1.my1FormINC.value = 0;
   document.F1.my1FormOmg.value = 0;
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   document.F1.myFormTIME.value = 0;
-  document.F1.SPD.value = 7;
+  BankSpd = 7;
   document.F1.ZOM.value = 4;
   document.F2.THEO.value = 0.01;
+  planet[1].m_pname = "Jupiter";
+  planet[0].m_pname = "Sun";
   dat = new Date(0);
   onAPP();
   radioList = document.getElementsByName("PUTSEL");
@@ -1233,6 +1588,7 @@ function mySwingby() {
   document.F1.my1FormOmg.value = 0;
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
+  planet[2].m_pname = "object";
   onAPP();
 }
 
@@ -1247,8 +1603,9 @@ function onTCLC(){
   document.F2.T12.value = c;
 }
 
-function onNow(){
+function onNow(rdt = null){
   var dt = new Date();
+  if(rdt) dt = rdt;
   var year = dt.getFullYear();
   var month = dt.getMonth()+1;
   var day = dt.getDate();
@@ -1278,8 +1635,19 @@ var MaxCsvLogLine = 0;
 var orbitCsvContent = "";
 var lap = 0, PeriAve = 0, ApheAve = 0, PeriAveRad = 0, ApheAveRad = 0, targettheta = null;
 
-
-
+function OrbitElementCalc(q, t, m1, m2){
+// t (年) を秒に変換
+  var t_sec = t * 365.2425 * 24 * 3600;
+  
+  // a^3 = (G * (m1 + m2) * t_sec^2) / (4 * PI^2)
+  var a_meter = Math.cbrt((rk.CNST_G * (m1 + m2) * Math.pow(t_sec, 2)) / (4 * Math.pow(Math.PI, 2)));
+  
+  // メートルを AU に変換
+  var a = a_meter / rk.CNST_AU;
+  var e = 1 - (q / a);
+  
+  return {a : a, e : e};
+}
 
 function Average(dataArray) {
   if(dataArray.length < 1) return 0;
@@ -1288,7 +1656,7 @@ function Average(dataArray) {
   for(i = 0; i < dataArray.length; i++){
     ret += dataArray[i];
   }
-  return (ret / dataArray.length)
+  return (ret / dataArray.length);
 }
 
 // 例：外れ値を除外して平均を出す関数
@@ -1398,13 +1766,22 @@ function NormalizeRad(th) {
 }
 
 function addlog2(str = ""){
+    var q = rk.mp[1].lastQ;
+    var t = rk.mp[1].lastT;
+    var m2 = rk.planet[1].m_m;
+    var m1 = rk.planet[0].m_m;
+
+    var ret = OrbitElementCalc(q, t, m1, m2);
+    var a = ret.a;
+    var e = ret.e;
+
     //abs(理論値 - 実測値) / 理論値 * 100
     var NowDate = new Date();
     var ctime = (NowDate.getTime() - StDate.getTime()) / 1000;
     var pt = planet[1].m_t; //公転周期[年]
     var dttt = lap * pt;
     str += "\n計算時間 = " + Number(ctime).toFixed(6) + " [秒]";
-    str += "\ndeltaT = " + Number(dt / 60 / 60 / 24 / 365.2425).toFixed(6) + " [年] ←→ "+ Number(dt).toFixed(6) + " [秒]";
+    str += "\ndeltaT = " + Number(rk.SpdRate * rk.dt / 60 / 60 / 24 / 365.2425).toFixed(6) + " [年] ←→ "+ Number(rk.SpdRate * rk.dt).toFixed(6) + " [秒]";
     str += "\nlaps = " + Number(lap) + " [周]";
     str += "\n計測期間 = " + Number(dttt).toFixed(6) + " [年]";
     str = str + "\n現在の角度 = " + targettheta;
@@ -1419,18 +1796,36 @@ function addlog2(str = ""){
     // 実測値（平均）：PeriAveRad (rad/rev)
     // 1周期あたりの近星点移動角 (rad/rev)
     //"# dphi[rad/rev] = (6πG(M+m))/(c^2a(1-e^2)): " +  + "[rad/rev]\n"
-    var deltaperirad = (theoryrad - PeriAveRad) / theoryrad * 100;
-    var accuracyrad = (100 - deltaperirad); // 正解率（再現率）
+    var logperirad = [Math.log(Math.abs(theoryrad)), Math.log(Math.abs(PeriAveRad))]
+    var deltaperirad = (logperirad[0] - logperirad[1]) / logperirad[0] * 100;
+    var accuracyrad = (100 - deltaperirad); // 対数再現率
     str = str + "\n[近日点の進動角の評価 [rad/rev]]";
     str = str + "\n理論値 (Theory) = " + theoryrad.toExponential(6);
     str = str + "\n実測値 (Measured) = " + PeriAveRad.toExponential(6);
-    str = str + "\n再現率 (Accuracy)[%] = " + accuracyrad.toFixed(3);
-    var deltaperi = (theory - PeriAve) / theory * 100;
-    var accuracy = (100 - deltaperi); // 正解率（再現率）
+    str = str + "\n対数再現率 (Accuracy)[%] = " + accuracyrad.toFixed(3);
+    var logperi = [Math.log(Math.abs(theory)), Math.log(Math.abs(PeriAve))]
+    var deltaperi = (logperi[0] - logperi[1]) / logperi[0] * 100;
+    var accuracy = (100 - deltaperi); // 対数再現率
+    var delta = [((rk.planet[1].m_ra - q) / rk.planet[1].m_ra * 100), ((rk.planet[1].m_t - t) / rk.planet[1].m_t * 100), 
+                 ((rk.planet[1].m_a - a) / rk.planet[1].m_a * 100), ((rk.planet[1].m_e - e) / rk.planet[1].m_e * 100)];
+    var acc = [(100 - delta[0]), (100 - delta[1]), (100 - delta[2]), (100 - delta[3])]; // 再現率
     str = str + "\n[近日点の進動角の評価 [秒角/100年]]";
     str = str + "\n理論値 (Theory) = " + theory.toExponential(6);
     str = str + "\n実測値 (Measured) = " + PeriAve.toExponential(6);
-    str = str + "\n再現率 (Accuracy)[%] = " + accuracy.toFixed(3);
+    str = str + "\n対数再現率 (Accuracy)[%] = " + accuracy.toFixed(3);
+    str = str + "\n[古典軌道要素の再評価]";
+    str = str + "\n近日点距離理論値 [AU] = " + rk.planet[1].m_ra.toExponential(6);
+    str = str + "\n近日点距離実測値 [AU] = " + q.toExponential(6);
+    str = str + "\n再現率 [%] = " + acc[0].toFixed(3);
+    str = str + "\n近日点周期理論値 [年] = " + rk.planet[1].m_t.toExponential(6);
+    str = str + "\n近日点周期実測値 [年] = " + t.toExponential(6);
+    str = str + "\n再現率 [%] = " + acc[1].toFixed(3);
+    str = str + "\n軌道長半径理論値 [AU] = " + rk.planet[1].m_a.toExponential(6);
+    str = str + "\n軌道長半径実測値 [AU] = " + a.toExponential(6);
+    str = str + "\n再現率 [%] = " + acc[2].toFixed(3);
+    str = str + "\n離心率理論値 = " + rk.planet[1].m_e.toExponential(6);
+    str = str + "\n離心率実測値 = " + e.toExponential(6);
+    str = str + "\n再現率 [%] = " + acc[3].toFixed(3);
 //}
     return str;
 }
@@ -1570,23 +1965,28 @@ N6LRngKt.prototype.onPerihelion = function (i, lr, pos, time) {
 //遠日点イベント 天体番号、距離、座標を通知
 N6LRngKt.prototype.onAphelion = function (i, lr, pos, time) {
     if(i !== 1) return;
+    var fff = false;
+    if(bAPHE) {onSTP();fff=true;}
+    var dat1 = null;
+    if(this.epoch){
+        var datt = this.epoch.getTime(); // Get the timestamp of the base date
+        var dat1t = datt + time * 1000; // Calculate the new timestamp
+        dat1 = new Date(dat1t); // Create a new Date object for the updated time
+    }
     var checkList = document.getElementsByName("calcPeri");
     if(checkList[0].checked){
       var str = "";
-      if(this.epoch){
-        var datt = this.epoch.getTime(); // Get the timestamp of the base date
-        var dat1t = datt + time * 1000; // Calculate the new timestamp
-        var dat1 = new Date(dat1t); // Create a new Date object for the updated time
+      if(dat1){
         str = "[" + dat1.toLocaleString() + "] onAphelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!";
       }
       else {
         str = "[NoDateData] onAphelion(" + i + ", " + lr + ", " + pos.Str() + "); occurred!";
       }
-        var pos3 = new N6LVector([pos.x[0], pos.x[1], pos.x[2]]);
+      var pos3 = new N6LVector([pos.x[0], pos.x[1], pos.x[2]]);
         if(bInit === 0) {
             bInit++;
             FstAphePos = new N6LVector(pos3);
-        }
+      }
 
       const logEl = document.getElementById('log-output');
 
@@ -1594,6 +1994,25 @@ N6LRngKt.prototype.onAphelion = function (i, lr, pos, time) {
       updateLog(str, logEl);
       updateAve(pos);
     }
+    if(fff) {
+      if(dat1){
+        onNow(dat1);
+        var t = eval(document.F2.T11.value);
+        settime(t * 3600 * 24 * 365.2425);
+        init(1);
+//        clearLog();
+        bAPHE = false;
+        if(sVDT) {
+          var checkList2 = document.getElementsByName("VDT");
+          checkList2[0].checked = true;
+          if (typeof checkList2[0].onclick == "function") {
+            checkList2[0].onclick();
+          }
+        }
+        onZAP();
+        window.alert("Set Aphelion");
+        bEXIT = true;
+    }}
 };
 
 
@@ -1612,6 +2031,7 @@ N6LRngKt.prototype.onSide = function (i, lr, pos) {
   }
 }
 N6LRngKt.prototype.OnEnterPerihelion = function (i) {
+return;
   if(i !== 1) return;
   var checkList = document.getElementsByName("calcPeri");
   if(checkList[0].checked){
@@ -1631,6 +2051,7 @@ N6LRngKt.prototype.OnEnterPerihelion = function (i) {
 }
 
 N6LRngKt.prototype.OnExitPerihelion = function (i) {
+return;
   if(i !== 1) return;
   var checkList = document.getElementsByName("calcPeri");
   if(checkList[0].checked){
@@ -1640,6 +2061,7 @@ N6LRngKt.prototype.OnExitPerihelion = function (i) {
 }
 
 N6LRngKt.prototype.OnEnterAphelion = function (i) {
+return;
   if(i !== 1) return;
   var checkList = document.getElementsByName("calcPeri");
   if(checkList[0].checked){
@@ -1659,6 +2081,7 @@ N6LRngKt.prototype.OnEnterAphelion = function (i) {
 }
 
 N6LRngKt.prototype.OnExitAphelion = function (i) {
+return;
   if(i !== 1) return;
   var checkList = document.getElementsByName("calcPeri");
   if(checkList[0].checked){
@@ -1801,6 +2224,34 @@ N6LRngKt.prototype.ToSchwartz = function (v, e) {
      return 0;//古典論
 };
 
+//2.5PN
+N6LRngKt.prototype.ToGravityRadiationLoss = function (v, m1, m2, r){
+    var radioList = document.getElementsByName("CALCMODE");
+     if(radioList[0].checked) {
+      //NAS6定数//解析的デバッグにより推定
+      const VAL_NAS6 = 1.35 - 3.3e+8 / r;
+      const CNST_NAS6 = -4.5e-1;
+      const CNST = this.CNST_C * CNST_NAS6 * VAL_NAS6;
+      var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 3) * m1 * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 5) * Math.pow(r, 4))) * v * this.CNST_C;
+      return ret;//相対論
+   }
+   return 0;//古典論
+};
 
+function oncalcPeri(){
+  var checkList = document.getElementsByName("calcPeri");
+  if(checkList[0].checked){
+    var checkList2 = document.getElementsByName("VDT");
+    if(checkList2[0].checked){
+      rk.SpdRate = Speed;
+    }
+    else {
+      rk.SpdRate = Speed * BankSpd;
+    }
+  }
+  else {
+    rk.SpdRate = Speed * BankSpd;
+  }
+}
 
 

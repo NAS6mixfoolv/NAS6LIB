@@ -255,7 +255,7 @@ function InitRelative() {
   var pmp = new Array(); // Temporary array to hold mass points for the Runge-Kutta solver
   var i;
   for(i = 0; i < planetnum; i++) pmp[i] = new N6LMassPoint(mp[i]); // Create copies of current mass points
-  rk.Init(pmp, dt, planet, dat, false); // Initialize the Runge-Kutta (rk) solver with the mass points and time step
+  rk.Init(pmp, dt, planet, dat, 1, false); // Initialize the Runge-Kutta (rk) solver with the mass points and time step
 }
 
 // Updates the simulation frame using the N-body (relative) calculation method.

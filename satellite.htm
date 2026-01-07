@@ -110,7 +110,7 @@
         }
         #log-output2 { 
             white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
-            height: 300px; overflow-y: auto; background: #000; color: #0f0; 
+            height: 600px; overflow-y: auto; background: #000; color: #0f0; 
             padding: 10px; border: 1px solid #444; border-radius: 4px;
         }
         #log-output3 { 
@@ -140,10 +140,15 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
 ケプラー方程式で初期値を取得<br>
 ルンゲクッタで万有引力を積分<br>
 万有引力の計算で<br>
-相対論補正項S=3(v/c)^2<br>
+1PN : 相対論補正項S=3(v/C)^2<br>
+2.5PN : 重力放射減衰L=(-32*A/5)*((G^3*m1*m2*(m1+m2))/(C^5) * r^4))) * v<br>
+v:軌道速度:r:距離:m1:重力源質量:m2:質量:G:万有引力定数:C:光速度:A:NAS6変数(デバッグにより経験的に決定):<br>
 相対論速度合成則<br>
 を組み込んでいます<br>
 ログのCSV出力もできます<br>
+<br>
+ハレー彗星を解くためにべき乗可変dtを採用したので<br>
+スケールに応じて自動調整されるようになっています<br>
 </b>
 </font>
 <form name="FD">
@@ -271,7 +276,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat00' solid='false'>
+                        <Text string='Sat00' solid='false' id="sph00t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -292,7 +297,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat01' solid='false'>
+                        <Text string='Sat01' solid='false' id="sph01t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -313,7 +318,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat02' solid='false'>
+                        <Text string='Sat02' solid='false' id="sph02t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -334,7 +339,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat03' solid='false'>
+                        <Text string='Sat03' solid='false' id="sph03t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -355,7 +360,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat04' solid='false'>
+                        <Text string='Sat04' solid='false' id="sph04t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -376,7 +381,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat05' solid='false'>
+                        <Text string='Sat05' solid='false' id="sph05t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -397,7 +402,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat06' solid='false'>
+                        <Text string='Sat06' solid='false' id="sph06t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -418,7 +423,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat07' solid='false'>
+                        <Text string='Sat07' solid='false' id="sph07t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -439,7 +444,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat08' solid='false'>
+                        <Text string='Sat08' solid='false' id="sph08t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -460,7 +465,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat09' solid='false'>
+                        <Text string='Sat09' solid='false' id="sph09t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -481,7 +486,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat10' solid='false'>
+                        <Text string='Sat10' solid='false' id="sph10t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -504,7 +509,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
 <form name="F1">
 <pre>
 相対論モード<input type="radio" name="CALCMODE" value="0"  checked>古典論モード<input type="radio" name="CALCMODE" value="1"><br>
-<input type="button" name="REV" value="←" onclick="onREV();">　<input type="button" name="STP" value="■" onclick="onSTP();">　<input type="button" name="RUN" value="→" onclick="onRUN();">　<select name="VP" onchange="viewp();">
+<input type="button" name="REV" value="←" onclick="onREV();">　<input type="button" name="POS" value="II" onclick="onPOS();">　<input type="button" name="RUN" value="→" onclick="onRUN();">　<select name="VP" onchange="viewp();">
 <option value="SAT00">Sat00</option>
 <option value="SAT01">Sat01</option>
 <option value="SAT02">Sat02</option>
@@ -516,21 +521,26 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
 <option value="SAT08">Sat08</option>
 <option value="SAT09">Sat09</option>
 <option value="SAT10">Sat10</option>
-</select>　speed(day) : <input type="text" name="SPD" value="1">　zoom : <input type="text" name="ZOM" value="1"><br>
+</select>　speed rate : <input type="text" name="SPD" value="1">　zoom : <input type="text" name="ZOM" value="1">　<input type="button" name="ZAP" value="ZoomApply" onclick="onZAP();"><br>
 経過時間 time(年) =			<input type="text" size="48" name="myFormTIME" value="0">		time(year)<br>
+経過時間 time(年)が遠日点付近からの開始がもっとも初期設定による誤差が少ないです<input type="button" name="Aphe" value="遠日点セット Set Aphelion" onclick="onAPHE();"><br>
 <input type="text" size="8" name="my1FormTT1" value="0" disabled>年　<input type="text" size="8" name="my1FormTT2" value="0" disabled>月　<input type="text" size="8" name="my1FormTT3" value="0" disabled>日<br>　
 <input type="text" size="8" name="my1FormTT4" value="0" disabled>時　<input type="text" size="8" name="my1FormTT5" value="0" disabled>分　<input type="text" size="8" name="my1FormTT6" value="0" disabled>秒<br>　
 <input type="radio" name="PUTSEL" value="0" checked>Sat01　<input type="radio" name="PUTSEL" value="1">Sat02　<input type="radio" name="PUTSEL" value="2">Sat03　<input type="radio" name="PUTSEL" value="3">Sat04　<input type="radio" name="PUTSEL" value="4">Sat05　<br>
 <input type="radio" name="PUTSEL" value="5">Sat06　<input type="radio" name="PUTSEL" value="6">Sat07　<input type="radio" name="PUTSEL" value="7">Sat08　<input type="radio" name="PUTSEL" value="8">Sat09　<input type="radio" name="PUTSEL" value="9">Sat10<br>
-<input type="button" name="CLS" value="CLS" onclick="onCLS();">　<input type="button" name="DEL" value="DEL" onclick="onDEL();">　<input type="button" name="CAL" value="CALL" onclick="onCAL();">　<input type="button" name="APP" value="APPLY" onclick="onAPP(); onLOOK(); onSTP();"><br>
-<br>
+<input type="button" name="CLS" value="CLS" onclick="onCLS();">　<input type="button" name="DEL" value="DEL" onclick="onDEL();">　<input type="button" name="CAL" value="CALL" onclick="onCAL();">　<input type="button" name="APP" value="APPLY" onclick="onAPP(); onLOOK(); onSTP(); onAPP(); onLOOK(); onSTP();"><br>
+太陽系内<br>
 <input type="button" value="水星 Mercury" onclick="myMercury();">　<input type="button" value="金星 Venus" onclick="myVenus();">　<input type="button" value="地球 Earth" onclick="myEarth();">　<input type="button" value="火星 Mars" onclick="myMars();"><br>
 <input type="button" value="木星 Jupiter" onclick="myJupiter();">　<input type="button" value="土星 Saturn" onclick="mySaturn();">　<input type="button" value="天王星 Uranus" onclick="myUranus();">　<input type="button" value="海王星 Neptune" onclick="myNeptune();"><br>
 <input type="button" value="冥王星 Pluto" onclick="myPluto();">　<input type="button" value="セレス Ceres" onclick="myCeres();">　<input type="button" value="パラス Pallas" onclick="myPallas();">　<input type="button" value="ジュノー Juno" onclick="myJuno();"><br>
-<input type="button" value="ヴェスタ Vesta" onclick="myVesta();">　<input type="button" value="キロン Chiron" onclick="myChiron();">　<input type="button" value="ハレー彗星 Halley" onclick="myHalley();">　<input type="button" value="Jupiter swing by" onclick="mySwingby();"><br>
-太陽系外<br>
-<input type="button" value="連星パルサー　PSR B1913+16" onclick="myPSRB1913()">　<input type="button" value="連星パルサー　PSR J0737-3039" onclick="myPSRJ0737()">　<input type="button" value="ISS" onclick="myISS()"><br>
-<br>
+<input type="button" value="ヴェスタ Vesta" onclick="myVesta();">　<input type="button" value="キロン Chiron" onclick="myChiron();">　<input type="button" value="ハレー彗星 Halley" onclick="myHalley();"><br>
+<input type="button" value="太陽系10体問題 Solar System (10-body)" onclick="mySolar();">　<input type="button" value="木星スイングバイ Jupiter swing by" onclick="mySwingby();"><br>
+注意：Jupiter swing byは可変DTではタイミングの設定が合わなくなります<br>
+太陽系外その他<br>
+<input type="button" value="連星パルサー　PSR B1913+16" onclick="myPSRB1913A()">　<input type="button" value="連星パルサー　PSR B1913B" onclick="myPSRB1913B()">　<input type="button" value="連星パルサー　PSR J0737-3039" onclick="myPSRJ0737A()">　<input type="button" value="連星パルサー　PSR J0737B" onclick="myPSRJ0737B()"><br>
+<input type="button" value="天の川銀河中心　SgrA_Star" onclick="mySgrAStar()">　<input type="button" value="仮想ブラックホールA　BH_PrimaryA" onclick="myBHPrimaryA()">　<input type="button" value="仮想ブラックホールB　BH_PrimaryB" onclick="myBHPrimaryB()">　<input type="button" value="ISS" onclick="myISS()"><br>
+仮想ブラックホールAは境界設定であり重力で拘束できずに飛んでいきます<br>
+仮想ブラックホールBは1PN崩壊境界設定でありまだ重力で拘束されています<br>
 <input type="radio" name="deg" value="0" checked>deg　<input type="radio" name="deg" value="1">rad　<br>
 入力(速度計算：単位、AU、年)(デフォルト値：水星)　<input type="radio" name="calc1" value="AU" checked>	input(CalcVelocity:unit:AU,year)(default:Mercury)<br>
 時間 t0(年) = 				<input type="text" size="48" name="my1FormT0" value="0">	time0 T0(year)<br>
@@ -571,7 +581,7 @@ Edgeで閲覧すると処理が重くなってくる時があります　その�
 <input type="text" size="48" name="T11" disabled> 年　<input type="text" size="48" name="T12" disabled> 秒<br>
 <br>
 <h2>内部ログ</h2>
-最大行数<input type="text" name="MAXLINE" id="MAXLINE" value="1000">　<input type="button" name="LOGCLS" value="LOGCLS" onclick="clearLog();">　近日点移動計算<input type="checkbox" name="calcPeri" checked>　理論値[秒角/100年]<input type="text" name="THEO" value="43.11"><br>
+最大行数<input type="text" name="MAXLINE" id="MAXLINE" value="1000">　<input type="button" name="LOGCLS" value="LOGCLS" onclick="clearLog();">　ログ出力<input type="checkbox" name="calcPeri" onclick="oncalcPeri();">　ログ出力時可変DT<input type="checkbox" name="VDT" onclick="oncalcPeri();" checked>　理論値[秒角/100年]<input type="text" name="THEO" value="43.11"><br>
 CSV最大ログ<input type="text" name="MAXLOGLINE" id="MAXLOGLINE" value="1000">　
 <input type="button" value="save" id="export">
 <a id="download" target="_blank">download NAS6OrbitData.csv</a><br>
@@ -586,6 +596,29 @@ CSV最大ログ<input type="text" name="MAXLOGLINE" id="MAXLOGLINE" value="1000"
 </font>
 <hr>
 <b>
+<br>
+<br>
+<a href="?logcheck=false">【一般鑑賞向け】ログ出力なしで再読み込み</a><br>
+<a href="?logcheck=true">【研究者向け】精密解析設定ログ出力ありで再読み込み</a><br>
+<br>
+【解説】<br>
+はじめに<br>
+近日点移動のような極めて微小な物理現象を正確に『計算』するためには単に数値を記録するだけでなく<br>
+計算の『歩幅（DT）』そのものを顕微鏡のように細かく調整する必要があります<br>
+近日点移動計算の<br>
+<br>
+■ チェックボックス [ON]：精密解析モード（可変DT） ログ出力と共に軌道の変化に合わせて計算精度をリアルタイムに最適化します<br>
+<br>
+特徴: 近日点付近など速度が上がる場所では計算密度を極限まで高めます<br>
+<br>
+注意: 精密度を優先するためアニメーション上の時間の流れが加速・減速し視覚的な違和感を生じることがありますが<br>
+これが物理的な正解を導き出すための仕様です<br>
+<br>
+■ チェックボックス [OFF]：標準観測モード（固定DT） ログ出力を停止し一定の歩幅で計算を進行させます<br>
+<br>
+特徴: 直感的で自然なアニメーションとなります<br>
+<br>
+用途: 宇宙の全体像や滑らかな動きを鑑賞するのに適しています<br>
 <br>
 <br>
 このシミュレーションモデルはルンゲクッタ法に基づいています<br>
@@ -728,6 +761,33 @@ A-B=43.022427194762[秒角/100年]<br>
 おらって天才プログラマーでしょ？偉そうにするよ<br>
 <br>
 <br>
+追記最新版<br>
+太陽系10体ボタンを実装しました<br>
+太陽系10体問題可変DTオフ<br>
+相対論モード<br>
+[近日点の進動角の評価 [rad/rev]]<br>
+理論値 (Theory) = 5.019181e-7<br>
+実測値 (Measured) = -2.385245e-6<br>
+対数再現率 (Accuracy)[%] = 89.254<br>
+[近日点の進動角の評価 [秒角/100年]]<br>
+理論値 (Theory) = 4.297553e+1<br>
+A実測値 (Measured) = -2.042309e+2<br>
+対数再現率 (Accuracy)[%] = 141.446<br>
+古典論モード<br>
+[近日点の進動角の評価 [rad/rev]]<br>
+理論値 (Theory) = 5.019181e-7<br>
+実測値 (Measured) = -2.887344e-6<br>
+対数再現率 (Accuracy)[%] = 87.937<br>
+[近日点の進動角の評価 [秒角/100年]]<br>
+理論値 (Theory) = 4.297553e+1<br>
+B実測値 (Measured) = -2.472218e+2<br>
+対数再現率 (Accuracy)[%] = 146.526<br>
+<br>
+開始時刻を合わせてデジタル離散誤差のタイミングが<br>
+合えば可変DTオフで抽出できます<br>
+A-B=42.9909<br>
+<br>
+<br>
 ジェミニさんのおすすめの偉そうな言い方<br>
 <br>
 「私は、宇宙のノイズをねじ伏せた。」<br>
@@ -760,6 +820,24 @@ A-B=43.022427194762[秒角/100年]<br>
 20年(2005年)位前から作ってきたのですがその時に全惑星の良い座標や速度データが見つからず<br>
 仕方なくケプラー方程式と格闘して惑星の初期設定を自前で実装したことが結局良かったようです<br>
 不運だったと思っても思わぬ幸運があるものですね<br>
+<br>
+<br>
+シミュレーション利用の遊び<br>
+SAT01に水星をSAT02に金星を配置して金星の質量M2を1e+30にしてApplyします<br>
+つまり連星系のお互いの軌道の中に惑星が存在する形です<br>
+この状態では水星は初期条件がどんな時間であろうとも早晩カタパルトをして<br>
+太陽系外へ脱出しますつまり毒親たちから逃げ出した家出少女ということになります<br>
+はるかかなたまで逃げ出すのですが私の想像ですが何もない荒野の宇宙で逃げ出した<br>
+水星が核となり星間ガスを集めて最終的には恒星になるのでは？と推測します<br>
+彼女はその無人の荒野で迷惑ばかりだと思っていたお父さんお母さんの温かさを初めて身に染みて<br>
+あんなにめちゃくちゃな毎日も大切な日々だったということに気が付くのです<br>
+そして彼女が強がりを言えるのならもう恒星になんてならないよ絶対なんですよ<br>
+<br>
+ジェミニさんの感想<br>
+【観測事後評価：家出少女の帰結】 水星は連星系の重力カタパルトにより系外へ放出された。<br>
+ 彼女は絶対零度の荒野で、かつて自分を翻弄した熱源の正体が「愛」であったと知る。<br>
+ 記録：彼女が強がりを言えるのなら、答えは一つ。 「もう恒星になんてならないよ絶対」<br>
+ （※注：その後、彼女の座標からは、新しい太陽の産声と思われる核融合反応が観測されたという。）<br>
 <br>
 <br>
 ・理論解説<br>

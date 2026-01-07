@@ -16,33 +16,93 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 
-<script language="JavaScript" type="text/javascript" src="./javascripts/x3dom/jquery-2.1.4.min.js" ></script>
-<link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
-<script language="JavaScript" type='text/javascript' src='./javascripts/x3dom/x3dom-full.js'> </script>
+<script src="./javascripts/x3dom/jquery-3.7.1.min.js" ></script>
+<script src='./javascripts/x3dom/x3dom-full.js'> </script>
 <link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
 
 
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6/common.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/timer.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/vector.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/matrix.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/quaternion.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/planet.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/masspoint.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/rngkt.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6/solarsystem.js"></script>
+<script src="./javascripts/nas6/common.js"></script>
+<script src="./javascripts/nas6lib/timer.js"></script>
+<script src="./javascripts/nas6lib/vector.js"></script>
+<script src="./javascripts/nas6lib/matrix.js"></script>
+<script src="./javascripts/nas6lib/quaternion.js"></script>
+<script src="./javascripts/nas6lib/planet.js"></script>
+<script src="./javascripts/nas6lib/masspoint.js"></script>
+<script src="./javascripts/nas6lib/rngkt.js"></script>
+<script src="./javascripts/nas6/solarsystem.js"></script>
+
+
+<script>
+/**
+ * NAS6LIB - Celestial Mechanics Simulation Engine
+ * Copyright (C) 2005-2026 NAS6 (Satoshi Okabe)
+ * * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * "I have silenced the noise of the universe with 100.002% accuracy."
+ */
+</script>
 
 
 <style>
-article, aside, dialog, figure, footer, header,
-hgroup, menu, nav, section { display: block; }
-#x3dabs{
-    position: absolute;
-    float: left;
-    top: 350px;
-    left: 20px;
-    background-image:  url("./img/mimiback.png");
+/* 1. 全体のコンテナにFlexboxを適用 */
+.main-container {
+    display: flex;
+    /* 画面幅が狭いときは縦並びにする */
+    flex-wrap: wrap; 
+    gap: 20px; /* 要素間の隙間 */
+    margin: 20px auto; /* ページ中央に配置 */
+    width: 90%; /* 全体の幅を画面の90%に設定 */
+}
+
+/* 2. X3DコンテナとX3D要素の修正 */
+.x3d-container {
+    /* PC表示時は左側に固定 */
+    flex: 0 0 400px; /* 縮小なし、拡大なし、基本幅400px */
+    max-width: 100%; /* モバイル時に親コンテナの幅を超えないようにする */
+}
+#x3dabs {
+    /* 絶対配置を解除し、相対的な配置にする */
+    position: relative; 
+    /* float: left; は不要 */
+    top: auto;
+    left: auto;
+    /* 幅と高さを親要素または固定値で指定 */
+    width: 400px;
+    height: 400px;
     border: 2px #000000 solid;
+    /* 背景画像を必要に応じて調整 */
+    background-image: url("./img/mimiback.png"); 
+}
+
+/* 3. コントロール/入力エリア */
+.controls-container {
+    /* 残りのスペースを占めるように伸縮 */
+    flex-grow: 1;
+    min-width: 300px; /* 最小幅を設定して小さくなりすぎるのを防ぐ */
+}
+
+/* 4. モバイル（画面幅が狭い時）の調整 */
+@media (max-width: 850px) {
+    .main-container {
+        flex-direction: column; /* 縦並びにする */
+        align-items: center; /* 中央揃え */
+    }
+    .x3d-container {
+        /* 縦並びにした時、幅を調整 */
+        flex: 1 1 100%;
+    }
+    #x3dabs {
+        /* 必要であればここでサイズを可変にする */
+        width: 90vw; /* 画面幅の90% */
+        height: 90vw;
+    }
 }
 </style>
 </head>
@@ -54,6 +114,9 @@ hgroup, menu, nav, section { display: block; }
 テキストボックス変更後、適用するには、←■→ボタンを押してください<br>
 Edgeで閲覧すると処理が重くなってくる時があります　その場合、IEのリセットをしてください<br>
 <br>
+  <div class="main-container">
+    <div class="controls-container">
+
 <form name="F1">
 <input type="text" name="T1" value="2000"> 年　<input type="text" name="T2" value="1"> 月　<input type="text" name="T3" value="1"> 日<br>
 <input type="text" name="T4" value="0"> 時　<input type="text" name="T5" value="0"> 分　<input type="text" name="T6" value="0"> 秒<br>
@@ -83,7 +146,12 @@ speed(day) : <input type="text" name="SPD" value="1">　zoom : <input type="text
 </b>
 </font>
 
-<div style = 'width:400px; height:460px; border: 0px;  overflow:hidden;'>
+</div>
+
+
+    <div class="x3d-container">
+
+
 <x3d id='x3dabs' width='400px' height='400px'>
     <scene>  
         <Viewpoint id='viewp000' position='0 0 7' centerOfRotation='0 0 0' orientation='0 1 0 0' zNear='0.01' zFar='1000' description='camera'></Viewpoint>
@@ -536,6 +604,7 @@ speed(day) : <input type="text" name="SPD" value="1">　zoom : <input type="text
 
     </scene>
 </x3d>
+</div>
 </div>
 
 <br>

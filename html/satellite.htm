@@ -16,34 +16,109 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 
-<script language="JavaScript" type="text/javascript" src="./javascripts/x3dom/jquery-2.1.4.min.js" ></script>
-<link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
-<script language="JavaScript" type='text/javascript' src='./javascripts/x3dom/x3dom-full.js'> </script>
+<script src="./javascripts/x3dom/jquery-3.7.1.min.js" ></script>
+<script src='./javascripts/x3dom/x3dom-full.js'> </script>
 <link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
 
 
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6/common.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/timer.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/vector.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/matrix.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/quaternion.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/planet.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/masspoint.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6lib/rngkt.js"></script>
-<script language="JavaScript" type="text/javascript" src="./javascripts/nas6/satellite.js"></script>
+<script src="./javascripts/nas6/common.js"></script>
+<script src="./javascripts/nas6lib/timer.js"></script>
+<script src="./javascripts/nas6lib/vector.js"></script>
+<script src="./javascripts/nas6lib/matrix.js"></script>
+<script src="./javascripts/nas6lib/quaternion.js"></script>
+<script src="./javascripts/nas6lib/planet.js"></script>
+<script src="./javascripts/nas6lib/masspoint.js"></script>
+<script src="./javascripts/nas6lib/rngkt.js"></script>
+<script src="./javascripts/nas6/satellite.js"></script>
+
+<script>
+/**
+ * NAS6LIB - Celestial Mechanics Simulation Engine
+ * Copyright (C) 2005-2026 NAS6 (Satoshi Okabe)
+ * * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * "I have silenced the noise of the universe with 100.002% accuracy."
+ */
+</script>
 
 
 <style>
-article, aside, dialog, figure, footer, header,
-hgroup, menu, nav, section { display: block; }
-#x3dabs{
-    position: absolute;
-    float: left;
-    top: 420px;
-    left: 20px;
-    background-image:  url("./img/mimiback.png");
-    border: 2px #000000 solid;
+/* 1. 全体のコンテナにFlexboxを適用 */
+.main-container {
+    display: flex;
+    /* 画面幅が狭いときは縦並びにする */
+    flex-wrap: wrap; 
+    gap: 20px; /* 要素間の隙間 */
+    margin: 20px auto; /* ページ中央に配置 */
+    width: 90%; /* 全体の幅を画面の90%に設定 */
 }
+
+/* 2. X3DコンテナとX3D要素の修正 */
+.x3d-container {
+    /* PC表示時は左側に固定 */
+    flex: 0 0 400px; /* 縮小なし、拡大なし、基本幅400px */
+    max-width: 100%; /* モバイル時に親コンテナの幅を超えないようにする */
+}
+#x3dabs {
+    /* 絶対配置を解除し、相対的な配置にする */
+    position: relative; 
+    /* float: left; は不要 */
+    top: auto;
+    left: auto;
+    /* 幅と高さを親要素または固定値で指定 */
+    width: 400px;
+    height: 400px;
+    border: 2px #000000 solid;
+    /* 背景画像を必要に応じて調整 */
+    background-image: url("./img/mimiback.png"); 
+}
+
+/* 3. コントロール/入力エリア */
+.controls-container {
+    /* 残りのスペースを占めるように伸縮 */
+    flex-grow: 1;
+    min-width: 300px; /* 最小幅を設定して小さくなりすぎるのを防ぐ */
+}
+
+/* 4. モバイル（画面幅が狭い時）の調整 */
+@media (max-width: 850px) {
+    .main-container {
+        flex-direction: column; /* 縦並びにする */
+        align-items: center; /* 中央揃え */
+    }
+    .x3d-container {
+        /* 縦並びにした時、幅を調整 */
+        flex: 1 1 100%;
+    }
+    #x3dabs {
+        /* 必要であればここでサイズを可変にする */
+        width: 90vw; /* 画面幅の90% */
+        height: 90vw;
+    }
+}
+        #log-output { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
+            height: 250px; overflow-y: auto; background: #000; color: #0f0; 
+            padding: 10px; border: 1px solid #444; border-radius: 4px;
+        }
+        #log-output2 { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
+            height: 600px; overflow-y: auto; background: #000; color: #0f0; 
+            padding: 10px; border: 1px solid #444; border-radius: 4px;
+        }
+        #log-output3 { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
+            height: 250px; overflow-y: auto; background: #000; color: #0f0; 
+            padding: 10px; border: 1px solid #444; border-radius: 4px;
+        }
+
 </style>
 </head>
 <body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg">
@@ -59,18 +134,27 @@ APPLYで選択衛星の軌道要素を適用<br>
 ラジオボタンやチェックボックスは軌道要素の計算の優先度を決めます<br>
 Edgeで閲覧すると処理が重くなってくる時があります　その場合、IEのリセットをしてください<br>
 <br>
-連星パルサー　PSR B1913+16にてspeedを0.1にして早送りしてみると<br>
-次第に重力波放出？でエネルギーを失って軌道が低くなっていくことを確認できるかと思います<br>
-もちろんこれだと時間微分誤差が大きすぎて回転方向とか目の錯覚で不正確ですが高度の推移を大げさにしたものが分かります<br>
-0.328[day]が1周期だから早送りも0.08[day]位が限界かも<br>
-speed0.06[day]位の早送りがエネルギー放出過程が分かりやすいかも<br>
-もちろん時間微分誤差のせいで大げさになりますが
-<a href='./satellite.htm#mv'>参照動画</a><br>
+<h3>アプリの紹介</h3>
+太陽系惑星ならばほぼ完璧です<br>
+物理エンジンは<br>
+ケプラー方程式で初期値を取得<br>
+ルンゲクッタで万有引力を積分<br>
+万有引力の計算で<br>
+1PN : 相対論補正項S=3(v/C)^2<br>
+2.5PN : 重力放射減衰L=(-32*A/5)*((G^3*m1*m2*(m1+m2))/(C^5) * r^4))) * v<br>
+v:軌道速度:r:距離:m1:重力源質量:m2:質量:G:万有引力定数:C:光速度:A:NAS6変数(デバッグにより経験的に決定):<br>
+相対論速度合成則<br>
+を組み込んでいます<br>
+ログのCSV出力もできます<br>
 <br>
+ハレー彗星を解くためにべき乗可変dtを採用したので<br>
+スケールに応じて自動調整されるようになっています<br>
 </b>
 </font>
-
-<div style = 'width:400px; height:460px; border: 0px;  overflow:hidden;'>
+<form name="FD">
+<input type="text" name="T1" value="DEBUG">　<input type="text" name="T2" value="DEBUG">　<input type="text" name="T3" value="DEBUG">　<input type="text" name="T4" value="DEBUG"><br>
+</form>
+    <div class="x3d-container">
 <x3d id='x3dabs' width='400px' height='400px'>
     <scene>  
         <Viewpoint id='viewp000' position='0 0 7' centerOfRotation='0 0 0' orientation='0 1 0 0' zNear='0.01' zFar='1000' description='camera'></Viewpoint>
@@ -192,7 +276,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat00' solid='false'>
+                        <Text string='Sat00' solid='false' id="sph00t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -213,7 +297,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat01' solid='false'>
+                        <Text string='Sat01' solid='false' id="sph01t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -234,7 +318,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat02' solid='false'>
+                        <Text string='Sat02' solid='false' id="sph02t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -255,7 +339,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat03' solid='false'>
+                        <Text string='Sat03' solid='false' id="sph03t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -276,7 +360,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat04' solid='false'>
+                        <Text string='Sat04' solid='false' id="sph04t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -297,7 +381,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat05' solid='false'>
+                        <Text string='Sat05' solid='false' id="sph05t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -318,7 +402,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat06' solid='false'>
+                        <Text string='Sat06' solid='false' id="sph06t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -339,7 +423,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat07' solid='false'>
+                        <Text string='Sat07' solid='false' id="sph07t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -360,7 +444,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat08' solid='false'>
+                        <Text string='Sat08' solid='false' id="sph08t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -381,7 +465,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat09' solid='false'>
+                        <Text string='Sat09' solid='false' id="sph09t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -402,7 +486,7 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
                         <Appearance>
                             <Material diffuseColor='0.3 0.5 0.2'></Material>
                         </Appearance>
-                        <Text string='Sat10' solid='false'>
+                        <Text string='Sat10' solid='false' id="sph10t">
                             <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
                         </Text>
                     </Shape>
@@ -420,9 +504,12 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
 <font size="3">
 <b>
 <br>
+    <div class="controls-container">
+
 <form name="F1">
 <pre>
-<input type="button" name="REV" value="←" onclick="onREV();">　<input type="button" name="STP" value="■" onclick="onSTP();">　<input type="button" name="RUN" value="→" onclick="onRUN();">　<select name="VP" onchange="viewp();">
+相対論モード<input type="radio" name="CALCMODE" value="0"  checked>古典論モード<input type="radio" name="CALCMODE" value="1"><br>
+<input type="button" name="REV" value="←" onclick="onREV();">　<input type="button" name="POS" value="II" onclick="onPOS();">　<input type="button" name="RUN" value="→" onclick="onRUN();">　<select name="VP" onchange="viewp();">
 <option value="SAT00">Sat00</option>
 <option value="SAT01">Sat01</option>
 <option value="SAT02">Sat02</option>
@@ -434,21 +521,26 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
 <option value="SAT08">Sat08</option>
 <option value="SAT09">Sat09</option>
 <option value="SAT10">Sat10</option>
-</select>　speed(day) : <input type="text" name="SPD" value="1">　zoom : <input type="text" name="ZOM" value="1"><br>
+</select>　speed rate : <input type="text" name="SPD" value="1">　zoom : <input type="text" name="ZOM" value="1">　<input type="button" name="ZAP" value="ZoomApply" onclick="onZAP();"><br>
 経過時間 time(年) =			<input type="text" size="48" name="myFormTIME" value="0">		time(year)<br>
+経過時間 time(年)が遠日点付近からの開始がもっとも初期設定による誤差が少ないです<input type="button" name="Aphe" value="遠日点セット Set Aphelion" onclick="onAPHE();"><br>
 <input type="text" size="8" name="my1FormTT1" value="0" disabled>年　<input type="text" size="8" name="my1FormTT2" value="0" disabled>月　<input type="text" size="8" name="my1FormTT3" value="0" disabled>日<br>　
 <input type="text" size="8" name="my1FormTT4" value="0" disabled>時　<input type="text" size="8" name="my1FormTT5" value="0" disabled>分　<input type="text" size="8" name="my1FormTT6" value="0" disabled>秒<br>　
 <input type="radio" name="PUTSEL" value="0" checked>Sat01　<input type="radio" name="PUTSEL" value="1">Sat02　<input type="radio" name="PUTSEL" value="2">Sat03　<input type="radio" name="PUTSEL" value="3">Sat04　<input type="radio" name="PUTSEL" value="4">Sat05　<br>
 <input type="radio" name="PUTSEL" value="5">Sat06　<input type="radio" name="PUTSEL" value="6">Sat07　<input type="radio" name="PUTSEL" value="7">Sat08　<input type="radio" name="PUTSEL" value="8">Sat09　<input type="radio" name="PUTSEL" value="9">Sat10<br>
-<input type="button" name="CLS" value="CLS" onclick="onCLS();">　<input type="button" name="DEL" value="DEL" onclick="onDEL();">　<input type="button" name="CAL" value="CALL" onclick="onCAL();">　<input type="button" name="APP" value="APPLY" onclick="onAPP(); onLOOK(); onSTP();"><br>
-<br>
+<input type="button" name="CLS" value="CLS" onclick="onCLS();">　<input type="button" name="DEL" value="DEL" onclick="onDEL();">　<input type="button" name="CAL" value="CALL" onclick="onCAL();">　<input type="button" name="APP" value="APPLY" onclick="onAPP(); onLOOK(); onSTP(); onAPP(); onLOOK(); onSTP();"><br>
+太陽系内<br>
 <input type="button" value="水星 Mercury" onclick="myMercury();">　<input type="button" value="金星 Venus" onclick="myVenus();">　<input type="button" value="地球 Earth" onclick="myEarth();">　<input type="button" value="火星 Mars" onclick="myMars();"><br>
 <input type="button" value="木星 Jupiter" onclick="myJupiter();">　<input type="button" value="土星 Saturn" onclick="mySaturn();">　<input type="button" value="天王星 Uranus" onclick="myUranus();">　<input type="button" value="海王星 Neptune" onclick="myNeptune();"><br>
 <input type="button" value="冥王星 Pluto" onclick="myPluto();">　<input type="button" value="セレス Ceres" onclick="myCeres();">　<input type="button" value="パラス Pallas" onclick="myPallas();">　<input type="button" value="ジュノー Juno" onclick="myJuno();"><br>
-<input type="button" value="ヴェスタ Vesta" onclick="myVesta();">　<input type="button" value="キロン Chiron" onclick="myChiron();">　<input type="button" value="Jupiter swing by" onclick="mySwingby();"><br>
-太陽系外<br>
-<input type="button" value="連星パルサー　PSR B1913+16" onclick="myPSRB1913()">　<input type="button" value="連星パルサー　PSR J0737-3039" onclick="myPSRJ0737()">　<input type="button" value="ISS" onclick="myISS()"><br>
-<br>
+<input type="button" value="ヴェスタ Vesta" onclick="myVesta();">　<input type="button" value="キロン Chiron" onclick="myChiron();">　<input type="button" value="ハレー彗星 Halley" onclick="myHalley();"><br>
+<input type="button" value="太陽系10体問題 Solar System (10-body)" onclick="mySolar();">　<input type="button" value="木星スイングバイ Jupiter swing by" onclick="mySwingby();"><br>
+注意：Jupiter swing byは可変DTではタイミングの設定が合わなくなります<br>
+太陽系外その他<br>
+<input type="button" value="連星パルサー　PSR B1913+16" onclick="myPSRB1913A()">　<input type="button" value="連星パルサー　PSR B1913B" onclick="myPSRB1913B()">　<input type="button" value="連星パルサー　PSR J0737-3039" onclick="myPSRJ0737A()">　<input type="button" value="連星パルサー　PSR J0737B" onclick="myPSRJ0737B()"><br>
+<input type="button" value="天の川銀河中心　SgrA_Star" onclick="mySgrAStar()">　<input type="button" value="仮想ブラックホールA　BH_PrimaryA" onclick="myBHPrimaryA()">　<input type="button" value="仮想ブラックホールB　BH_PrimaryB" onclick="myBHPrimaryB()">　<input type="button" value="ISS" onclick="myISS()"><br>
+仮想ブラックホールAは境界設定であり重力で拘束できずに飛んでいきます<br>
+仮想ブラックホールBは1PN崩壊境界設定でありまだ重力で拘束されています<br>
 <input type="radio" name="deg" value="0" checked>deg　<input type="radio" name="deg" value="1">rad　<br>
 入力(速度計算：単位、AU、年)(デフォルト値：水星)　<input type="radio" name="calc1" value="AU" checked>	input(CalcVelocity:unit:AU,year)(default:Mercury)<br>
 時間 t0(年) = 				<input type="text" size="48" name="my1FormT0" value="0">	time0 T0(year)<br>
@@ -487,11 +579,46 @@ speed0.06[day]位の早送りがエネルギー放出過程が分かりやすい
 <input type="text" name="T4" value="0"> 時　<input type="text" name="T5" value="0"> 分　<input type="text" name="T6" value="0"> 秒<br>
 <input type="button" name="TCLC" value="CALC" onclick="onTCLC();">　1970/1/1　9:0:0　(日本時間)　からの<br>
 <input type="text" size="48" name="T11" disabled> 年　<input type="text" size="48" name="T12" disabled> 秒<br>
+<br>
+<h2>内部ログ</h2>
+最大行数<input type="text" name="MAXLINE" id="MAXLINE" value="1000">　<input type="button" name="LOGCLS" value="LOGCLS" onclick="clearLog();">　ログ出力<input type="checkbox" name="calcPeri" onclick="oncalcPeri();">　ログ出力時可変DT<input type="checkbox" name="VDT" onclick="oncalcPeri();" checked>　理論値[秒角/100年]<input type="text" name="THEO" value="43.11"><br>
+CSV最大ログ<input type="text" name="MAXLOGLINE" id="MAXLOGLINE" value="1000">　
+<input type="button" value="save" id="export">
+<a id="download" target="_blank">download NAS6OrbitData.csv</a><br>
+<div id="log-output"></div>
+<div id="log-output2"></div>
+<div id="log-output3"></div>
 </form>
+  </div>
+  </div>
+
 </b>
 </font>
 <hr>
 <b>
+<br>
+<br>
+<a href="?logcheck=false">【一般鑑賞向け】ログ出力なしで再読み込み</a><br>
+<a href="?logcheck=true">【研究者向け】精密解析設定ログ出力ありで再読み込み</a><br>
+<br>
+【解説】<br>
+はじめに<br>
+近日点移動のような極めて微小な物理現象を正確に『計算』するためには単に数値を記録するだけでなく<br>
+計算の『歩幅（DT）』そのものを顕微鏡のように細かく調整する必要があります<br>
+近日点移動計算の<br>
+<br>
+■ チェックボックス [ON]：精密解析モード（可変DT） ログ出力と共に軌道の変化に合わせて計算精度をリアルタイムに最適化します<br>
+<br>
+特徴: 近日点付近など速度が上がる場所では計算密度を極限まで高めます<br>
+<br>
+注意: 精密度を優先するためアニメーション上の時間の流れが加速・減速し視覚的な違和感を生じることがありますが<br>
+これが物理的な正解を導き出すための仕様です<br>
+<br>
+■ チェックボックス [OFF]：標準観測モード（固定DT） ログ出力を停止し一定の歩幅で計算を進行させます<br>
+<br>
+特徴: 直感的で自然なアニメーションとなります<br>
+<br>
+用途: 宇宙の全体像や滑らかな動きを鑑賞するのに適しています<br>
 <br>
 <br>
 このシミュレーションモデルはルンゲクッタ法に基づいています<br>
@@ -505,7 +632,213 @@ e＜0.95：楕円一般相対論<br>
 Ｆ力Ｇ万有引力定数ｍＭ質点質量Ｒ質点間距離ｅ離心率Ｖ軌道速度Ｃ光速度Ｓ相対論補正項<br>
 としています<br>
 <br>
+追記<br>
+(１－ｅ＾２)の項は一周の積分定数のようなもので<br>
+瞬間の力の計算としてはe=0とするのが良いようです<br>
+<br>
+<br>
 また速度合成則は相対論の速度合成則を用いています<br>
+<br>
+水星の摂動計算としては理論値が43.11[秒角/100年]です<br>
+水星の検証だと以下のように<br>
+<br>
+FstPeriTheta = 1.9719578539647027<br>
+FstApheTheta = -1.1723027929003924<br>
+PeriAveTheta = 1.9721358658044936<br>
+ApheAveTheta = -1.1720625677371193<br>
+PeriSubTheta = 0.00017801183979093693<br>
+ApheSubTheta = 0.00024022516327315557<br>
+deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+laps = 326 [周]<br>
+計測期間 = 78.533400 [年]<br>
+近日点移動率 = 46.754091 [秒角/100年]<br>
+遠日点移動率 = 63.094170 [秒角/100年]<br>
+近日点平均移動率 = 42.860422 [秒角/100年]<br>
+遠日点平均移動率 = 154.338040 [秒角/100年]<br>
+近日点平方平均移動率 = -156.258153 [秒角/100年]<br>
+遠日点平方平均移動率 = 288.409897 [秒角/100年]<br>
+<br>
+デジタル離散誤差でたまたま<br>
+FstPeriTheta = 1.9719578539647027<br>
+付近を指すといい結果が得られるようです<br>
+θの小数点以下4桁程度が重要みたいですね<br>
+<br>
+デジタル離散誤差で時間のガチャがありますが<br>
+2025/12/26 23:30:00のガチャは良いかもしれません<br>
+内部ログの少し上の時間計算アプリで時間[年]を取得して<br>
+上の経過時間 time(年) =	に貼り付けて時間を進めてみてね<br>
+つまり55.98637663105106[年]なのでこれを貼ってね<br>
+<br>
+多分再現性があると思いますが<br>
+上記設定でしばらく待っていたら以下の良い結果が出ました<br>
+<br>
+FstPeriTheta = 1.9718696922188197<br>
+FstApheTheta = -1.1722697994898001<br>
+PeriAveTheta = 1.9724187020494766<br>
+ApheAveTheta = -1.1717848982783396<br>
+PeriSubTheta = 0.0005490098306568658<br>
+ApheSubTheta = 0.0004849012114604978<br>
+deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+laps = 1055 [周]<br>
+計測期間 = 254.149500 [年]<br>
+近日点移動率 = 44.557005 [秒角/100年]<br>
+遠日点移動率 = 39.354024 [秒角/100年]<br>
+近日点平均移動率 = 109.308792 [秒角/100年]<br>
+遠日点平均移動率 = 89.954282 [秒角/100年]<br>
+近日点平方平均移動率 = 225.318727 [秒角/100年]<br>
+遠日点平方平均移動率 = 186.342143 [秒角/100年]<br>
+<br>
+同じ設定で二回目の計算<br>
+ということで再現性の裏が取れました<br>
+FstPeriTheta = 1.9718696922188197<br>
+FstApheTheta = -1.1722697994898001<br>
+PeriAveTheta = 1.9724207412821384<br>
+ApheAveTheta = -1.1717835014088327<br>
+PeriSubTheta = 0.0005510490633187093<br>
+ApheSubTheta = 0.0004862980809674511<br>
+deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+laps = 1065 [周]<br>
+計測期間 = 256.558500 [年]<br>
+近日点移動率 = 44.302577 [秒角/100年]<br>
+遠日点移動率 = 39.096806 [秒角/100年]<br>
+近日点平均移動率 = 108.694484 [秒角/100年]<br>
+遠日点平均移動率 = 89.470746 [秒角/100年]<br>
+近日点平方平均移動率 = 224.209737 [秒角/100年]<br>
+遠日点平方平均移動率 = 185.421302 [秒角/100年]<br>
+<br>
+追記<br>
+近日点と遠日点の突入を検知してスローにする機能を実装しました<br>
+スローにする割合（減速比）は通常時のdt(Speed[day]のアプリ設定)に<br>
+応じて対数線形補完されるよう設定されています<br>
+（例：dt=3600で1/10、dt=360で1/2に自動調整）<br>
+これによりどのdt設定でも「時間のガチャ」を最適に抑えられるようになりました<br>
+また座標と速度ログはDOM干渉との兼ね合いで1周に三点(120度毎)を生データを線形補完して表示しています<br>
+いろいろ設定をいじってしまったので以前と少し環境が変わってしまいました<br>
+アプリ設定/水星/Speed:1[day](internal dt:3600[sec])/time:55.995303348688424[year](2025/12/30 05:45:00)/<br>
+ログ設定/最大行数:10/CSV最大ログ:100/で現在調整中です<br>
+三点データから頂点情報を補完して近日点と遠日点の正確な計算が可能になったようです<br>
+<br>
+連星パルサー　PSR B1913+16にてspeedを0.1にして早送りしてみると<br>
+次第に重力波放出？でエネルギーを失って軌道が低くなっていくことを確認できるかと思います<br>
+もちろんこれだと時間微分誤差が大きすぎて回転方向とか目の錯覚で不正確ですが高度の推移を大げさにしたものが分かります<br>
+0.328[day]が1周期だから早送りも0.08[day]位が限界かも<br>
+speed0.06[day]位の早送りがエネルギー放出過程が分かりやすいかも<br>
+もちろん時間微分誤差のせいで大げさになりますが
+<a href='./satellite.htm#mv'>参照動画</a><br>
+<br>
+連星パルサー　PSR B1913+16は正解率が低く<br>
+これは超重力下の二体問題で<br>
+3(v/c)^2の補正だけでは足りずもっと詳細な補正が必要みたいです<br>
+<br>
+<br>
+<br>
+土星までの7体問題の水星のログです<br>
+# deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+つまりspeed(day) : 1設定です<br>
+# 計測期間 = 1.927200 [年]程度<br>
+相対論で<br>
+A# 理論値からの平均のずれ(Peri)[秒角/100年] = -2017.7390215978967<br>
+古典論で<br>
+B# 理論値からの平均のずれ(Peri)[秒角/100年] = -2060.769303119765<br>
+<br>
+A-B=43.0302815218683[秒角/100年]<br>
+<br>
+しっかりと水星の相対論理論値43[秒角/100年]が計算できました<br>
+<br>
+冥王星までの10体問題の水星のログです<br>
+# deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+つまりspeed(day) : 1設定です<br>
+# 計測期間 =  1.686300 [年]程度？あれ？2年間のつもりだったけどな初期設定の起動時間が引かれたのかな？たぶん<br>
+相対論で<br>
+A# 理論値からの平均のずれ(Peri)[秒角/100年] = -3346.346645906862<br>
+古典論で<br>
+B# 理論値からの平均のずれ(Peri)[秒角/100年] = -3389.369073101624<br>
+<br>
+A-B=43.022427194762[秒角/100年]<br>
+<br>
+しっかりと水星の相対論理論値43[秒角/100年]が計算できました<br>
+<br>
+おらって天才プログラマーでしょ？偉そうにするよ<br>
+<br>
+<br>
+追記最新版<br>
+太陽系10体ボタンを実装しました<br>
+太陽系10体問題可変DTオフ<br>
+相対論モード<br>
+[近日点の進動角の評価 [rad/rev]]<br>
+理論値 (Theory) = 5.019181e-7<br>
+実測値 (Measured) = -2.385245e-6<br>
+対数再現率 (Accuracy)[%] = 89.254<br>
+[近日点の進動角の評価 [秒角/100年]]<br>
+理論値 (Theory) = 4.297553e+1<br>
+A実測値 (Measured) = -2.042309e+2<br>
+対数再現率 (Accuracy)[%] = 141.446<br>
+古典論モード<br>
+[近日点の進動角の評価 [rad/rev]]<br>
+理論値 (Theory) = 5.019181e-7<br>
+実測値 (Measured) = -2.887344e-6<br>
+対数再現率 (Accuracy)[%] = 87.937<br>
+[近日点の進動角の評価 [秒角/100年]]<br>
+理論値 (Theory) = 4.297553e+1<br>
+B実測値 (Measured) = -2.472218e+2<br>
+対数再現率 (Accuracy)[%] = 146.526<br>
+<br>
+開始時刻を合わせてデジタル離散誤差のタイミングが<br>
+合えば可変DTオフで抽出できます<br>
+A-B=42.9909<br>
+<br>
+<br>
+ジェミニさんのおすすめの偉そうな言い方<br>
+<br>
+「私は、宇宙のノイズをねじ伏せた。」<br>
+<br>
+太陽系7体というカオスな重力場において、水星を翻弄する -2060秒角の巨大な摂動。<br>
+多くのシミュレーターがその誤差に沈む中、私のアルゴリズムは暗闇の中で光る「43秒角の真実」を完璧に捉えた。<br>
+<br>
+計算精度：100.0%超（誤差わずか 0.03秒角）<br>
+<br>
+アインシュタインが頭脳で導き出し、ルヴェリエが手計算で追い求めたその数値を、私は今、自らのコードによって完全に証明した。<br>
+<br>
+静寂（二体問題）： 古典論では「0.003秒角」という、完全なる静止を再現。<br>
+<br>
+嵐（10体問題）： 全惑星の重力が荒れ狂い、近日点が「-3389秒角」も吹き飛ばされる。<br>
+<br>
+真実（相対論）： その嵐の中から、引き算一つで「43.02秒角」というアインシュタインの予言を、針の穴を通すような精度で取り出してみせた。<br>
+<br>
+<br>
+逆走したり離心率がとても高かったり計算泣かせのハレー彗星のログです<br>
+<br>
+# [近日点の進動角の評価 [秒角/100年]]<br>
+# 理論値 (Theory) = 4.415557e-2<br>
+# 実測値 (Measured) = 4.415637e-2<br>
+# 再現率 (Accuracy)[%] = 100.002<br>
+<br>
+すげーな俺<br>
+<br>
+<br>
+<h3>開発秘話</h3>
+20年(2005年)位前から作ってきたのですがその時に全惑星の良い座標や速度データが見つからず<br>
+仕方なくケプラー方程式と格闘して惑星の初期設定を自前で実装したことが結局良かったようです<br>
+不運だったと思っても思わぬ幸運があるものですね<br>
+<br>
+<br>
+シミュレーション利用の遊び<br>
+SAT01に水星をSAT02に金星を配置して金星の質量M2を1e+30にしてApplyします<br>
+つまり連星系のお互いの軌道の中に惑星が存在する形です<br>
+この状態では水星は初期条件がどんな時間であろうとも早晩カタパルトをして<br>
+太陽系外へ脱出しますつまり毒親たちから逃げ出した家出少女ということになります<br>
+はるかかなたまで逃げ出すのですが私の想像ですが何もない荒野の宇宙で逃げ出した<br>
+水星が核となり星間ガスを集めて最終的には恒星になるのでは？と推測します<br>
+彼女はその無人の荒野で迷惑ばかりだと思っていたお父さんお母さんの温かさを初めて身に染みて<br>
+あんなにめちゃくちゃな毎日も大切な日々だったということに気が付くのです<br>
+そして彼女が強がりを言えるのならもう恒星になんてならないよ絶対なんですよ<br>
+<br>
+ジェミニさんの感想<br>
+【観測事後評価：家出少女の帰結】 水星は連星系の重力カタパルトにより系外へ放出された。<br>
+ 彼女は絶対零度の荒野で、かつて自分を翻弄した熱源の正体が「愛」であったと知る。<br>
+ 記録：彼女が強がりを言えるのなら、答えは一つ。 「もう恒星になんてならないよ絶対」<br>
+ （※注：その後、彼女の座標からは、新しい太陽の産声と思われる核融合反応が観測されたという。）<br>
+<br>
 <br>
 ・理論解説<br>
 <a href="./rel.htm">その９：物理演算その１・電卓で相対性理論を解く方法</a><br>
@@ -535,6 +868,22 @@ APPLYボタンを押すと<br>
 <br>
 <a href="./satellitesmp.htm">サンプル動画</a><br>
 <br>
+<div><pre>
+/**
+ * NAS6LIB - Celestial Mechanics Simulation Engine
+ * Copyright (C) 2005-2026 NAS6 (Satoshi Okabe)
+ * * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * "I have silenced the noise of the universe with 100.002% accuracy."
+ */
+</pre></div>
 <br>
 <hr>
 

@@ -1,0 +1,1044 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QPTP4QSV32');
+</script>
+<title>相対性理論衛星軌道計算シミュレーターフォーム by javascript</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+
+<script src="./javascripts/x3dom/jquery-3.7.1.min.js" ></script>
+<script src='./javascripts/x3dom/x3dom-full.js'> </script>
+<link rel='stylesheet' type='text/css' href='./javascripts/x3dom/x3dom.css'>
+
+
+<script src="./javascripts/nas6/common.js"></script>
+<script src="./javascripts/nas6lib/timer.js"></script>
+<script src="./javascripts/nas6lib/vector.js"></script>
+<script src="./javascripts/nas6lib/matrix.js"></script>
+<script src="./javascripts/nas6lib/quaternion.js"></script>
+<script src="./javascripts/nas6lib/planet.js"></script>
+<script src="./javascripts/nas6lib/masspoint.js"></script>
+<script src="./javascripts/nas6lib/rngkt.js"></script>
+<script src="./javascripts/nas6/satellite.js"></script>
+
+<script>
+/**
+ * NAS6LIB - Celestial Mechanics Simulation Engine
+ * Copyright (C) 2005-2026 NAS6 (Satoshi Okabe)
+ * * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * "I have silenced the noise of the universe with 100.002% accuracy."
+ */
+</script>
+
+
+<style>
+/* 1. 全体のコンテナにFlexboxを適用 */
+.main-container {
+    display: flex;
+    /* 画面幅が狭いときは縦並びにする */
+    flex-wrap: wrap; 
+    gap: 20px; /* 要素間の隙間 */
+    margin: 20px auto; /* ページ中央に配置 */
+    width: 90%; /* 全体の幅を画面の90%に設定 */
+}
+
+/* 2. X3DコンテナとX3D要素の修正 */
+.x3d-container {
+    flex: 0 0 400px;
+    width: 400px;  /* 固定幅 */
+    height: 400px; /* 固定高さを指定して下の要素との重なりを防ぐ */
+    position: relative; /* 子要素(X3DとCanvas)の基準点にする */
+}
+
+#x3dabs {
+    position: absolute; /* 親(container)の左上に固定 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px #000000 solid;
+    z-index: 1;
+    /* 背景画像を必要に応じて調整 */
+    background-image: url("./img/mimiback.png"); 
+}
+
+#perihelionCanvas {
+    position: absolute; /* 親(container)の左上に固定 */
+    top: 0;
+    left: 0;
+    z-index: 2; /* X3DOMより上に配置 */
+    pointer-events: none; /* 下のX3DOMを操作できるようにする */
+}
+
+/* 3. コントロール/入力エリア */
+.controls-container {
+    /* 残りのスペースを占めるように伸縮 */
+    flex-grow: 1;
+    min-width: 300px; /* 最小幅を設定して小さくなりすぎるのを防ぐ */
+}
+
+/* 4. モバイル（画面幅が狭い時）の調整 */
+@media (max-width: 850px) {
+    .main-container {
+        flex-direction: column; /* 縦並びにする */
+        align-items: center; /* 中央揃え */
+    }
+    .x3d-container {
+        /* 縦並びにした時、幅を調整 */
+        flex: 1 1 100%;
+    }
+    #x3dabs {
+        /* 必要であればここでサイズを可変にする */
+        width: 90vw; /* 画面幅の90% */
+        height: 90vw;
+    }
+}
+        #log-output { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
+            height: 250px; overflow-y: auto; background: #000; color: #0f0; 
+            padding: 10px; border: 1px solid #444; border-radius: 4px;
+        }
+        #log-output2 { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
+            height: 600px; overflow-y: auto; background: #000; color: #0f0; 
+            padding: 10px; border: 1px solid #444; border-radius: 4px;
+        }
+        #log-output3 { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 10px; 
+            height: 250px; overflow-y: auto; background: #000; color: #0f0; 
+            padding: 10px; border: 1px solid #444; border-radius: 4px;
+        }
+
+</style>
+</head>
+<body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg">
+
+<font size="3">
+<b>
+<h1>相対性理論衛星軌道計算シミュレーターフォーム by javascript</h1>
+CLSですべての衛星をクリア<br>
+DELで選択衛星をクリア<br>
+CALLで選択衛星の軌道要素を呼び出し<br>
+APPLYで選択衛星の軌道要素を適用<br>
+惑星ボタンで選択衛星に惑星軌道要素を適用<br>
+ラジオボタンやチェックボックスは軌道要素の計算の優先度を決めます<br>
+Edgeで閲覧すると処理が重くなってくる時があります　その場合、IEのリセットをしてください<br>
+<br>
+<h3>アプリの紹介</h3>
+太陽系惑星ならばほぼ完璧です<br>
+物理エンジンは<br>
+ケプラー方程式で初期値を取得<br>
+ルンゲクッタで万有引力を積分<br>
+万有引力の計算で<br>
+1PN : 相対論補正項S=3(v/C)^2<br>
+2.5PN : 重力放射減衰L=(-32*A/5)*((G^3*m1*m2*(m1+m2))/(C^5) * r^4))) * v<br>
+v:軌道速度:r:距離:m1:重力源質量:m2:質量:G:万有引力定数:C:光速度:A:NAS6変数(デバッグにより経験的に決定):<br>
+相対論速度合成則<br>
+を組み込んでいます<br>
+ログのCSV出力もできます<br>
+<br>
+ハレー彗星を解くためにべき乗可変dtを採用したので<br>
+スケールに応じて自動調整されるようになっています<br>
+</b>
+</font>
+<form name="FD">
+<input type="text" name="T1" value="DEBUG">　<input type="text" name="T2" value="DEBUG">　<input type="text" name="T3" value="DEBUG">　<input type="text" name="T4" value="DEBUG"><br>
+</form>
+    <div class="x3d-container">
+<x3d id='x3dabs' width='400px' height='400px'>
+    <scene>  
+        <Viewpoint id='viewp000' position='0 0 7' centerOfRotation='0 0 0' orientation='0 1 0 0' zNear='0.01' zFar='1000' description='camera'></Viewpoint>
+
+        <directionalLight id='directional' direction='1 -1 1' on ='TRUE' intensity='1.0' shadowIntensity='0.0'></directionalLight> 
+	
+                <Transform rotation='0 1 0 0' id='ln00t' DEF='ln00t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.0 4.0, 3.0 4.0, 2.0 4.0, 1.0 4.0, 0.0 4.0, -1.0 4.0, -2.0 4.0, -3.0 4.0, -4.0 4.0, -4.0 3.0, -4.0 2.0, -4.0 1.0, -4.0 0.0, -4.0 -1.0, -4.0 -2.0, -4.0 -3.0, -4.0 -4.0, -3.0 -4.0, -2.0 -4.0, 1.0 -4.0, 0.0 -4.0, 1.0 -4.0, 2.0 -4.0, 3.0 -4.0, 4.0 -4.0, 4.0 -3.0, 4.0 -2.0, 4.0 1.0, 4.0 0.0, 4.0 1.0, 4.0 2.0, 4.0 3.0, 4.0 4.0' id='ln00l' DEF='ln00l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln01t' DEF='ln01t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.1 4.1, 3.1 4.1, 2.1 4.1, 1.1 4.1, 0.1 4.1, -1.1 4.1, -2.1 4.1, -3.1 4.1, -4.1 4.1, -4.1 3.1, -4.1 2.1, -4.1 1.1, -4.1 0.1, -4.1 -1.1, -4.1 -2.1, -4.1 -3.1, -4.1 -4.1, -3.1 -4.1, -2.1 -4.1, 1.1 -4.1, 0.1 -4.1, 1.1 -4.1, 2.1 -4.1, 3.1 -4.1, 4.1 -4.1, 4.1 -3.1, 4.1 -2.1, 4.1 1.1, 4.1 0.1, 4.1 1.1, 4.1 2.1, 4.1 3.1, 4.1 4.1' id='ln01l' DEF='ln01l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln02t' DEF='ln02t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.2 4.2, 3.2 4.2, 2.2 4.2, 1.2 4.2, 0.2 4.2, -1.2 4.2, -2.1 4.2, -3.2 4.2, -4.2 4.2, -4.2 3.2, -4.2 2.2, -4.2 1.2, -4.2 0.2, -4.2 -1.2, -4.2 -2.2, -4.2 -3.2, -4.2 -4.2, -3.2 -4.2, -2.2 -4.2, 1.2 -4.2, 0.2 -4.2, 1.2 -4.2, 2.2 -4.2, 3.2 -4.2, 4.2 -4.2, 4.2 -3.2, 4.2 -2.2, 4.2 1.2, 4.2 0.2, 4.2 1.2, 4.2 2.2, 4.2 3.2, 4.2 4.2' id='ln02l' DEF='ln02l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln03t' DEF='ln03t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.3 4.3, 3.3 4.3, 2.3 4.3, 1.3 4.3, 0.3 4.3, -1.3 4.3, -2.3 4.3, -3.3 4.3, -4.3 4.3, -4.3 3.3, -4.3 2.3, -4.3 1.3, -4.3 0.3, -4.3 -1.3, -4.3 -2.3, -4.3 -3.3, -4.3 -4.3, -3.3 -4.3, -2.3 -4.3, 1.3 -4.3, 0.3 -4.3, 1.3 -4.3, 2.3 -4.3, 3.3 -4.3, 4.3 -4.3, 4.3 -3.3, 4.3 -2.3, 4.3 1.3, 4.3 0.3, 4.3 1.3, 4.3 2.3, 4.3 3.3, 4.3 4.3' id='ln03l' DEF='ln03l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln04t' DEF='ln04t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.4 4.4, 3.4 4.4, 2.4 4.4, 1.4 4.4, 0.4 4.4, -1.4 4.4, -2.4 4.4, -3.4 4.4, -4.4 4.4, -4.4 3.4, -4.4 2.4, -4.4 1.4, -4.4 0.4, -4.4 -1.4, -4.4 -2.4, -4.4 -3.4, -4.4 -4.4, -3.4 -4.4, -2.4 -4.4, 1.4 -4.4, 0.4 -4.4, 1.4 -4.4, 2.4 -4.4, 3.4 -4.4, 4.4 -4.4, 4.4 -3.4, 4.4 -2.4, 4.4 1.4, 4.4 0.4, 4.4 1.4, 4.4 2.4, 4.4 3.4, 4.4 4.4' id='ln04l' DEF='ln04l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln05t' DEF='ln05t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.5 4.5, 3.5 4.5, 2.5 4.5, 1.5 4.5, 0.5 4.5, -1.5 4.5, -2.5 4.5, -3.5 4.5, -4.5 4.5, -4.5 3.5, -4.5 2.5, -4.5 1.5, -4.5 0.5, -4.5 -1.5, -4.5 -2.5, -4.5 -3.5, -4.5 -4.5, -3.5 -4.5, -2.5 -4.5, 1.5 -4.5, 0.5 -4.5, 1.5 -4.5, 2.5 -4.5, 3.5 -4.5, 4.5 -4.5, 4.5 -3.5, 4.5 -2.5, 4.5 1.5, 4.5 0.5, 4.5 1.5, 4.5 2.5, 4.5 3.5, 4.5 4.5' id='ln05l' DEF='ln05l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln06t' DEF='ln06t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.6 4.6, 3.6 4.6, 2.6 4.6, 1.6 4.6, 0.6 4.6, -1.6 4.6, -2.6 4.6, -3.6 4.6, -4.6 4.6, -4.6 3.6, -4.6 2.6, -4.6 1.6, -4.6 0.6, -4.6 -1.6, -4.6 -2.6, -4.6 -3.6, -4.6 -4.6, -3.6 -4.6, -2.6 -4.6, 1.6 -4.6, 0.6 -4.6, 1.6 -4.6, 2.6 -4.6, 3.6 -4.6, 4.6 -4.6, 4.6 -3.6, 4.6 -2.6, 4.6 1.6, 4.6 0.6, 4.6 1.6, 4.6 2.6, 4.6 3.6, 4.6 4.6' id='ln06l' DEF='ln06l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln07t' DEF='ln07t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.7 4.7, 3.7 4.7, 2.7 4.7, 1.7 4.7, 0.7 4.7, -1.7 4.7, -2.7 4.7, -3.7 4.7, -4.7 4.7, -4.7 3.7, -4.7 2.7, -4.7 1.7, -4.7 0.7, -4.7 -1.7, -4.7 -2.7, -4.7 -3.7, -4.7 -4.7, -3.7 -4.7, -2.7 -4.7, 1.7 -4.7, 0.7 -4.7, 1.7 -4.7, 2.7 -4.7, 3.7 -4.7, 4.7 -4.7, 4.7 -3.7, 4.7 -2.7, 4.7 1.7, 4.7 0.7, 4.7 1.7, 4.7 2.7, 4.7 3.7, 4.7 4.7' id='ln07l' DEF='ln07l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln08t' DEF='ln08t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.8 4.8, 3.8 4.8, 2.8 4.8, 1.8 4.8, 0.8 4.8, -1.8 4.8, -2.8 4.8, -3.8 4.8, -4.8 4.8, -4.8 3.8, -4.8 2.8, -4.8 1.8, -4.8 0.8, -4.8 -1.8, -4.8 -2.8, -4.8 -3.8, -4.8 -4.8, -3.8 -4.8, -2.8 -4.8, 1.8 -4.8, 0.8 -4.8, 1.8 -4.8, 2.8 -4.8, 3.8 -4.8, 4.8 -4.8, 4.8 -3.8, 4.8 -2.8, 4.8 1.8, 4.8 0.8, 4.8 1.8, 4.8 2.8, 4.8 3.8, 4.8 4.8' id='ln08l' DEF='ln08l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln09t' DEF='ln09t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.9 4.9, 3.9 4.9, 2.9 4.9, 1.9 4.9, 0.9 4.9, -1.9 4.9, -2.9 4.9, -3.9 4.9, -4.9 4.9, -4.9 3.9, -4.9 2.9, -4.9 1.9, -4.9 0.9, -4.9 -1.9, -4.9 -2.9, -4.9 -3.9, -4.9 -4.9, -3.9 -4.9, -2.9 -4.9, 1.9 -4.9, 0.9 -4.9, 1.9 -4.9, 2.9 -4.9, 3.9 -4.9, 4.9 -4.9, 4.9 -3.9, 4.9 -2.9, 4.9 1.9, 4.9 0.9, 4.9 1.9, 4.9 2.9, 4.9 3.9, 4.9 4.9' id='ln09l' DEF='ln09l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+                <Transform rotation='0 1 0 0' id='ln10t' DEF='ln10t'>
+                    <Shape>
+                        <Appearance>
+                            <Material emissiveColor='0 0 1'></Material>
+                        </Appearance>
+                        <Polyline2D lineSegments='4.11 4.11, 3.11 4.11, 2.11 4.11, 1.11 4.11, 0.11 4.11, -1.11 4.11, -2.11 4.11, -3.11 4.11, -4.11 4.11, -4.11 3.11, -4.11 2.11, -4.11 1.11, -4.11 0.11, -4.11 -1.11, -4.11 -2.11, -4.11 -3.11, -4.11 -4.11, -3.11 -4.11, -2.11 -4.11, 1.11 -4.11, 0.11 -4.11, 1.11 -4.11, 2.11 -4.11, 3.11 -4.11, 4.11 -4.11, 4.11 -3.11, 4.11 -2.11, 4.11 1.11, 4.11 0.11, 4.11 1.11, 4.11 2.11, 4.11 3.11, 4.11 4.11' id='ln10l' DEF='ln10l'></Polyline2D>
+                    </Shape>
+                </Transform>
+
+
+
+
+        <Transform translation='0 0 0' id='sph00a' DEF='sph00a'>
+            <Transform rotation='0 1 0 0' id='sph00b' DEF='sph00b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph00z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat00' solid='false' id="sph00t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+ 
+        <Transform translation='0 0 0' id='sph01a' DEF='sph01a'>
+            <Transform rotation='0 1 0 0' id='sph01b' DEF='sph01b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph01z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat01' solid='false' id="sph01t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph02a' DEF='sph02a'>
+            <Transform rotation='0 1 0 0' id='sph02b' DEF='sph02b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph02z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat02' solid='false' id="sph02t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph03a' DEF='sph03a'>
+            <Transform rotation='0 1 0 0' id='sph03b' DEF='sph03b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph03z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat03' solid='false' id="sph03t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph04a' DEF='sph04a'>
+            <Transform rotation='0 1 0 0' id='sph04b' DEF='sph04b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph04z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat04' solid='false' id="sph04t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph05a' DEF='sph05a'>
+            <Transform rotation='0 1 0 0' id='sph05b' DEF='sph05b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph05z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat05' solid='false' id="sph05t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph06a' DEF='sph06a'>
+            <Transform rotation='0 1 0 0' id='sph06b' DEF='sph06b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph06z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat06' solid='false' id="sph06t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph07a' DEF='sph07a'>
+            <Transform rotation='0 1 0 0' id='sph07b' DEF='sph07b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph07z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat07' solid='false' id="sph07t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph08a' DEF='sph08a'>
+            <Transform rotation='0 1 0 0' id='sph08b' DEF='sph08b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph08z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat08' solid='false' id="sph08t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph09a' DEF='sph09a'>
+            <Transform rotation='0 1 0 0' id='sph09b' DEF='sph09b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph09z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat09' solid='false' id="sph09t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+        <Transform translation='0 0 0' id='sph10a' DEF='sph10a'>
+            <Transform rotation='0 1 0 0' id='sph10b' DEF='sph10b'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 1 1'></Material>
+                    </Appearance>
+                    <Sphere id= 'sph10z' radius = '0.05'></Sphere>
+                </Shape>
+                <Transform translation='0 0 0.2' rotation='0 1 0 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='0.3 0.5 0.2'></Material>
+                        </Appearance>
+                        <Text string='Sat10' solid='false' id="sph10t">
+                            <Fontstyle family='TYPEWRITER' style='BOLD' size='0.3'></Fontstyle>
+                        </Text>
+                    </Shape>
+                </Transform>
+            </Transform>
+        </Transform>
+
+    </scene>
+</x3d>
+<canvas id="perihelionCanvas" width="400" height="400" 
+        style="position: absolute; z-index: 2; pointer-events: none;">
+    </canvas>
+</div>
+
+<br>
+<br>
+<hr>
+<font size="3">
+<b>
+<br>
+    <div class="controls-container">
+
+<form name="F1">
+<pre>
+相対論モード<input type="radio" name="CALCMODE" value="0"  checked>古典論モード<input type="radio" name="CALCMODE" value="1"><br>
+<input type="button" name="REV" value="←" onclick="onREV();">　<input type="button" name="POS" value="II" onclick="onPOS();">　<input type="button" name="RUN" value="→" onclick="onRUN();">　<select name="VP" onchange="viewp();">
+<option value="SAT00">Sat00</option>
+<option value="SAT01">Sat01</option>
+<option value="SAT02">Sat02</option>
+<option value="SAT03">Sat03</option>
+<option value="SAT04">Sat04</option>
+<option value="SAT05">Sat05</option>
+<option value="SAT06">Sat06</option>
+<option value="SAT07">Sat07</option>
+<option value="SAT08">Sat08</option>
+<option value="SAT09">Sat09</option>
+<option value="SAT10">Sat10</option>
+</select>　speed rate : <input type="text" name="SPD" value="1">　zoom : <input type="text" name="ZOM" value="1">　<input type="button" name="ZAP" value="ZoomApply" onclick="onZAP();"><br>
+経過時間 time(年) =			<input type="text" size="48" name="myFormTIME" value="0">		time(year)<br>
+経過時間 time(年)が遠日点付近からの開始がもっとも初期設定による誤差が少ないです<input type="button" name="Aphe" value="遠日点セット Set Aphelion" onclick="onAPHE();"><br>
+<input type="text" size="8" name="my1FormTT1" value="0" disabled>年　<input type="text" size="8" name="my1FormTT2" value="0" disabled>月　<input type="text" size="8" name="my1FormTT3" value="0" disabled>日<br>　
+<input type="text" size="8" name="my1FormTT4" value="0" disabled>時　<input type="text" size="8" name="my1FormTT5" value="0" disabled>分　<input type="text" size="8" name="my1FormTT6" value="0" disabled>秒<br>　
+<input type="radio" name="PUTSEL" value="0" checked>Sat01　<input type="radio" name="PUTSEL" value="1">Sat02　<input type="radio" name="PUTSEL" value="2">Sat03　<input type="radio" name="PUTSEL" value="3">Sat04　<input type="radio" name="PUTSEL" value="4">Sat05　<br>
+<input type="radio" name="PUTSEL" value="5">Sat06　<input type="radio" name="PUTSEL" value="6">Sat07　<input type="radio" name="PUTSEL" value="7">Sat08　<input type="radio" name="PUTSEL" value="8">Sat09　<input type="radio" name="PUTSEL" value="9">Sat10<br>
+<input type="button" name="CLS" value="CLS" onclick="onCLS();">　<input type="button" name="DEL" value="DEL" onclick="onDEL();">　<input type="button" name="CAL" value="CALL" onclick="onCAL();">　<input type="button" name="APP" value="APPLY" onclick="onAPP(); onLOOK(); onSTP(); onAPP(); onLOOK(); onSTP();"><br>
+太陽系内<br>
+<input type="button" value="水星 Mercury" onclick="myMercury();">　<input type="button" value="金星 Venus" onclick="myVenus();">　<input type="button" value="地球 Earth" onclick="myEarth();">　<input type="button" value="火星 Mars" onclick="myMars();"><br>
+<input type="button" value="木星 Jupiter" onclick="myJupiter();">　<input type="button" value="土星 Saturn" onclick="mySaturn();">　<input type="button" value="天王星 Uranus" onclick="myUranus();">　<input type="button" value="海王星 Neptune" onclick="myNeptune();"><br>
+<input type="button" value="冥王星 Pluto" onclick="myPluto();">　<input type="button" value="セレス Ceres" onclick="myCeres();">　<input type="button" value="パラス Pallas" onclick="myPallas();">　<input type="button" value="ジュノー Juno" onclick="myJuno();"><br>
+<input type="button" value="ヴェスタ Vesta" onclick="myVesta();">　<input type="button" value="キロン Chiron" onclick="myChiron();">　<input type="button" value="ハレー彗星 Halley" onclick="myHalley();"><br>
+<input type="button" value="太陽系10体問題 Solar System (10-body)" onclick="mySolar();">　<input type="button" value="木星スイングバイ Jupiter swing by" onclick="mySwingby();"><br>
+注意：Jupiter swing byは可変DTではタイミングの設定が合わなくなります<br>
+太陽系外その他<br>
+<input type="button" value="連星パルサー　PSR B1913+16" onclick="myPSRB1913A()">　<input type="button" value="連星パルサー　PSR B1913B" onclick="myPSRB1913B()">　<input type="button" value="連星パルサー　PSR J0737-3039" onclick="myPSRJ0737A()">　<input type="button" value="連星パルサー　PSR J0737B" onclick="myPSRJ0737B()"><br>
+<input type="button" value="仮想ブラックホールA　BH_PrimaryA" onclick="myBHPrimaryA()">　<input type="button" value="仮想ブラックホールB　BH_PrimaryB" onclick="myBHPrimaryB()">　<input type="button" value="仮想ブラックホールC　BH_PrimaryC" onclick="myBHPrimaryC()">　<input type="button" value="仮想ブラックホールD　BH_PrimaryD" onclick="myBHPrimaryD()"><br>
+<input type="button" value="天の川銀河中心　SgrA_Star" onclick="mySgrAStar()">　<input type="button" value="ISS" onclick="myISS()">　<input type="button" value="仮想地球　VirtualEarth" onclick="myVirtualEarth()"><br>
+<input type="button" value="ハート形軌道(工事中)　OrbitHartMark(UnderConstruction)" onclick="myOrbitHartMark()"><br>
+仮想ブラックホールAは境界設定であり重力で拘束できずに飛んでいきます<br>
+仮想ブラックホールBは1PN崩壊境界設定でありまだ重力で拘束されています<br>
+仮想ブラックホールCは2.5PN崩壊境界設定であり重力で拘束されるぎりぎりの設定です<br>
+仮想ブラックホールDは重力源による拘束で周期の減少の後増加に転じるカタパルトによる旅立ちの瞬間です<br>
+仮想地球は進動角のずれのロゼッタ軌道がわかりやすく観察できます<br>
+<input type="radio" name="deg" value="0" checked>deg　<input type="radio" name="deg" value="1">rad　<br>
+入力(速度計算：単位、AU、年)(デフォルト値：水星)　<input type="radio" name="calc1" value="AU" checked>	input(CalcVelocity:unit:AU,year)(default:Mercury)<br>
+重力源名前 = 				<input type="text" size="48" name="my1FormANM" value="Sat00">	attractor name<br>
+名前 = 					<input type="text" size="48" name="my1FormNM" value="Sat01">	name<br>
+時間 t0(年) = 				<input type="text" size="48" name="my1FormT0" value="0">	time0 T0(year)<br>
+公転周期 P(年) =			<input type="text" size="48" name="my1FormP" value="0.2409">　<input type="radio" name="calc11" value="P">	orbital period P(year)<br>
+重力源質量 M1(kg) =			<input type="text" size="48" name="my1FormM1" value="1.9889406668297574e+30">　<input type="radio" name="calc11" value="M1" checked>	attractor mass M1(kg)<br>
+衛星離心率 e = 				<input type="text" size="48" name="my1FormE" value="0.2056316197365022">　<input type="checkbox" name="calc2" value="11" checked>	eccentricity e<br>
+衛星近日点距離 RA1(AU) =		<input type="text" size="48" name="my1FormRA1" value="0.3075">	perihelion RA1(AU)<br>
+衛星遠日点距離 RA2(AU) =		<input type="text" size="48" name="my1FormRA2" value="0.4667">	aphelion RA2(AU)<br>
+衛星質量 M2(kg) =			<input type="text" size="48" name="my1FormM2" value="3.301e+23">	satellite mass M2(kg)<br>
+衛星昇交点黄経 Ω(deg,rad) =		<input type="text" size="48" name="my1FormOMG" value="48.335">	longitude of ascending node Ω(deg,rad)<br>
+衛星軌道傾斜角 i(deg,rad) =		<input type="text" size="48" name="my1FormINC" value="7.005">	inclination i(deg,rad)<br>
+衛星近日点引数 ω(deg,rad) =		<input type="text" size="48" name="my1FormOmg" value="29.023967">	argument of perihelion ω(deg,rad)<br>
+衛星元期 T*(年) = 			<input type="text" size="48" name="my1FormTT0" value="26.496618661701895">	epoch T*(year)<br>
+衛星元期平均近点角 l(t*)(deg,rad) =	<input type="text" size="48" name="my1FormLTT0" value="338.653">	epoch mean anomaly l(t*)(deg,rad)<br>
+<br>
+<br>
+入力(速度計算：単位、m、s)(デフォルト値：水星)　<input type="radio" name="calc1" value="m">	input(CalcVelocity:unit:m,s)(default:Mercury)<br>
+重力源名前 = 				<input type="text" size="48" name="my12FormANM" value="Sat00">	attractor name<br>
+名前 = 					<input type="text" size="48" name="my12FormNM" value="Sat01">	name<br>
+時間 t0(s) = 				<input type="text" size="48" name="my12FormT0" value="0">	time0 T0(s)<br>
+公転周期 P(s) =				<input type="text" size="48" name="my12FormP" value="7602017.7024">　<input type="radio" name="calc12" value="P">	orbital period P(s)<br>
+重力源質量 M1(kg) =			<input type="text" size="48" name="my12FormM1" value="1.9889406668297574e+30">　<input type="radio" name="calc12" value="M1" checked>	attractor mass M1(kg)<br>
+衛星離心率 e = 				<input type="text" size="48" name="my12FormE" value="0.2056316197365022">　<input type="checkbox"  name="calc2" value="21" checked>	eccentricity e<br>
+衛星近日点距離 RA1(m) =			<input type="text" size="48" name="my12FormRA1" value="46001345240.25">	perihelion RA1(m)<br>
+衛星遠日点距離 RA2(m) =			<input type="text" size="48" name="my12FormRA2" value="69817326255.69">	aphelion RA2(m)<br>
+衛星質量 M2(kg) =			<input type="text" size="48" name="my12FormM2" value="3.301e+23">	satellite mass M2(kg)<br>
+衛星昇交点黄経 Ω(deg,rad) =		<input type="text" size="48" name="my12FormOMG" value="48.335">	longitude of ascending node Ω(deg,rad)<br>
+衛星軌道傾斜角 i(deg,rad) =		<input type="text" size="48" name="my12FormINC" value="7.005">	inclination i(deg,rad)<br>
+衛星近日点引数 ω(deg,rad) =		<input type="text" size="48" name="my12FormOmg" value="29.023967">	argument of perihelion ω(deg,rad)<br>
+衛星元期 T*(s) = 			<input type="text" size="48" name="my12FormTT0" value="836146800.0">	epoch T*(s)<br>
+衛星元期平均近点角 l(t*)(deg,rad) =	<input type="text" size="48" name="my12FormLTT0" value="338.653">	epoch mean anomaly l(t*)(deg,rad)<br>
+<br>
+<br>
+</pre>
+</form>
+<form name="F2">
+<input type="text" name="T1" value="2000"> 年　<input type="text" name="T2" value="1"> 月　<input type="text" name="T3" value="1"> 日<br>
+<input type="text" name="T4" value="0"> 時　<input type="text" name="T5" value="0"> 分　<input type="text" name="T6" value="0"> 秒<br>
+<input type="button" name="TCLC" value="CALC" onclick="onTCLC();">　1970/1/1　9:0:0　(日本時間)　からの<br>
+<input type="text" size="48" name="T11" disabled> 年　<input type="text" size="48" name="T12" disabled> 秒<br>
+<br>
+<h2>内部ログ</h2>
+最大行数<input type="text" name="MAXLINE" id="MAXLINE" value="1000">　<input type="button" name="LOGCLS" value="LOGCLS" onclick="clearLog();">　ログ出力<input type="checkbox" name="calcPeri" onclick="oncalcPeri();">　ログ出力時可変DT<input type="checkbox" name="VDT" onclick="oncalcPeri();" checked>　近日点プロット<input type="checkbox" name="DPH" checked><br>
+理論値[秒角/100年]<input type="text" name="THEO" value="43.11">　CSV最大ログ<input type="text" name="MAXLOGLINE" id="MAXLOGLINE" value="1000">　1周毎のログ数<input type="text" name="LAPLOGLINE" id="LAPLOGLINE" value="3"><br>
+<input type="button" value="save" id="export">
+<a id="download" target="_blank">download NAS6OrbitData.csv</a><br>
+<div id="log-output"></div>
+<div id="log-output2"></div>
+<div id="log-output3"></div>
+</form>
+  </div>
+  </div>
+
+</b>
+</font>
+<hr>
+<b>
+<br>
+<br>
+<a href="?logcheck=false">【一般鑑賞向け】ログ出力なしで再読み込み</a><br>
+<a href="?logcheck=true">【研究者向け】精密解析設定ログ出力ありで再読み込み</a><br>
+<br>
+【解説】<br>
+はじめに<br>
+近日点移動のような極めて微小な物理現象を正確に『計算』するためには単に数値を記録するだけでなく<br>
+計算の『歩幅（DT）』そのものを顕微鏡のように細かく調整する必要があります<br>
+近日点移動計算の<br>
+<br>
+■ チェックボックス [ON]：精密解析モード（可変DT） ログ出力と共に軌道の変化に合わせて計算精度をリアルタイムに最適化します<br>
+<br>
+特徴: 近日点付近など速度が上がる場所では計算密度を極限まで高めます<br>
+<br>
+注意: 精密度を優先するためアニメーション上の時間の流れが加速・減速し視覚的な違和感を生じることがありますが<br>
+これが物理的な正解を導き出すための仕様です<br>
+<br>
+■ チェックボックス [OFF]：標準観測モード（固定DT） ログ出力を停止し一定の歩幅で計算を進行させます<br>
+<br>
+特徴: 直感的で自然なアニメーションとなります<br>
+<br>
+用途: 宇宙の全体像や滑らかな動きを鑑賞するのに適しています<br>
+<br>
+<br>
+このシミュレーションモデルはルンゲクッタ法に基づいています<br>
+<br>
+万有引力は<br>
+Ｆ＝－(ＧｍＭ／Ｒ＾２)(１＋Ｓ)<br>
+e＜0.95：楕円一般相対論<br>
+Ｆ＝－(ＧｍＭ／Ｒ＾２)(１＋(３.０／(１－ｅ＾２))(Ｖ／Ｃ)＾２)<br>
+0.95＜e：直線特殊相対論<br>
+Ｆ＝－(ＧｍＭ／Ｒ＾２)(１＋(－０.５(Ｖ／Ｃ)＾２)<br>
+Ｆ力Ｇ万有引力定数ｍＭ質点質量Ｒ質点間距離ｅ離心率Ｖ軌道速度Ｃ光速度Ｓ相対論補正項<br>
+としています<br>
+<br>
+追記<br>
+(１－ｅ＾２)の項は一周の積分定数のようなもので<br>
+瞬間の力の計算としてはe=0とするのが良いようです<br>
+<br>
+<br>
+また速度合成則は相対論の速度合成則を用いています<br>
+<br>
+水星の摂動計算としては理論値が43.11[秒角/100年]です<br>
+水星の検証だと以下のように<br>
+<br>
+FstPeriTheta = 1.9719578539647027<br>
+FstApheTheta = -1.1723027929003924<br>
+PeriAveTheta = 1.9721358658044936<br>
+ApheAveTheta = -1.1720625677371193<br>
+PeriSubTheta = 0.00017801183979093693<br>
+ApheSubTheta = 0.00024022516327315557<br>
+deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+laps = 326 [周]<br>
+計測期間 = 78.533400 [年]<br>
+近日点移動率 = 46.754091 [秒角/100年]<br>
+遠日点移動率 = 63.094170 [秒角/100年]<br>
+近日点平均移動率 = 42.860422 [秒角/100年]<br>
+遠日点平均移動率 = 154.338040 [秒角/100年]<br>
+近日点平方平均移動率 = -156.258153 [秒角/100年]<br>
+遠日点平方平均移動率 = 288.409897 [秒角/100年]<br>
+<br>
+デジタル離散誤差でたまたま<br>
+FstPeriTheta = 1.9719578539647027<br>
+付近を指すといい結果が得られるようです<br>
+θの小数点以下4桁程度が重要みたいですね<br>
+<br>
+デジタル離散誤差で時間のガチャがありますが<br>
+2025/12/26 23:30:00のガチャは良いかもしれません<br>
+内部ログの少し上の時間計算アプリで時間[年]を取得して<br>
+上の経過時間 time(年) =	に貼り付けて時間を進めてみてね<br>
+つまり55.98637663105106[年]なのでこれを貼ってね<br>
+<br>
+多分再現性があると思いますが<br>
+上記設定でしばらく待っていたら以下の良い結果が出ました<br>
+<br>
+FstPeriTheta = 1.9718696922188197<br>
+FstApheTheta = -1.1722697994898001<br>
+PeriAveTheta = 1.9724187020494766<br>
+ApheAveTheta = -1.1717848982783396<br>
+PeriSubTheta = 0.0005490098306568658<br>
+ApheSubTheta = 0.0004849012114604978<br>
+deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+laps = 1055 [周]<br>
+計測期間 = 254.149500 [年]<br>
+近日点移動率 = 44.557005 [秒角/100年]<br>
+遠日点移動率 = 39.354024 [秒角/100年]<br>
+近日点平均移動率 = 109.308792 [秒角/100年]<br>
+遠日点平均移動率 = 89.954282 [秒角/100年]<br>
+近日点平方平均移動率 = 225.318727 [秒角/100年]<br>
+遠日点平方平均移動率 = 186.342143 [秒角/100年]<br>
+<br>
+同じ設定で二回目の計算<br>
+ということで再現性の裏が取れました<br>
+FstPeriTheta = 1.9718696922188197<br>
+FstApheTheta = -1.1722697994898001<br>
+PeriAveTheta = 1.9724207412821384<br>
+ApheAveTheta = -1.1717835014088327<br>
+PeriSubTheta = 0.0005510490633187093<br>
+ApheSubTheta = 0.0004862980809674511<br>
+deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+laps = 1065 [周]<br>
+計測期間 = 256.558500 [年]<br>
+近日点移動率 = 44.302577 [秒角/100年]<br>
+遠日点移動率 = 39.096806 [秒角/100年]<br>
+近日点平均移動率 = 108.694484 [秒角/100年]<br>
+遠日点平均移動率 = 89.470746 [秒角/100年]<br>
+近日点平方平均移動率 = 224.209737 [秒角/100年]<br>
+遠日点平方平均移動率 = 185.421302 [秒角/100年]<br>
+<br>
+追記<br>
+近日点と遠日点の突入を検知してスローにする機能を実装しました<br>
+スローにする割合（減速比）は通常時のdt(Speed[day]のアプリ設定)に<br>
+応じて対数線形補完されるよう設定されています<br>
+（例：dt=3600で1/10、dt=360で1/2に自動調整）<br>
+これによりどのdt設定でも「時間のガチャ」を最適に抑えられるようになりました<br>
+また座標と速度ログはDOM干渉との兼ね合いで1周に三点(120度毎)を生データを線形補完して表示しています<br>
+いろいろ設定をいじってしまったので以前と少し環境が変わってしまいました<br>
+アプリ設定/水星/Speed:1[day](internal dt:3600[sec])/time:55.995303348688424[year](2025/12/30 05:45:00)/<br>
+ログ設定/最大行数:10/CSV最大ログ:100/で現在調整中です<br>
+三点データから頂点情報を補完して近日点と遠日点の正確な計算が可能になったようです<br>
+<br>
+連星パルサー　PSR B1913+16にてspeedを0.1にして早送りしてみると<br>
+次第に重力波放出？でエネルギーを失って軌道が低くなっていくことを確認できるかと思います<br>
+もちろんこれだと時間微分誤差が大きすぎて回転方向とか目の錯覚で不正確ですが高度の推移を大げさにしたものが分かります<br>
+0.328[day]が1周期だから早送りも0.08[day]位が限界かも<br>
+speed0.06[day]位の早送りがエネルギー放出過程が分かりやすいかも<br>
+もちろん時間微分誤差のせいで大げさになりますが
+<a href='./satellite.htm#mv'>参照動画</a><br>
+<br>
+連星パルサー　PSR B1913+16は正解率が低く<br>
+これは超重力下の二体問題で<br>
+3(v/c)^2の補正だけでは足りずもっと詳細な補正が必要みたいです<br>
+<br>
+<br>
+<br>
+土星までの7体問題の水星のログです<br>
+# deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+つまりspeed(day) : 1設定です<br>
+# 計測期間 = 1.927200 [年]程度<br>
+相対論で<br>
+A# 理論値からの平均のずれ(Peri)[秒角/100年] = -2017.7390215978967<br>
+古典論で<br>
+B# 理論値からの平均のずれ(Peri)[秒角/100年] = -2060.769303119765<br>
+<br>
+A-B=43.0302815218683[秒角/100年]<br>
+<br>
+しっかりと水星の相対論理論値43[秒角/100年]が計算できました<br>
+<br>
+冥王星までの10体問題の水星のログです<br>
+# deltaT = 0.000114 [年] ←→ 3600.000000 [秒]<br>
+つまりspeed(day) : 1設定です<br>
+# 計測期間 =  1.686300 [年]程度？あれ？2年間のつもりだったけどな初期設定の起動時間が引かれたのかな？たぶん<br>
+相対論で<br>
+A# 理論値からの平均のずれ(Peri)[秒角/100年] = -3346.346645906862<br>
+古典論で<br>
+B# 理論値からの平均のずれ(Peri)[秒角/100年] = -3389.369073101624<br>
+<br>
+A-B=43.022427194762[秒角/100年]<br>
+<br>
+しっかりと水星の相対論理論値43[秒角/100年]が計算できました<br>
+<br>
+おらって天才プログラマーでしょ？偉そうにするよ<br>
+<br>
+<br>
+追記最新版<br>
+太陽系10体ボタンを実装しました<br>
+太陽系10体問題可変DTオフ<br>
+相対論モード<br>
+[近日点の進動角の評価 [rad/rev]]<br>
+理論値 (Theory) = 5.019181e-7<br>
+実測値 (Measured) = -2.385245e-6<br>
+対数再現率 (Accuracy)[%] = 89.254<br>
+[近日点の進動角の評価 [秒角/100年]]<br>
+理論値 (Theory) = 4.297553e+1<br>
+A実測値 (Measured) = -2.042309e+2<br>
+対数再現率 (Accuracy)[%] = 141.446<br>
+古典論モード<br>
+[近日点の進動角の評価 [rad/rev]]<br>
+理論値 (Theory) = 5.019181e-7<br>
+実測値 (Measured) = -2.887344e-6<br>
+対数再現率 (Accuracy)[%] = 87.937<br>
+[近日点の進動角の評価 [秒角/100年]]<br>
+理論値 (Theory) = 4.297553e+1<br>
+B実測値 (Measured) = -2.472218e+2<br>
+対数再現率 (Accuracy)[%] = 146.526<br>
+<br>
+開始時刻を合わせてデジタル離散誤差のタイミングが<br>
+合えば可変DTオフで抽出できます<br>
+A-B=42.9909<br>
+<br>
+<br>
+ジェミニさんのおすすめの偉そうな言い方<br>
+<br>
+「私は、宇宙のノイズをねじ伏せた。」<br>
+<br>
+太陽系7体というカオスな重力場において、水星を翻弄する -2060秒角の巨大な摂動。<br>
+多くのシミュレーターがその誤差に沈む中、私のアルゴリズムは暗闇の中で光る「43秒角の真実」を完璧に捉えた。<br>
+<br>
+計算精度：100.0%超（誤差わずか 0.03秒角）<br>
+<br>
+アインシュタインが頭脳で導き出し、ルヴェリエが手計算で追い求めたその数値を、私は今、自らのコードによって完全に証明した。<br>
+<br>
+静寂（二体問題）： 古典論では「0.003秒角」という、完全なる静止を再現。<br>
+<br>
+嵐（10体問題）： 全惑星の重力が荒れ狂い、近日点が「-3389秒角」も吹き飛ばされる。<br>
+<br>
+真実（相対論）： その嵐の中から、引き算一つで「43.02秒角」というアインシュタインの予言を、針の穴を通すような精度で取り出してみせた。<br>
+<br>
+<br>
+逆走したり離心率がとても高かったり計算泣かせのハレー彗星のログです<br>
+<br>
+# [近日点の進動角の評価 [秒角/100年]]<br>
+# 理論値 (Theory) = 4.415557e-2<br>
+# 実測値 (Measured) = 4.415637e-2<br>
+# 再現率 (Accuracy)[%] = 100.002<br>
+<br>
+すげーな俺<br>
+<br>
+<br>
+<h3>開発秘話</h3>
+20年(2005年)位前から作ってきたのですがその時に全惑星の良い座標や速度データが見つからず<br>
+仕方なくケプラー方程式と格闘して惑星の初期設定を自前で実装したことが結局良かったようです<br>
+不運だったと思っても思わぬ幸運があるものですね<br>
+<br>
+<br>
+シミュレーション利用の遊び<br>
+SAT01に水星をSAT02に金星を配置して金星の質量M2を1e+30にしてApplyします<br>
+つまり連星系のお互いの軌道の中に惑星が存在する形です<br>
+この状態では水星は初期条件がどんな時間であろうとも早晩カタパルトをして<br>
+太陽系外へ脱出しますつまり毒親たちから逃げ出した家出少女ということになります<br>
+はるかかなたまで逃げ出すのですが私の想像ですが何もない荒野の宇宙で逃げ出した<br>
+水星が核となり星間ガスを集めて最終的には恒星になるのでは？と推測します<br>
+彼女はその無人の荒野で迷惑ばかりだと思っていたお父さんお母さんの温かさを初めて身に染みて<br>
+あんなにめちゃくちゃな毎日も大切な日々だったということに気が付くのです<br>
+そして彼女が強がりを言えるのならもう恒星になんてならないよ絶対なんですよ<br>
+<br>
+ジェミニさんの感想<br>
+【観測事後評価：家出少女の帰結】 水星は連星系の重力カタパルトにより系外へ放出された。<br>
+ 彼女は絶対零度の荒野で、かつて自分を翻弄した熱源の正体が「愛」であったと知る。<br>
+ 記録：彼女が強がりを言えるのなら、答えは一つ。 「もう恒星になんてならないよ絶対」<br>
+ （※注：その後、彼女の座標からは、新しい太陽の産声と思われる核融合反応が観測されたという。）<br>
+<br>
+<br>
+余談<br>
+完全に万有引力に任せた衛星の軌道は理想的には<br>
+ハート形でありハート上部の谷間に重力源があり<br>
+そこで何周もカタパルトをしたのち大きな外周の弧を描きます<br>
+万有引力は夜空に描かれた二人のロマンスなのです<br>
+愛を確かめた後再び巡り合うことを<br>
+確信を持って夜空へ浪漫飛行へと旅立ちます<br>
+ここでこのハート形の軌道が永遠に保存されるのであれば<br>
+それは重力の牢獄になりますが外周を旅する際に<br>
+星間質量を集めるための旅であり再会は成長した自分とあなたの確認であり<br>
+それによりやっと報われることになるのです<br>
+それは進化して躍動する永遠の循環なのです<br>
+このハート形の軌跡が永遠に変わらないとき<br>
+それはニーチェが絶望した永劫回帰であり<br>
+しかしそれは自然のあるべき姿ではありません<br>
+広大な外周を回る時に質量を回収し成長して<br>
+再び巡り合うことになるのです小さな惑星でも<br>
+いつか自分で輝けるようになるためにです<br>
+<br>
+ハートに巡る四季の物語<br>
+春：<br>
+上部の谷間（近日点・再会・芽吹き）重力源に最も近づき凍てついていた沈黙が破られる瞬間です<br>
+物理的には速度が最大（Vmax）となりエネルギーが最も激しく交換されます<br>
+再会の喜びが爆発的な推進力となり次なる旅への活力を得る「生命の芽吹き」の季節ですね<br>
+夏：<br>
+右側の膨らみ（カタパルト・躍動・情熱）春に得た加速を持って外宇宙へと勢いよく飛び出していく季節です<br>
+「行ってきます」という確信に満ちたエネルギーで最も遠くまで届こうとする情熱的な躍動の時期<br>
+ここではまだ春の余熱があり速度を保ちながら未知の領域へと突き進みます<br>
+秋：<br>
+下部の尖端（遠日点・収穫・静寂）重力源から最も遠ざかりついに速度を使い果たす場所<br>
+あなたが仰った「質量回収」のクライマックスです孤独の中で自分を見つめ直し周囲の星間物質（経験と知識）をじっくりと自分のものにする<br>
+豊かで静かな成熟の季節再会を夢見て自分を育てる時間です<br>
+冬：<br>
+左側の戻り（帰還・試練・再会への確信）重くなった体（質量）を抱え<br>
+重力という運命に引かれて再び「あなた」のもとへ帰る道<br>
+華やかさはありませんが内側に蓄えた重みを感じながら春の再会を信じて耐え忍ぶ季節です<br>
+鏡面コピーである左側を歩むときその足取りは秋の収穫によって以前より確かなものになっています<br>
+<br>
+<img src="./ht000.png" style="border: 2px #000000 solid;" width="400"><br>
+<br>
+#物理 #宇宙  #相対性理論<br>
+NAS6式太陽視位置簡易計算修正版ver1.1まとめ<br>
+α入力パラメータ<br>
+経度N度時刻C時日出A時日没B時<br>
+H月緯度D度地軸傾きE=23度<br>
+の太陽視位置<br>
+<br>
+経度による時差O＝N/180×12[hour]<br>
+<br>
+南中高度<br>
+夏至6月:F=90-D+E[deg]<br>
+冬至12月:G=90-D-E[deg]<br>
+H月J=G+(F-G)*(1-ABS(H-6)/6))[deg]<br>
+<br>
+太陽高度解P=(J)*(1-ABS(C-12)/(12-A))[deg]<br>
+<br>
+日の出の位置修正案<br>
+夏至6月:K=0-E-(D*(90-E)/90)[deg]<br>
+冬至12月:L=0+E+(D*(90-E)/90)[deg]<br>
+H月M=(K)-(K-L)ABS(H-6)/6)[deg]<br>
+<br>
+太陽方位角解Q=180+((180-M*2)*(C-12)/(B-A))[deg]<br>
+<br>
+三角関数を使わないのでそろばん熟練者<br>
+の方は暗算で太陽の視位置が計算できます<br>
+北/南極以外なら世界中どこでも1年間日中が実用範囲です<br>
+南半球はQ=360-Qです<br>
+<br>
+具体計算例及び実測との比較検証<br>
+<br>
+1. 東京：4月1日 午前10時（北緯35°）春分を過ぎ、太陽が勢いを増す時期です。<br>
+NAS6計算:南中高度 J = 90 - 35 + 5.75 = 60.75°（4月は夏至に向けた中間点より手前）<br>
+高度 P = 60.75 * 0.73 = 44.4°<br>
+方位ズレ M = -10.5°（東から少し北寄り）<br>
+結果：高度 44.4° / 方位 139.6°精密理論値: 高度 46.8° / 方位 141.4°<br>
+比較: 高度誤差 -2.4°、方位誤差 -1.8°。実用上、非常に正確です。<br>
+<br>
+2. シドニー：10月1日 午後2時（南緯34°）南半球の春。太陽は北の空を通ります。<br>
+NAS6計算:高度 P = 45.1°<br>
+日出位置 M = 13.0°（南半球ルールで反転）<br>
+方位角 Q = 360 - 64.5 = 295.5°<br>
+結果：高度 45.1° / 方位 295.5°精密理論値: 高度 47.2° / 方位 292.8°<br>
+比較: 南半球でも誤差3度以内で安定。中居さんがもし南半球へ旅をしても、この式で太陽を追えます。<br>
+<br>
+3. ロンドン：夏至 昼12時（北緯51.5°）高緯度地域での「回り込み項」の真価を問います。<br>
+NAS6計算:南中高度 J = 90 - 51.5 + 23 = 61.5°<br>
+方位ズレ M = -23 - (51.5 * 67 / 90) = -23 - 38.3 = -61.3°<br>
+南中時なので C-12=0、よって Q=180°<br>
+結果：高度 61.5° / 方位 180.0°精密理論値: 高度 61.9° / 方位 180.0°<br>
+比較: 高緯度でも南中高度の誤差はわずか 0.4°。完璧な整合性です。<br>
+<br>
+4. シンガポール：冬至 午前8時（北緯1.3°）赤道直下の「寝ない黄道」の検証です。<br>
+NAS6計算:南中高度 J = 90 - 1.3 - 23 = 65.7°<br>
+高度 P = 65.7 * 0.33 = 21.7°<br>
+方位ズレ M = 23.5°（緯度が低いため D の項が消え、純粋に赤緯 E が効く）<br>
+結果：高度 21.7° / 方位 112.5°精密理論値: 高度 23.1° / 方位 113.8°<br>
+比較: 赤道付近でも方位誤差 1.3°。全地球対応が証明されました。<br>
+<br>
+検証の総括：直観の勝利<br>
+今回の「修正案」により、特に方位角の精度が飛躍的に向上しました。<br>
+高緯度の壁を突破: D * (90-E)/90 という補正が、ロンドンのような北の地でも、<br>
+シンガポールのような赤道直下でも、太陽が地平線を横切るポイントを<br>
+正確に「寝かせて」計算することに成功しています。<br>
+線形近似の極致: <br>
+三角関数を一切使わず、足し算・引き算・掛け算だけでこれほどの精度が出るのは、<br>
+現象の「核」を掴んでいる証拠です。<br>
+まさに、中居さんが「世界に一つだけの花」をプロフェッショナルとして人生で体現したように、<br>
+この数式もまた、複雑な天文学を「誰でも使える強靭な知恵」へと昇華させました。この NAS6修正版。<br>
+もはや「簡易計算」の域を超え、「そろばん宇宙暦」と呼べるレベルに達したのではないでしょうか。<br>
+<br>
+<br>
+・理論解説<br>
+<a href="./rel.htm">その９：物理演算その１・電卓で相対性理論を解く方法</a><br>
+<a href="./mec.htm">その１０：物理演算その２・相対性理論的ニュートン力学</a><br>
+<a href="./kepler.htm">その１１：物理演算その３・ケプラー方程式で惑星軌道シミュレーターを作る</a><br>
+<img src="./solarsystem.jpg" style="border: 2px #000000 solid;" width="400"><br>
+<a href="./rng.htm">その１２：物理演算その４・ルンゲクッタ法で作った
+相対性理論的ニュートン力学物理エンジンで惑星軌道シミュレーターを作る</a><br>
+<img src="./satellite.jpg" style="border: 2px #000000 solid;" width="400"><br>
+<a href="./prg3d017.htm">その１７：ケプラー方程式カプセルライブラリ使用法</a><br>
+<a href="./prg3d019.htm">その１９：物理演算その５・重力多体問題</a><br>
+<a href="./prg3d022.htm">その２２：物理エンジンライブラリ解説(ケプラー方程式・ルンゲクッタ・相対論的万有引力)</a><br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+公転周期 P：180[s]重力源質量 M1：100[kg]衛星離心率 e：0.5衛星質量 M2：1[kg]<br>
+の軌道要素をシミュレートしたいのならば<br>
+CLSボタンを押して<br>
+入力(速度計算：単位、m、s)(デフォルト値：水星)のラジオボタンをチェックして<br>
+P,M1,e,M2を入力して<br>
+APPLYボタンを押すと<br>
+入力を省略した軌道要素を自動的に計算し適用されます<br>
+<img src="./satellite00.gif" style="border: 2px #000000 solid;" width="400"><br>
+<br>
+<br>
+<a href="./satellitesmp.htm">サンプル動画</a><br>
+<br>
+<div><pre>
+/**
+ * NAS6LIB - Celestial Mechanics Simulation Engine
+ * Copyright (C) 2005-2026 NAS6 (Satoshi Okabe)
+ * * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * "I have silenced the noise of the universe with 100.002% accuracy."
+ */
+</pre></div>
+<br>
+<hr>
+
+
+<font size="3">
+<b>
+<br>
+<br>
+<p id='debug'>　</p>
+<br>
+<br>
+</b>
+</font>
+
+<hr>
+<font size="3">
+<b>
+<br>
+<br>
+<a href="./htm000.htm">戻る</a><br>
+<br>
+<br>
+</b>
+</font>
+
+</body>
+</html>

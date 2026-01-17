@@ -226,12 +226,19 @@ function simpleDeepMerge(target, source, seen = new WeakSet(), deep = true) {
     
     return target;
 }
-
+var MyManagedClassDefaultProperty = {
+ variablename: "MyManagedClassDefaultProperty",
+ profile: { name: "Default Name", age: 25 },
+ settings: { theme: "light", notifications: true }
+};
+/*
 const MyManagedClassDefaultProperty = Object.freeze({
   variablename: "MyManagedClassDefaultProperty",
   profile: Object.freeze({ name: "Default Name", age: 25 }),
   settings: Object.freeze({ theme: "light", notifications: true })
 });
+*/
+
 /*//参考//設計のヒント
 const MyManagedClassDefaultProperty = Object.freeze({
   variablename: "DefaultInstance",

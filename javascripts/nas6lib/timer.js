@@ -5,7 +5,7 @@ var DISP_NAS6LIB_COPYRIGHT = false;
 
 class N6LTimer {
 
-  constructor(id) {
+  constructor(id, rh = null) {
     this.typename = "N6LTimer";
     this.ID = id;
     this.enable = false;
@@ -15,8 +15,20 @@ class N6LTimer {
     this.alermfunc = 0;
     this.isUpdating = false; // ★実行中かどうかを管理するフラグ
     this.interval = 25;
+    var i;
+    if(rh && rh.typename == "N6LTimer"){
+        this.ID = rh.ID;
+        this.enable = rh.enable;
+        this.starttime = rh.starttime;
+        this.alerm = rh.alerm;
+        this.alermfunc = rh.alermfunc;
+        this.isUpdating = rh.isUpdating;
+        this.interval = rh.interval;
+    }
   }
-
+  clone() {
+    return new N6LTimer(this.ID, this);
+  };
   start() {
     this.enable = true;
     this.reset();
@@ -54,14 +66,27 @@ class N6LTimer {
 }
 
 class N6LTimerMan {
-  constructor() {
+  constructor(rh) {
     this.typename = "N6LTimerMan";
     this.interval = 25;
     this.enable = true;
     this.timer = new Array();
     this.hnd = null; // ★予約を管理するハンドルを追加
     this.isUpdating = false; // ★実行中かどうかを管理するフラグ
+    var i;
+    if(rh && rh.typename == "N6LTimerMan"){
+        this.interval = rh.interval;
+        this.enable = rh.enable;
+        this.hnd = rh.hnd;
+        this.isUpdating = rh.isUpdating;
+        this.timer.length = rh.timer.length;
+        for(i = 0; i < rh.timer.length; i++) this.timer[i] = new N6LTimer(rh.timer[i]);
+    }
   }
+  clone() {
+    return new N6LTimerMan(this);
+  };
+
   add() {
     var l = this.timer.length;
     if(l == 0) this.start();

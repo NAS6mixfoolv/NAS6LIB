@@ -1,3 +1,5 @@
+![image of banner](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/solarsystem000.jpg)  
+
 # NAS6LIB: JavaScript Physics Engine & Robust Math Library  
   
 **Programmed by NAS6** - [nas6.net](https://nas6.net/)  

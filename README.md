@@ -30,6 +30,10 @@ a graphical page like this is created.
 *太陽系シミュレーション (Solar System Simulation)*  
 [Solar System Simulation DEMO](https://nas6.net/solarsystem.htm)  
   
+![gif of satellite](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/satellite102.gif)  
+*衛星軌道シミュレーション (Satellite orbit Simulation)*  
+[Satellite orbit Simulation DEMO](https://nas6.net/satellite.htm)  
+  
 ![gif of fresnel](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/fresnel000.gif)  
 *フレネル効果 (Fresnel Effect)*  
 [Fresnel Effect DEMO](https://nas6.net/javascripts/threejs/examples/WaterPlaneTest.htm)  

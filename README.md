@@ -30,7 +30,7 @@ a graphical page like this is created.
 *太陽系シミュレーション (Solar System Simulation)*  
 [Solar System Simulation DEMO](https://nas6.net/solarsystem.htm)  
   
-![gif of satellite](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/satellite102.gif)  
+![gif of satellite](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/Satellite102.gif)  
 *衛星軌道シミュレーション (Satellite orbit Simulation)*  
 [Satellite orbit Simulation DEMO](https://nas6.net/satellite.htm)  
   

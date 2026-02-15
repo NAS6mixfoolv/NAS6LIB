@@ -1,4 +1,4 @@
-![image of banner](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/solarsystem000.jpg)  
+![image of banner](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/solarsystem001.jpg)  
 
 # NAS6LIB: JavaScript Physics Engine & Robust Math Library  
   

@@ -45,6 +45,7 @@ a graphical page like this is created.
 ## Wiki  
   
 * **Wiki Page**: [https://github.com/NAS6mixfoolv/NAS6LIB/wiki/](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/)  
+* [Japanese version 日本語版](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/](https://github.com/NAS6mixfoolv/NAS6LIB/wiki/Home‐Japanese)  
   
 ## Demos  
   

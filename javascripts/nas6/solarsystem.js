@@ -373,6 +373,7 @@ function PlanetInit(dat) {
       var vv = new Array(new N6LVector(3)); // Array to hold the position vector (x, y, z)
       // Calculate the planet's position (xx) at 'nday' days from epoch using Keplerian elements
       var f = planet[i].kepler(nday, xx, vv); 
+      //var f = planet[i].kepler2(nday, xx, vv); 
       planet[i].x0 = new N6LVector(3); // Initialize the planet's initial position vector
 
       // Copy the calculated Keplerian position components (x, y, z=0 in orbital plane)
@@ -500,6 +501,7 @@ function setline() {
       var vv = new Array(new N6LVector(3)); // Array to hold the position vector (x, y, z)
       // Calculate the planet's position (xx) at 'nday' days from epoch using Keplerian elements
       var f = planet[i].kepler(nday, xx, vv);
+      //var f = planet[i].kepler2(nday, xx, vv);
       var x1 = new N6LVector(3); // New vector for the current point's position
       x1.x[0] = xx[0].x[0];
       x1.x[1] = xx[0].x[1];

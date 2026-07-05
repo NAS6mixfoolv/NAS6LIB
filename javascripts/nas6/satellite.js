@@ -877,6 +877,7 @@ function PlanetInit(dat) {
       var vvA = new Array(new N6LVector(3));
       planet[i].m_nday = nday;
       var f = planet[i].kepler(nday, xx, vvA);
+      //var f = planet[i].kepler2(nday, xx, vvA);
       planet[i].x0 = new N6LVector(3);
       planet[i].x0.x[0] = xx[0].x[0];
       planet[i].x0.x[1] = xx[0].x[1];
@@ -965,6 +966,7 @@ function setline() {
       var xx = new Array(new N6LVector(3));
       var vvA = new Array(new N6LVector(3));
       var f = planet[i].kepler(nday, xx, vvA);
+      //var f = planet[i].kepler2(nday, xx, vvA);
       var eps = Math.PI / 32;
       if(Math.PI - eps < f && f < Math.PI + eps) ndayR = nday;
       var x1 = new N6LVector(3);

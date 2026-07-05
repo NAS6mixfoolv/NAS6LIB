@@ -67,7 +67,7 @@ xyz is the Euler angle to check for consistency
 
 ## Zip Files Links
 
-[NAS6LIB_2_1_2 Zip Files](https://nas6.net/NAS6LIB_2_1_2_javascripts.zip)  
+[NAS6LIB_2_2_1 Zip Files](https://nas6.net/NAS6LIB_2_2_1_javascripts.zip)  
 [SolarSystem DEMO Zip Files](https://nas6.net/solarsystem.zip)  
 [Satellite DEMO Zip Files](https://nas6.net/satellite.zip)  
 [Simple Template Zip Files](https://nas6.net/TestPage.zip)  
@@ -163,6 +163,14 @@ NAS6LIB_2_0_3 (2025/06/10): N6LQuaternion & N6LLnQuaternion more bugfix
 NAS6LIB_2_1_0 (2025/06/11): add GetAccessor/Get/Set/Create  
 NAS6LIB_2_1_1 (2025/06/14): refine Comp/Equal/EpsComp/EpsEqual  
 NAS6LIB_2_1_2 (2025/06/17): Licensing arrangement  
+NAS6LIB_2_1_3(2025/10/11):note:N6LLnQuaternion bugfix  
+NAS6LIB_2_1_4(2025/11/04):note:N6LRngKt bugfix  
+NAS6LIB_2_1_5(2025/12/24):note:add clone()  
+NAS6LIB_2_1_6(2026/01/01):note:output log  
+NAS6LIB_2_1_7(2026/01/07):note:add ToGravityRadiationLoss()  
+NAS6LIB_2_1_8(2026/01/17):note:output log  
+NAS6LIB_2_2_0(2026/06/21):note:keplerWithAGM  
+NAS6LIB_2_2_1(2026/07/05):note:BugFix ToSchwartz  
 License: GPL-3.0  
   
   

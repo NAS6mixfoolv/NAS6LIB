@@ -268,6 +268,7 @@ class N6LPlanet {
         var xx = new Array(new N6LVector(3));
         var vv = new Array(new N6LVector(3));
         var f = this.kepler(nday, xx, vv);
+        //var f = this.kepler2(nday, xx, vv);
         this.x0 = new N6LVector([xx[0].x[0], xx[0].x[1], 0]);
         this.v0 = new N6LVector([vv[0].x[0], vv[0].x[1], 0]);
 
@@ -756,6 +757,7 @@ class N6LPlanet {
         var xx = [new N6LVector(3)];
         var vv = [new N6LVector(3)];
         var f = this.kepler(nday, xx, vv);
+        //var f = this.kepler2(nday, xx, vv);
         this.x0 = new N6LVector([xx[0].x[0], xx[0].x[1], xx[0].x[2]]);
         this.v0 = new N6LVector([vv[0].x[0], vv[0].x[1], vv[0].x[2]]);
 
@@ -800,6 +802,7 @@ class N6LPlanet {
         var xx = [new N6LVector(3)];
         var vv = [new N6LVector(3)];
         var f = this.kepler(nday, xx, vv);
+        //var f = this.kepler2(nday, xx, vv);
         this.x0 = new N6LVector([xx[0].x[0], xx[0].x[1], xx[0].x[2]]);
         this.v0 = new N6LVector([vv[0].x[0], vv[0].x[1], vv[0].x[2]]);
 
@@ -940,6 +943,188 @@ class N6LPlanet {
         if(fret == undefined) return 0;
         return fret;
     };
+
+/**
+ * AGM-Kepler Solver
+ * アルキメデスの挟み撃ち精神をAGMで拡張した「歪み自己相殺型」解法
+ */
+solveKeplerAGM(m, e) {
+    let u = m + e * Math.sin(m);   // 初期推定値
+    let a = Math.abs(m) || 1.0;    // 算術平均側
+    let g = 1.0;                   // 幾何平均側
+
+    for(let i = 0; i < 10; i++) {
+        let sinu = Math.sin(u);
+        let cosu = Math.cos(u);
+        let ds = e * sinu;
+        let ds2 = ds * ds;
+
+        // AGMによる対称性回復
+        let next_a = (a + g) / 2 + ds2 * 0.25;
+        let next_g = Math.sqrt(a * g * (1 + ds2 * 0.08));
+
+        a = next_a;
+        g = next_g;
+
+        // 補正（AGMの収束度をダンパーとして活用）
+        let f  = u - e * sinu - m;
+        let df = 1.0 - e * cosu + (a - g) * 0.5;
+        let du = f / df;
+
+        u -= du * 0.75;
+
+        if(Math.abs(du) < 1e-14) break;
+    }
+    return u;
+};
+
+
+
+
+
+
+// NAS6式ケプラー方程式　AGM版（歪み累積＋対称性回復）
+kepler2(nday, xx, vv, num, x0, fret) {
+    let m = (this.m_nperday * nday + this.m_l0) * this.CNST_DR;
+    let e = this.m_e;
+    let e2 = this.m_e * this.m_e;
+    let x;
+    let y;
+    //let u = m + e * Math.sin(m);  // 良い初期値
+    let u = this.solveKeplerAGM(m, e);
+
+/*
+    // AGMによる歪み制御
+    let a = 1.0;          // 算術平均側（あなたのanに相当）
+    let g = 1.0;          // 幾何平均側（収束を強制）
+    const agm_steps = 8;  // AGMは収束が非常に速い
+
+    for(let i = 0; i < agm_steps; i++) {
+        let sinu = Math.sin(u);
+        
+        // 瞬間歪み（あなたのds2）
+        let ds = e * sinu;
+        
+        // 新しい視点：歪みをAGMで包み込む
+        let next_a = (a + g + ds * ds) / 2;   // 算術平均（拡張）
+        let next_g = Math.sqrt(a * g + ds * ds * 0.5);  // 幾何平均（歪み平均化）
+        
+        a = next_a;
+        g = next_g;
+        
+        // uの補正（AGMの収束値を使って幾何学的に）
+        let correction = (m - u + e * sinu) / (1 + (a - g));  // (a-g)で歪み重み付け
+        u += correction;
+        
+        if(Math.abs(correction) < 1e-14) break;
+    }
+
+    // 最終的なuをAGMの収束値で微調整（オプション）
+    let agm_factor = (a + g) / 2;  // 最終的な「平均化された歪み補正係数」
+*/
+
+    // 以降は従来の座標計算部（x_prime, y_primeなど）
+        var ree = Math.sqrt(1.0 - e * e);
+        var cosu = Math.cos(u);
+        var sinu = Math.sin(u);
+        var x_prime = this.m_a * (cosu - this.m_e);
+        var y_prime = this.m_a * ree * sinu;
+        var f = Math.atan2(y_prime, x_prime); 
+        var cosf = Math.cos(f);
+        var sinf = Math.sin(f);
+
+        var r0 = this.m_a * (1.0 - e2) / (1.0 + this.m_e * cosf);
+        x = r0 * cosf;
+        y = r0 * sinf;
+
+        if(fret == undefined) {
+          if(xx != undefined) xx[0] = new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]);
+          else xx = new Array(new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]));
+
+          if(x0 != undefined) x0[0] = new N6LVector(xx[0]);
+          else x0 = new Array(new N6LVector(xx[0]));
+          
+          return this.kepler2(nday + (1.0 / (24.0 * 4.0) * this.m_t), xx, vv, num, x0, f);
+        }
+
+        var xxx = new Array(new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]));
+        var dx = xxx[0].Sub(xx[0]);
+        if(vv != undefined) vv[0] = new N6LVector(3).ZeroVec();
+        else vv = new Array(new N6LVector(3).ZeroVec());
+
+        //速度微調整
+        vv[0].x[0] = (dx.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * this.m_t) / this.CNST_C) * this.m_mv;
+        vv[0].x[1] = (dx.x[1] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * this.m_t) / this.CNST_C) * this.m_mv;
+        vv[0].x[2] = 0.0;
+
+        if(fret == undefined) return 0;
+        return fret;
+};
+
+
+/*
+//NAS6式ケプラー方程式　漸化式ver.
+kepler2(nday, xx, vv, num, x0, fret) {
+    // 1. 基本パラメータ設定
+    let m = (this.m_nperday * nday + this.m_l0) * this.CNST_DR;
+    let e = this.m_e;
+    let e2 = this.m_e * this.m_e;
+    let x;
+    let y;
+    
+    // 2. あなたの漸化式による「幾何学的近似」
+    // 円周率計算の an=sqrt(2+an) を拡張して、軌道の累積長を測る
+    // 近似的な離心近点角 u を初期推定値から直接、高精度へ持ち込む
+    let u = m; // 初期値
+    let an = 1.0; 
+    
+    // 平方根の連鎖による収束（反復なし、あるいは少ないステップで完了）
+    // 物理的には「離心率という歪み」を平方根の連鎖で「打ち消し」ながら進む
+    for(let i = 0; i < 5; i++) { // 通常数ステップでニュートン法と同等の精度に達する
+        let ds2 = Math.pow(e * Math.sin(u), 2); // 歪み成分
+        an = Math.sqrt(ds2 + an);
+        u = m + e * Math.sin(u); // 漸化式で補正された新たな u
+    }
+
+    // 3. 座標計算（以降は既存のロジックと同じ）
+    // ...以下既存の変換ロジック
+        var ree = Math.sqrt(1.0 - e * e);
+        var cosu = Math.cos(u);
+        var sinu = Math.sin(u);
+        var x_prime = this.m_a * (cosu - this.m_e);
+        var y_prime = this.m_a * ree * sinu;
+        var f = Math.atan2(y_prime, x_prime); 
+        var cosf = Math.cos(f);
+        var sinf = Math.sin(f);
+
+        var r0 = this.m_a * (1.0 - e2) / (1.0 + this.m_e * cosf);
+        x = r0 * cosf;
+        y = r0 * sinf;
+
+        if(fret == undefined) {
+          if(xx != undefined) xx[0] = new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]);
+          else xx = new Array(new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]));
+
+          if(x0 != undefined) x0[0] = new N6LVector(xx[0]);
+          else x0 = new Array(new N6LVector(xx[0]));
+          
+          return this.kepler2(nday + (1.0 / (24.0 * 4.0) * this.m_t), xx, vv, num, x0, f);
+        }
+
+        var xxx = new Array(new N6LVector([x * this.CNST_AU, y * this.CNST_AU, 0.0]));
+        var dx = xxx[0].Sub(xx[0]);
+        if(vv != undefined) vv[0] = new N6LVector(3).ZeroVec();
+        else vv = new Array(new N6LVector(3).ZeroVec());
+
+        //速度微調整
+        vv[0].x[0] = (dx.x[0] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * this.m_t) / this.CNST_C) * this.m_mv;
+        vv[0].x[1] = (dx.x[1] / (60.0 * 60.0 * 24.0 / (24.0 * 4.0) * this.m_t) / this.CNST_C) * this.m_mv;
+        vv[0].x[2] = 0.0;
+
+        if(fret == undefined) return 0;
+        return fret;
+    };
+*/
 
     //xyz to ecliptic//xyz系を日心黄道直交座標系に変換
     ecliptic(x, y, z, xyz) {

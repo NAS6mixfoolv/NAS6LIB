@@ -15,5 +15,13 @@ note:NAS6LIB_2_0_2(2025/06/08):note:N6LQuaternion bugfix
 note:NAS6LIB_2_0_3(2025/06/10):note:N6LQuaternion & N6LLnQuaternion more bugfix
 note:NAS6LIB_2_1_0(2025/06/11):note:add GetAccessor/Get/Set/Create
 note:NAS6LIB_2_1_1(2025/06/14):note:refine Comp/Equal/EpsComp/EpsEqual
-version:NAS6LIB_2_1_2(2025/06/17):note:Licensing arrangement
-licence:GPL
+note:NAS6LIB_2_1_2(2025/06/17):note:Licensing arrangement
+note:NAS6LIB_2_1_3(2025/10/11):note:N6LLnQuaternion bugfix
+note:NAS6LIB_2_1_4(2025/11/04):note:N6LRngKt bugfix
+note:NAS6LIB_2_1_5(2025/12/24):note:add clone()
+note:NAS6LIB_2_1_6(2026/01/01):note:output log
+note:NAS6LIB_2_1_7(2026/01/07):note:add ToGravityRadiationLoss()
+note:NAS6LIB_2_1_8(2026/01/17):note:output log
+note:NAS6LIB_2_2_0(2026/06/21):note:keplerWithAGM
+version:NAS6LIB_2_2_1(2026/07/05):note:BugFix ToSchwartz, add timer.module.js, keyboard.module.js
+licence:GPL-3.0

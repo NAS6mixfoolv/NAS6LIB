@@ -192,46 +192,37 @@ var dokp;
 var dokd;
 var doku;
 
+
 //キーボード初期化
 //tman:N6LTimerMan, func:chkKeyBoardFunc, ret:loopKeyBoardID 
 function initKeyBoard(tman, func) {
   if(func) KeyB.setfunc(function() { func(); });
   if(tman) TManKeyBoard = tman;
   else TManKeyBoard = new N6LTimerMan();
+  
+  // イベント登録はここで行う（毎フレームやらない）
+  document.onkeydown = function(e) {
+    if(!KeyB.enable) return;
+    KeyB.keystate[e.keyCode] = true;
+    KeyB.lastkey = e.keyCode;
+    // 必要なら e.preventDefault(); を入れる
+  };
+  document.onkeyup = function(e) {
+    if(!KeyB.enable) return;
+    KeyB.keystate[e.keyCode] = false;
+    KeyB.lastkey = e.keyCode;
+  };
+  
   TManKeyBoard.add();
   var id = TManKeyBoard.timer.length - 1;
-  TManKeyBoard.timer[id].setalerm(function() { loopKeyBoard(id); }, 33);  //set main loop//メインループセット
-  dokp = document.onkeypress;
-  dokd = document.onkeydown;
-  doku = document.onkeyup;
+  TManKeyBoard.timer[id].setalerm(function() { loopKeyBoard(id); }, 33);
   return id;
 }
-
 //キーボードメインループ
 function loopKeyBoard(id) {
   if(KeyB.enable) {
-    document.onkeypress = function(e) {
-      return false;
-    };
-    document.onkeydown = function(e) {
-      KeyB.keystate[e.keyCode] = true;
-      KeyB.lastkey = e.keyCode;
-      return false;
-    };
-    document.onkeyup = function(e) {
-      KeyB.keystate[e.keyCode] = false;
-      KeyB.lastkey = e.keyCode;
-      return false;
-    };
     if(KeyB.keyfunc) KeyB.keyfunc();
   }
-  else {
-    if(dokp) document.onkeypress = dokp();
-    else document.onkeypress = dokp;
-    if(dokd) document.onkeydown = dokd();
-    else document.onkeydown = dokd;
-    if(doku) document.onkeyup = doku();
-    else document.onkeyup = doku;
-  }
+
   TManKeyBoard.timer[id].setalerm(function() { loopKeyBoard(id); }, 33);  //set main loop//メインループセット
 }

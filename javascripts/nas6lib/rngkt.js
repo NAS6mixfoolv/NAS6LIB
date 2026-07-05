@@ -474,7 +474,7 @@ document.FD.T4.value = c2;
     //1PN
     //schwartz correction term//シュワルツシルト補正項
     ToSchwartz(v, e) {
-        var ret = 3.0 * v * v / ( 1.0 - (e * e)); //楕円一般相対論//eは一周の積分するときに必要
+        var ret = 3.0 * v * v;                    //楕円一般相対論
         if(1.0 <= e) ret = -0.5 * v * v;          //直線特殊相対論
         return ret;
     };

@@ -4,6 +4,19 @@
   
 **Programmed by NAS6** - [nas6.net](https://nas6.net/)  
   
+---  
+  
+[Support this project](https://github.com/sponsors/NAS6mixfoolv)  
+  
+---  
+  
+## Features  
+- Reproduces the perihelion precession of Mercury with over 99.9% accuracy  
+- Enables verification of relativistic effects, including 2.5PN terms  
+  
+---  
+  
+  
 NAS6LIB is a comprehensive JavaScript library for **physics simulations** and **geometric transformations**, originally developed  
 for real-time 3D graphics in game development. It offers highly optimized and numerically stable implementations of  
 fundamental linear algebra operations.  

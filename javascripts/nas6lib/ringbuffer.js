@@ -3,6 +3,7 @@
 //N6LRingBuffer 2026
 /*
  * N6LRingBuffer
+ * // RingBuffer implementation based on circular iterator indexing.
  *
  * 主な想定用途:
  *   PushNew() による末尾追加

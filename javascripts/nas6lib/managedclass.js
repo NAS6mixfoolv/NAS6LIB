@@ -3,6 +3,23 @@
 //N6LManagedClass 2026
 
 /**
+ * N6LManagedClass
+ *
+ * Object wrapper class for managed property data.
+ *
+ * Features:
+ * - Deep clone
+ * - Deep merge
+ * - Safe object/array handling
+ * - Custom class clone() support
+ *
+ * Note:
+ * Internal property data is managed as objects.
+ * Indexed objects can be converted to arrays using toArrayIfIndexed().
+ */
+
+
+/**
  * N6LManagedClassの結果はオブジェクトとして返されるが、配列型が必要な場合はtoArrayIfIndexedを使用。
  * 例: const items = toArrayIfIndexed(instance.property.profile.items, true);
  */

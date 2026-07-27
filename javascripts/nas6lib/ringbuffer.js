@@ -1,6 +1,22 @@
 ﻿//Programed by NAS6
 //ringbuffer.js
 //N6LRingBuffer 2026
+/*
+ * N6LRingBuffer
+ *
+ * 主な想定用途:
+ *   PushNew() による末尾追加
+ *   GetStart() による先頭からの参照
+ *
+ * 上記アクセスパターンを主用途として設計・最適化しています。
+ * その他の操作(PushStart, PopStart, PopEnd, ToArray等)は
+ * 補助的な機能であり、頻繁な利用を想定していません。
+ *
+ * 一般的なRingBuffer互換APIや全操作の均一な性能を
+ * 目的とした実装ではありません。
+ */
+// rh : right hand object (copy source)
+// .NET style naming convention
 
 class N6LRingBuffer {
   constructor(rh, ary = null, it = 0) {

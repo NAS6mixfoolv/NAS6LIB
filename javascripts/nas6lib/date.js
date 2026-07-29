@@ -121,8 +121,8 @@ class N6LDate {
   static get N6LDATE_FMT_ISO_D()    { return 8; }  // "2026-07-29(水)"
   static get N6LDATE_FMT_ISO_D_NW() { return 9; }  // "2026-07-29"
 
-  //ユリウス暦通算日数取得
-  //誤差含む正確な経過日数はaddCalendar()後this.pastdayから取得してください
+  //ユリウス暦通算日数取得誤差含む
+  //また正確な経過日数はnormalize()かaddCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
   julianDayRaw(val, flg = false){
     // x は3月1日を起点とした年内日数
     // 1～2月は前年の13・14月として扱う（フェアフィールド方式）
@@ -141,8 +141,8 @@ class N6LDate {
     return ret + ret2;
   }
 
-  //グレゴリオ暦通算日数取得
-  //誤差含む正確な経過日数はaddCalendar()後this.pastdayから取得してください
+  //グレゴリオ暦通算日数取得誤差含む
+  //また正確な経過日数はnormalize()かaddCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
   gregorianDayRaw(val, flg = false){
     // x は3月1日を起点とした年内日数
     // 1～2月は前年の13・14月として扱う（フェアフィールド方式）
@@ -163,8 +163,8 @@ class N6LDate {
   }
 
 
-  //通算日数取得(ユリウス暦・グレゴリオ暦自動処理)
-  //誤差含む正確な経過日数はaddCalendar()後this.pastdayから取得してください
+  //通算日数取得(ユリウス暦・グレゴリオ暦自動処理)誤差含む
+  //また正確な経過日数はnormalize()かaddCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
   calendarToDay(val, flg = false) {
     if(!this.afterGregorian(val)) {
       return this.julianDayRaw(val, flg);
@@ -291,7 +291,7 @@ class N6LDate {
     while(this.mdays[m] < x){
       x -= this.mdays[m];
       m++;
-      if(m === this.mdayslength - 1) break;
+      if(m === this.mdays.length - 1) break;
     }
 
     var wsub = 5;
@@ -318,60 +318,6 @@ class N6LDate {
     return val;
   }
 
-/*
-    if(!add) add = 0;
-    daya++;
-    var day = daya + add;
-    var val = new N6LDate(this);
-    var y400 = flg ? 146097 : 146100; //365.2425 * 400 : 365.25 * 400
-    var nl;
-    if(flg) nl = ((val.ya-1 % 4 === 0)&&((val.ya-1 % 100 !== 0)||(val.ya-1 % 400 === 0))) ? 1 : 0;
-    else nl = (val.ya-1 % 4 === 0) ? 1 : 0;
-    day += nl;
-    // x は3月1日を起点とした年内日数
-    // 1～2月は前年の13・14月として扱う（フェアフィールド方式）
-    val.ya = Math.floor(((day+305)*400)/y400);
-    var lp = this.getLeap(val);
-    var tdays = Math.floor(val.ya * 365) + lp + nl;
-    if(flg) tdays -= 10;//改暦閏年
-    //tdays--;
-    var x = (day + 305) - tdays;
-    if(365 < x) x -= 365;
-    var m = 3;
-    if(x <= 0){
-      val.ya--;
-      tdays = tdays - 365;
-      x = (day + 305) - tdays;
-    }
-    while (m < this.mdays.length - 1 && this.mdays[m] < x) {
-      x -= this.mdays[m];
-      m++;
-    }
-
-    var wsub = 5; //1/1/1(土)に合わせるためのオフセット
-    val.ma = m;
-    if(12 < val.ma) { val.ya++; val.ma -= 12; }
-    val.da = x;
-
-    val.wk = (day + wsub) % 7;
-
-    var tt = Math.floor((add * this.DayMS + this.ms) % this.DayMS);
-    val.ms = day  * this.DayMS + tt;
-
-    val.pastdays = val.ms / this.DayMS;
-
-    var ms = val.ms % this.DayMS;
-    var t = ms;
-    t %= this.DayMS;
-    val.ho = Math.floor(t / this.HourMS);
-    t %= this.HourMS;
-    val.mo = Math.floor(t / this.MinMS);
-    t %= this.MinMS;
-    val.so = Math.floor(t / this.SecMS);
-
-    return val;
-  }
-*/
   //ユリウス歴加算処理
   addJulian(daya, add = 0) {
     return this.addGregorian(daya, add, false);
@@ -421,33 +367,6 @@ class N6LDate {
     this.SetVal(val);
     return this;
   }
-/*
-  addCalendar(rh = null){
-    var flg = this.afterGregorian(this);
-    var val1 = new N6LDate(this);
-    var daya = this.calendarToDay(this);
-    val1 = this.addGregorian(daya,0,flg);
-    var days1 = val1.pastdays;
-    var days0 = 0;
-    if (rh && rh.typename == "N6LDate") {
-      val0 = new N6LDate(rh);
-      daya = this.calendarToDay(rh);
-      val0 = this.addGregorian(daya,0,flg);
-      days0 = val0.pastdays;
-    } else if (typeof rh === "number") {
-      days0 = rh;
-    }
-
-    var val;
-    if (flg) {
-      val = this.addGregorian(days1, days0);
-    } else {
-      val = this.addJulian(days1, days0);
-    }
-    this.SetVal(val);
-    return this;
-  }
-*/
 
   //[!!!通算ミリ秒!!!][日時週]正規化
   //this内容変更含む

@@ -4,7 +4,7 @@
 class N6LDate {
 
   //var dt = new N6LDate().normalize();のように.normalize()を必ずつけてください
-  constructor(ya, ma, da, ho, mo, so, ms) {
+  constructor(ya, ma, da, ho, mo, so, ms, region = "JP") {
     this.typename = "N6LDate";
     this.ya = 1;
     this.ma = 1;
@@ -17,6 +17,13 @@ class N6LDate {
     this.pastdays = 0;
     this.weeks = ["土", "日", "月", "火", "水", "木", "金"];
     this.mdays = [0,31,28,31,30,31,30,31,31,30,31,30,31,31,28];
+    this.ReformTable = {
+      JP: { julianEnd: "1582-10-04", gregorianStart: "1582-10-14", reformDays: "10" },
+      GB: { julianEnd: "1752-09-02", gregorianStart: "1752-09-13", reformDays: "11" },
+      RU: { julianEnd: "1918-01-31", gregorianStart: "1918-02-13", reformDays: "13" },
+      GR: { julianEnd: "1923-02-15", gregorianStart: "1923-02-28", reformDays: "13" },
+    };
+    if(region === "JP" || region === "GB" || region === "RU" || region === "GR") this.region = region;
     this.SecMS = 1000;
     this.MinMS = 60 * this.SecMS;
     this.HourMS = 60 * this.MinMS;
@@ -48,6 +55,7 @@ class N6LDate {
         this.so = ya.so;
         this.ms = ya.ms;
         this.wk = ya.wk;
+        this.region = ya.region;
       }
       // 標準の Date オブジェクトの場合
       else if (ya instanceof Date) {
@@ -101,6 +109,7 @@ class N6LDate {
           if (mo !== undefined && mo !== null) this.mo = mo;
           if (so !== undefined && so !== null) this.so = so;
           if (ms !== undefined && ms !== null) this.ms = ms;
+          if (region !== undefined && region !== null) this.region = region;
         }
       }
     }
@@ -169,14 +178,29 @@ class N6LDate {
       return this.julianDayRaw(val, flg);
     }
     else {
-      var cc = { ya: 1582, ma: 10, da: 5, ho: 0, mo: 0, so: 0, ms: 0 };
-      if((val.ya == 1582 && val.ma == 10 && 4 < val.da && val.da < 15)) {
+      var reform = this.ReformTable[this.region];
+      var jed = this.parseDate(reform.julianEnd);
+      var gsd = this.parseDate(reform.gregorianStart);
+      var rd = Math.floor(reform.reformDays);
+      var cc = { ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0, region: this.region };
+      var med = this.getMonthEnd(new N6LDate(cc.ya,cc.ma,cc.da,cc.ho,cc.mo,cc.so,cc.ms,cc.region),false);
+      if(jed.ma == gsd.ma) med = gsd.da;
+      if(((val.ya == jed.ya && val.ma == jed.ma && jed.da < val.da && val.da <= med))||
+         ((val.ya == gsd.ya && val.ma == gsd.ma && 0 < val.da && val.da <= gsd.da))) {
         return this.julianDayRaw(cc, flg);
       }
-      return (this.gregorianDayRaw(val, flg) - this.gregorianDayRaw(cc, flg) + this.julianDayRaw(cc, flg) - 10);
+      return (this.gregorianDayRaw(val, flg) - this.gregorianDayRaw(cc, flg) + this.julianDayRaw(cc, flg) - rd);
     }
   }
 
+  //日付解析
+  parseDate(str){
+    const words = str.split("-");
+    const ya = Math.floor(words[0]);
+    const ma = Math.floor(words[1]);
+    const da = Math.floor(words[2]);
+    return {ya: ya, ma: ma, da: da};
+  }
 
   //週取得
   getWeek(){
@@ -213,10 +237,17 @@ class N6LDate {
 
   //ユリウス暦グレゴリオ暦改暦
   afterGregorian(val){
-    if(
-      val.ya < 1582 ||
-      (val.ya == 1582 && val.ma < 10) ||
-      (val.ya == 1582 && val.ma == 10 && val.da < 5)
+    var reform = this.ReformTable[this.region];
+    var jed = this.parseDate(reform.julianEnd);
+    var gsd = this.parseDate(reform.gregorianStart);
+    var rd = Math.floor(reform.reformDays);
+    var cc = { ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0, region: val.region };
+    var med = this.getMonthEnd(new N6LDate(cc.ya,cc.ma,cc.da,cc.ho,cc.mo,cc.so,cc.ms,cc.region),false);
+    if(jed.ma == gsd.ma) med = gsd.da;
+    if((val.ya < jed.ya) ||
+      (val.ya == jed.ya && val.ma < jed.ma) ||
+      ((val.ya == jed.ya && val.ma == jed.ma && val.da <= med) ||
+       (val.ya == gsd.ya && val.ma == gsd.ma && val.da <= gsd.da))
     ) {
       return false;
     }
@@ -224,8 +255,9 @@ class N6LDate {
   }
 
   //当年閏年判定
-  isLeap(val){
-    return ((val.ya % 4 === 0)&&((val.ya % 100 !== 0)||(val.ya % 400 === 0)));
+  isLeap(val, flg = true){
+    if(flg) return ((val.ya % 4 === 0)&&((val.ya % 100 !== 0)||(val.ya % 400 === 0)));
+    return (val.ya % 4 === 0);
   }
 
   //月末判定
@@ -236,8 +268,9 @@ class N6LDate {
   }
 
   //月末取得
-  getMonthEnd(val){
-    var wk = new N6LDate(val).normalize();
+  getMonthEnd(val, flg = true){
+    var wk = new N6LDate(val);
+    if(flg) wk.normalize();
     var m = wk.ma;
     var ed = this.mdays[m];
     if(m == 2 && this.isLeap(wk)) ed++;
@@ -246,14 +279,22 @@ class N6LDate {
 
   //通算閏年取得
   getLeap(val) {
+    var reform = this.ReformTable[val.region];
+    var jed = this.parseDate(reform.julianEnd);
+    var gsd = this.parseDate(reform.gregorianStart);
+    var rd = Math.floor(reform.reformDays);
+    var cc = { ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0, region: this.region };
+    var med = this.getMonthEnd(new N6LDate(cc.ya,cc.ma,cc.da,cc.ho,cc.mo,cc.so,cc.ms,cc.region),false);
+    if(jed.ma == gsd.ma) med = gsd.da;
+
     var tmp = new N6LDate(val.ya, val.ma, val.da);
     if(0 < tmp.ma && tmp.ma < 3){
       tmp.ya--;
       tmp.ma += 12;
     }
     var ret = (Math.floor(tmp.ya / 4) - (Math.floor(tmp.ya / 100) - Math.floor(tmp.ya / 400)));
-    if(tmp.ya < 1600) ret = ret + (Math.floor(tmp.ya / 100) - Math.floor(tmp.ya / 400));
-    else ret += 12;
+    if(tmp.ya < jed.ya) ret = ret + (Math.floor(tmp.ya / 100) - Math.floor(tmp.ya / 400));
+    else ret += (rd + 2);
     return ret;
   }
 
@@ -269,6 +310,7 @@ class N6LDate {
       this.ms = val.ms;
       this.wk = val.wk;
       this.pastdays = val.pastdays;
+      this.region = val.region;
     }
     return this;
   }
@@ -283,7 +325,10 @@ class N6LDate {
     var lp = this.getLeap(val);
     var tdays = Math.floor(val.ya * 365) + lp;
 
-    if(flg) tdays -= 10;
+    var reform = this.ReformTable[val.region];
+    var rd = Math.floor(reform.reformDays);
+
+    if(flg) tdays -= rd;
 
     var x = (day + 305) - tdays;
     if (365 < x) x -= 365;
@@ -348,8 +393,20 @@ class N6LDate {
     var targetDay = sourceDays + addDays;
 
     // 4. 改暦境界の通算日を定義（ユリウス暦最終日とグレゴリオ暦開始日）
-    var julianEndDay = this.calendarToDay({ ya: 1582, ma: 10, da: 4, ho: 0, mo: 0, so: 0, ms: 0 });
-    var gregorianStartDay = this.calendarToDay({ ya: 1582, ma: 10, da: 15, ho: 0, mo: 0, so: 0, ms: 0 });
+    var reform = this.ReformTable[this.region];
+    var jed = this.parseDate(reform.julianEnd);
+    var gsd = this.parseDate(reform.gregorianStart);
+    var med = this.mdays[jed.ma];
+    if(med < gsd.da + 1){
+      gsd.ma++;
+      gsd.da = 0;
+    }
+    else if(jed.ma + 1 == gsd.ma){
+      ;
+    }
+    var rd = Math.floor(reform.reformDays);
+    var julianEndDay = this.calendarToDay({ ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0 });
+    var gregorianStartDay = this.calendarToDay({ ya: gsd.ya, ma: gsd.ma, da: gsd.da + 1, ho: 0, mo: 0, so: 0, ms: 0 });
 
     // 5. 改暦をまたいだかの判定（必要に応じて ccflg などの拡張用）
     var ccflg = 0;
@@ -391,9 +448,6 @@ class N6LDate {
     var lh = new N6LDate(this).normalize();
     var rh = new N6LDate(target).normalize();
     var ret = Math.floor(lh.getMS() - rh.getMS());
-    //var reformBoundaryDayMS = 577738 * this.DayMS; // 1582年10月4日/15, ざっくりとした境界またはdayのしきい値
-    //var dlh = lh.getMS() - reformBoundaryDayMS;
-    //var drh = rh.getMS() - reformBoundaryDayMS;
     return ret;
   }
 

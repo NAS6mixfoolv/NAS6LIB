@@ -104,12 +104,14 @@ class N6LDate {
         } else {
           this.ya = ya;
           this.ma = ma;
-          if (da !== undefined && da !== null) this.da = da;
-          if (ho !== undefined && ho !== null) this.ho = ho;
-          if (mo !== undefined && mo !== null) this.mo = mo;
-          if (so !== undefined && so !== null) this.so = so;
-          if (ms !== undefined && ms !== null) this.ms = ms;
+          var dms = 0;
+          if (da !== undefined && da !== null) { this.da = Math.floor(da); dms += ((da - Math.floor(da)) * this.DayMS); }
+          if (ho !== undefined && ho !== null) { this.ho = Math.floor(ho); dms += (ho * this.HourMS); }
+          if (mo !== undefined && mo !== null) { this.mo = Math.floor(mo); dms += (mo * this.MinMS); }
+          if (so !== undefined && so !== null) { this.so = Math.floor(so); dms += (so * this.SecMS); }
+          if (ms !== undefined && ms !== null) { this.ms = ms % this.SecMS; dms += (ms % this.SecMS); }
           if (region !== undefined && region !== null) this.region = region;
+          this.ms += dms;
         }
       }
     }
@@ -318,7 +320,9 @@ class N6LDate {
   // 通算日からグレゴリオ暦の日付オブジェクトを生成する
   gregorianDayToDate(targetDay, flg = true) {
     var val = new N6LDate(this);
-    var day = targetDay; // 処理対象の通算日
+    var day = Math.floor(targetDay);             // 処理対象の通算日
+    var dms = targetDay - Math.floor(targetDay); // 処理対象の通算日小数部
+    var msInDay = dms * this.DayMS;              // 1日の中のミリ秒
 
     var y400 = flg ? 146097 : 146100;
     val.ya = Math.floor(((day + 305) * 400) / y400);
@@ -355,6 +359,28 @@ class N6LDate {
 
     val.wk = Math.floor((day + wsub) % 7);
 
+
+    // ms は通算ミリ秒（正規化前に addDays/addHours が更新している）
+    var msTick = day * this.DayMS + msInDay;
+    var ms = msTick;
+
+    // 1日の中のミリ秒
+    var t = ms % this.DayMS;
+    if (t < 0) t += this.DayMS; // 負の値の補正
+
+    val.ho = Math.floor(t / this.HourMS);
+    t %= this.HourMS;
+
+    val.mo = Math.floor(t / this.MinMS);
+    t %= this.MinMS;
+
+    val.so = Math.floor(t / this.SecMS);
+    t %= this.SecMS;
+
+    // ms を通算ミリ秒に復元//this.ms//通算チックタイム
+    val.ms = msTick;
+
+/*
     // 時刻・ミリ秒の計算
     var tt = Math.floor((day * this.DayMS) % this.DayMS); // ※日数の小数部分や時刻の復元
     val.ms = (day - 2) * this.DayMS;
@@ -367,7 +393,7 @@ class N6LDate {
     val.mo = Math.floor(t / this.MinMS);
     t %= this.MinMS;
     val.so = Math.floor(t / this.SecMS);
-
+*/
     return val;
   }
 
@@ -389,8 +415,8 @@ class N6LDate {
       addDays = rh;
     }
 
-    // 3. 目的地のトータル通算日
-    var targetDay = sourceDays + addDays;
+    // 3. 目的地のトータル通算日//this.ms//通算チックタイム
+    var targetDay = sourceDays + addDays + ( this.ms % this.DayMS ) / this.DayMS;
 
     // 4. 改暦境界の通算日を定義（ユリウス暦最終日とグレゴリオ暦開始日）
     var reform = this.ReformTable[this.region];
@@ -594,17 +620,13 @@ class N6LDate {
 
   // 各種加算
   addYears(rh) {
-    var val = new N6LDate(this).normalize();
-    val.ya = Math.floor(val.ya + rh);
-    return val.normalize();
+    var rhdays = rh * this.YearMS / this.DayMS;
+    return this.adjustCalendar(rhdays);
   }
 
   addMonths(rh) {
-    var val = new N6LDate(this).normalize();
-    var total = val.ma - 1 + Math.floor(rh);
-    val.ya += Math.floor(total / 12);
-    val.ma = Math.floor((total % 12) + 12) % 12 + 1;
-    return val.normalize();
+    var rhdays = rh * this.MonMS / this.DayMS;
+    return this.adjustCalendar(rhdays);
   }
 
   addDays(rh) {
@@ -613,7 +635,7 @@ class N6LDate {
   }
 
   addHours(rh) {
-    var rhdays = rh  * this.HourMS / this.DayMS;
+    var rhdays = rh * this.HourMS / this.DayMS;
     return this.adjustCalendar(rhdays);
   }
 

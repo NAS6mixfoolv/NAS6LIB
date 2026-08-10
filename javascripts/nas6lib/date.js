@@ -96,8 +96,8 @@ class N6LDate {
       PT: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ポルトガル",       countryEN: "Portugal"},
       PL: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ポーランド",       countryEN: "Poland"},
 
-      FR: { julianEnd: "1582-12-09", gregorianStart: "1582-12-20", reformDays: "11", countryJP: "フランス",         countryEN: "France"},
-      NL: { julianEnd: "1582-12-14", gregorianStart: "1582-12-25", reformDays: "11", countryJP: "オランダ",         countryEN: "Netherlands"},
+      FR: { julianEnd: "1582-12-09", gregorianStart: "1582-12-20", reformDays: "10", countryJP: "フランス",         countryEN: "France"},
+      NL: { julianEnd: "1582-12-14", gregorianStart: "1582-12-25", reformDays: "10", countryJP: "オランダ",         countryEN: "Netherlands"},
 
       DE: { julianEnd: "1700-02-18", gregorianStart: "1700-03-01", reformDays: "11", countryJP: "ドイツ",           countryEN: "Germany"},
       DK: { julianEnd: "1700-02-18", gregorianStart: "1700-03-01", reformDays: "11", countryJP: "デンマーク",       countryEN: "Denmark"},
@@ -105,17 +105,17 @@ class N6LDate {
 
       SE: { julianEnd: "1753-02-17", gregorianStart: "1753-03-01", reformDays: "11", countryJP: "スウェーデン",     countryEN: "Sweden"},
 
-      CH: { julianEnd: "1583-01-11", gregorianStart: "1583-01-22", reformDays: "11", countryJP: "スイス",           countryEN: "Switzerland"},
-      HU: { julianEnd: "1587-10-21", gregorianStart: "1587-11-01", reformDays: "11", countryJP: "ハンガリー",       countryEN: "Hungary"},
+      CH: { julianEnd: "1583-01-11", gregorianStart: "1583-01-22", reformDays: "10", countryJP: "スイス",           countryEN: "Switzerland"},
+      HU: { julianEnd: "1587-10-21", gregorianStart: "1587-11-01", reformDays: "10", countryJP: "ハンガリー",       countryEN: "Hungary"},
 
       TR: { julianEnd: "1917-02-15", gregorianStart: "1917-02-28", reformDays: "13", countryJP: "トルコ",           countryEN: "Turkey"},
       BG: { julianEnd: "1916-03-31", gregorianStart: "1916-04-14", reformDays: "13", countryJP: "ブルガリア",       countryEN: "Bulgaria"},
       RO: { julianEnd: "1919-03-31", gregorianStart: "1919-04-14", reformDays: "13", countryJP: "ルーマニア",       countryEN: "Romania"},
       RS: { julianEnd: "1919-01-14", gregorianStart: "1919-01-27", reformDays: "13", countryJP: "セルビア",         countryEN: "Serbia"},
 
-      AT: { julianEnd: "1583-01-06", gregorianStart: "1583-01-17", reformDays: "11", countryJP: "オーストリア",     countryEN: "Austria"},
-      CZ: { julianEnd: "1584-10-04", gregorianStart: "1584-10-15", reformDays: "11", countryJP: "チェコ",           countryEN: "Czech Republic"},
-      SK: { julianEnd: "1587-10-21", gregorianStart: "1587-11-01", reformDays: "11", countryJP: "スロバキア",       countryEN: "Slovakia"},
+      AT: { julianEnd: "1583-01-06", gregorianStart: "1583-01-17", reformDays: "10", countryJP: "オーストリア",     countryEN: "Austria"},
+      CZ: { julianEnd: "1584-10-04", gregorianStart: "1584-10-15", reformDays: "10", countryJP: "チェコ",           countryEN: "Czech Republic"},
+      SK: { julianEnd: "1587-10-21", gregorianStart: "1587-11-01", reformDays: "10", countryJP: "スロバキア",       countryEN: "Slovakia"},
 
       LT: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "リトアニア",       countryEN: "Lithuania"},
       LV: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ラトビア",         countryEN: "Latvia"},

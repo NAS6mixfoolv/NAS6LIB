@@ -159,7 +159,7 @@ class N6LDate {
       this.ya = now.getFullYear();
       this.ma = now.getMonth() + 1;
       this.da = now.getDate();
-      this.ho = now.getHours();
+      this.ho = now.getUTCHours()
       this.mo = now.getMinutes();
       this.so = now.getSeconds();
       this.ms = now.getMilliseconds();
@@ -184,20 +184,20 @@ class N6LDate {
         this.ya = ya.getFullYear();
         this.ma = ya.getMonth() + 1;
         this.da = ya.getDate();
-        this.ho = ya.getHours();
+        this.ho = ya.getUTCHours();
         this.mo = ya.getMinutes();
         this.so = ya.getSeconds();
-        this.ms = ya.getMilliseconds();
+        this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + ya.getMilliseconds();
       }
       else if (typeof ya.getFullYear === "function") {
         // その他の getter 持ちオブジェクト
         this.ya = ya.getFullYear();
         this.ma = ya.getMonth() + 1;
         this.da = ya.getDate();
-        this.ho = ya.getHours();
+        this.ho = ya.getUTCHours();
         this.mo = ya.getMinutes();
         this.so = ya.getSeconds();
-        this.ms = ya.getMilliseconds();
+        this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + ya.getMilliseconds();
       } 
       else if (typeof ya === "string") {
         // 文字列からの生成
@@ -206,10 +206,10 @@ class N6LDate {
           this.ya = d.getFullYear();
           this.ma = d.getMonth() + 1;
           this.da = d.getDate();
-          this.ho = d.getHours();
+          this.ho = d.getUTCHours();
           this.mo = d.getMinutes();
           this.so = d.getSeconds();
-          this.ms = d.getMilliseconds();
+          this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + d.getMilliseconds();
         }
       } 
       else if (typeof ya === "number") {
@@ -219,10 +219,10 @@ class N6LDate {
           this.ya = d.getFullYear();
           this.ma = d.getMonth() + 1;
           this.da = d.getDate();
-          this.ho = d.getHours();
+          this.ho = d.getUTCHours();
           this.mo = d.getMinutes();
           this.so = d.getSeconds();
-          this.ms = d.getMilliseconds();
+          this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + d.getMilliseconds();
         } else {
           var dms = 0;
           if (ms !== undefined && ms !== null) { 
@@ -292,17 +292,6 @@ class N6LDate {
   clone() {
     return new N6LDate(this).normalize();
   }
-
-  static get N6LDATE_FMT_DEFAULT()  { return 0; }  // "2026/07/29(水) 04:55:04.123"
-  static get N6LDATE_FMT_FULL()     { return 1; }  // "2026/07/29 04:55:04.123 (水)"
-  static get N6LDATE_FMT_NW()       { return 2; }  // "2026/07/29 04:55:04.123"
-  static get N6LDATE_FMT_DATE()     { return 3; }  // "2026/07/29(水)"
-  static get N6LDATE_FMT_DATE_NW()  { return 4; }  // "2026/07/29"
-  static get N6LDATE_FMT_ISO()      { return 5; }  // "2026-07-29(水) T 04:55:04.123 Z"
-  static get N6LDATE_FMT_ISO_W()    { return 6; }  // "2026-07-29 T 04:55:04.123 Z (水)"
-  static get N6LDATE_FMT_ISO_NW()   { return 7; }  // "2026-07-29 T 04:55:04.123 Z"
-  static get N6LDATE_FMT_ISO_D()    { return 8; }  // "2026-07-29(水)"
-  static get N6LDATE_FMT_ISO_D_NW() { return 9; }  // "2026-07-29"
 
   //ユリウス暦通算日数取得誤差含む
   //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
@@ -796,6 +785,19 @@ class N6LDate {
   isAfter(target) { return this.diffMS(target) > 0; }
   isEqual(target, eps = 1e-6) { return Math.abs(this.diffMS(target)) <= eps; }
 
+  // N6LDate 標準フォーマット定数
+  // toString(fmtsw) のプリセット指定子として使用する
+  static get N6LDATE_FMT_DEFAULT()  { return 0; }  // "2026/07/29(水) 04:55:04.123"
+  static get N6LDATE_FMT_FULL()     { return 1; }  // "2026/07/29 04:55:04.123 (水)"
+  static get N6LDATE_FMT_NW()       { return 2; }  // "2026/07/29 04:55:04.123"
+  static get N6LDATE_FMT_DATE()     { return 3; }  // "2026/07/29(水)"
+  static get N6LDATE_FMT_DATE_NW()  { return 4; }  // "2026/07/29"
+  static get N6LDATE_FMT_ISO()      { return 5; }  // "2026-07-29(水) T 04:55:04.123 Z"
+  static get N6LDATE_FMT_ISO_W()    { return 6; }  // "2026-07-29 T 04:55:04.123 Z (水)"
+  static get N6LDATE_FMT_ISO_NW()   { return 7; }  // "2026-07-29 T 04:55:04.123 Z"
+  static get N6LDATE_FMT_ISO_D()    { return 8; }  // "2026-07-29(水)"
+  static get N6LDATE_FMT_ISO_D_NW() { return 9; }  // "2026-07-29"
+
   // フォーマット出力 (例: "2026/07/29 04:55:04 水")
   toString(fmtsw = 0) {
     const y = String(this.ya).padStart(4, '0');
@@ -956,13 +958,23 @@ class N6LDate {
     return this.fromJD(rh + 2400000.5).normalize();
   }
 
-  // ユニックス時間
+  // ユニックス時間秒
   toUNIX(){
     return (this.toJD() - 2440587.5) * 86400;
   }
 
   fromUNIX(rh){
     var jd = rh / 86400 + 2440587.5;
+    return this.fromJD(jd).normalize();
+  }
+
+  // ユニックス時間ミリ秒
+  toUNIXms(){
+    return (this.toJD() - 2440587.5) * 86400000;
+  }
+
+  fromUNIXms(rh){
+    var jd = rh / 86400000 + 2440587.5;
     return this.fromJD(jd).normalize();
   }
 

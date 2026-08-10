@@ -4,7 +4,7 @@
 class N6LDate {
 
   //var dt = new N6LDate().normalize();のように.normalize()を必ずつけてください
-  constructor(ya, ma, da, ho, mo, so, ms, region = "JP") {
+  constructor(ya, ma, da, ho, mo, so, ms, region = "DEFAULT", regionW = "DEFAULT") {
     this.typename = "N6LDate";
     this.ya = 1;
     this.ma = 1;
@@ -15,15 +15,135 @@ class N6LDate {
     this.ms = 0; // tick: 通算ミリセカンドとして保持
     this.wk = 0;
     this.pastdays = 0;
-    this.weeks = ["土", "日", "月", "火", "水", "木", "金"];
-    this.mdays = [0,31,28,31,30,31,30,31,31,30,31,30,31,31,28];
-    this.ReformTable = {
-      JP: { julianEnd: "1582-10-04", gregorianStart: "1582-10-14", reformDays: "10" },//日本
-      GB: { julianEnd: "1752-09-02", gregorianStart: "1752-09-13", reformDays: "11" },//イギリス
-      RU: { julianEnd: "1918-01-31", gregorianStart: "1918-02-13", reformDays: "13" },//ロシア
-      GR: { julianEnd: "1923-02-15", gregorianStart: "1923-02-28", reformDays: "13" },//ギリシャ
+    this.region = "DEFAULT";
+    this.regionW = "DEFAULT";
+    this.weeks = {
+      JP: ["土","日","月","火","水","木","金"],        // 日本
+      EN: ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],   // 英語圏（US/GB 共通）
+
+      FR: ["Sam","Dim","Lun","Mar","Mer","Jeu","Ven"],   // フランス
+      DE: ["Sa","So","Mo","Di","Mi","Do","Fr"],          // ドイツ
+      ES: ["Sab","Dom","Lun","Mar","Mie","Jue","Vie"],   // スペイン
+      IT: ["Sab","Dom","Lun","Mar","Mer","Gio","Ven"],   // イタリア
+      PT: ["Sab","Dom","Seg","Ter","Qua","Qui","Sex"],   // ポルトガル
+
+      RU: ["Сб","Вс","Пн","Вт","Ср","Чт","Пт"],          // ロシア
+      GR: ["Σαβ","Κυρ","Δευ","Τρι","Τετ","Πεμ","Παρ"],   // ギリシャ
+
+      SE: ["Lor","Son","Man","Tis","Ons","Tors","Fre"],   // スウェーデン
+      NO: ["Lor","Son","Man","Tir","Ons","Tor","Fre"],    // ノルウェー
+      DK: ["Lor","Son","Man","Tir","Ons","Tor","Fre"],    // デンマーク
+      FI: ["La","Su","Ma","Ti","Ke","To","Pe"],           // フィンランド
+      NL: ["Za","Zo","Ma","Di","Wo","Do","Vr"],           // オランダ
+
+      PL: ["Sob","Nie","Pon","Wto","S^ro","Czw","Pia"],    // ポーランド
+      CZ: ["So","Ne","Po","Ut","St","C^t","Pa"],           // チェコ
+      SK: ["So","Ne","Po","Ut","St","S^t","Pi"],           // スロバキア
+      HU: ["Szo","Vas","Het","Ked","Sze","Csu","Pen"],    // ハンガリー
+
+      TR: ["Cmt","Paz","Pzt","Sal","Car","Per","Cum"],    // トルコ
+      BG: ["Съб","Нед","Пон","Вт","Ср","Чет","Пет"],      // ブルガリア
+      RO: ["Sam","Dum","Lun","Mar","Mie","Joi","Vin"],    // ルーマニア
+      RS: ["Суб","Нед","Пон","Уто","Сре","Чет","Пет"],    // セルビア
+
+      US: ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],    // アメリカ（EN と同じ）
+      CA: ["Sam","Dim","Lun","Mar","Mer","Jeu","Ven"],    // カナダ（FR/EN 混在 → FR を採用）
+      AU: ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],    // オーストラリア
+      NZ: ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],    // ニュージーランド
+
+      LT: ["S^es^","Sek","Pir","Ant","Tre","Ket","Pen"],    // リトアニア
+      LV: ["Ses","Sve","Pir","Otr","Tre","Cet","Pie"],    // ラトビア
+      EE: ["Lau","Puh","Esm","Tei","Kol","Nel","Ree"],    // エストニア
+
+      MX: ["Sab","Dom","Lun","Mar","Mie","Jue","Vie"],    // メキシコ（スペイン語）
+      PE: ["Sab","Dom","Lun","Mar","Mie","Jue","Vie"],    // ペルー
+      BR: ["Sab","Dom","Seg","Ter","Qua","Qui","Sex"],    // ブラジル（ポルトガル語）
+      PH: ["Sab","Dom","Lun","Mar","Miy","Huw","Biy"],     // フィリピン（タガログ語）
     };
-    if(region === "JP" || region === "GB" || region === "RU" || region === "GR") this.region = region;
+    // DEFAULT は内部的に EN にマップする
+    if (regionW === "DEFAULT") {
+        regionW = "EN";
+    }
+    // ReformTable に存在する地域だけ採用
+    if (this.weeks[regionW]) {
+        this.regionW = regionW;
+    } else {
+        this.regionW = "EN"; // フォールバック
+    }
+
+    this.months = {
+      JP: ["1","2","3","4","5","6","7","8","9","10","11","12"],
+      EN: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+      FR: ["Janv","Fevr","Mars","Avr","Mai","Juin","Juil","Aout","Sept","Oct","Nov","Dec"],
+      DE: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"],
+      ES: ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
+      PT: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
+      // 必要なら追加
+    };
+
+
+
+    this.mdays = [0,31,28,31,30,31,30,31,31,30,31,30,31,31,28];
+
+    this.ReformTable = {
+      JP: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "日本",             countryEN: "Japan"},
+      GB: { julianEnd: "1752-09-02", gregorianStart: "1752-09-14", reformDays: "11", countryJP: "イギリス",         countryEN: "UK"},
+      RU: { julianEnd: "1918-01-31", gregorianStart: "1918-02-14", reformDays: "13", countryJP: "ロシア",           countryEN: "Russia"},
+      GR: { julianEnd: "1923-02-15", gregorianStart: "1923-03-01", reformDays: "13", countryJP: "ギリシャ",         countryEN: "Greece"},
+
+      IT: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "イタリア",         countryEN: "Italy"},
+      ES: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "スペイン",         countryEN: "Spain"},
+      PT: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ポルトガル",       countryEN: "Portugal"},
+      PL: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ポーランド",       countryEN: "Poland"},
+
+      FR: { julianEnd: "1582-12-09", gregorianStart: "1582-12-20", reformDays: "11", countryJP: "フランス",         countryEN: "France"},
+      NL: { julianEnd: "1582-12-14", gregorianStart: "1582-12-25", reformDays: "11", countryJP: "オランダ",         countryEN: "Netherlands"},
+
+      DE: { julianEnd: "1700-02-18", gregorianStart: "1700-03-01", reformDays: "11", countryJP: "ドイツ",           countryEN: "Germany"},
+      DK: { julianEnd: "1700-02-18", gregorianStart: "1700-03-01", reformDays: "11", countryJP: "デンマーク",       countryEN: "Denmark"},
+      NO: { julianEnd: "1700-02-18", gregorianStart: "1700-03-01", reformDays: "11", countryJP: "ノルウェー",       countryEN: "Norway"},
+
+      SE: { julianEnd: "1753-02-17", gregorianStart: "1753-03-01", reformDays: "11", countryJP: "スウェーデン",     countryEN: "Sweden"},
+
+      CH: { julianEnd: "1583-01-11", gregorianStart: "1583-01-22", reformDays: "11", countryJP: "スイス",           countryEN: "Switzerland"},
+      HU: { julianEnd: "1587-10-21", gregorianStart: "1587-11-01", reformDays: "11", countryJP: "ハンガリー",       countryEN: "Hungary"},
+
+      TR: { julianEnd: "1917-02-15", gregorianStart: "1917-02-28", reformDays: "13", countryJP: "トルコ",           countryEN: "Turkey"},
+      BG: { julianEnd: "1916-03-31", gregorianStart: "1916-04-14", reformDays: "13", countryJP: "ブルガリア",       countryEN: "Bulgaria"},
+      RO: { julianEnd: "1919-03-31", gregorianStart: "1919-04-14", reformDays: "13", countryJP: "ルーマニア",       countryEN: "Romania"},
+      RS: { julianEnd: "1919-01-14", gregorianStart: "1919-01-27", reformDays: "13", countryJP: "セルビア",         countryEN: "Serbia"},
+
+      AT: { julianEnd: "1583-01-06", gregorianStart: "1583-01-17", reformDays: "11", countryJP: "オーストリア",     countryEN: "Austria"},
+      CZ: { julianEnd: "1584-10-04", gregorianStart: "1584-10-15", reformDays: "11", countryJP: "チェコ",           countryEN: "Czech Republic"},
+      SK: { julianEnd: "1587-10-21", gregorianStart: "1587-11-01", reformDays: "11", countryJP: "スロバキア",       countryEN: "Slovakia"},
+
+      LT: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "リトアニア",       countryEN: "Lithuania"},
+      LV: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ラトビア",         countryEN: "Latvia"},
+      EE: { julianEnd: "1700-02-18", gregorianStart: "1700-03-01", reformDays: "11", countryJP: "エストニア",       countryEN: "Estonia"},
+
+      FI: { julianEnd: "1753-02-17", gregorianStart: "1753-03-01", reformDays: "11", countryJP: "フィンランド",     countryEN: "Finland"},
+
+      US: { julianEnd: "1752-09-02", gregorianStart: "1752-09-14", reformDays: "11", countryJP: "アメリカ",         countryEN: "USA"},
+      CA: { julianEnd: "1752-09-02", gregorianStart: "1752-09-14", reformDays: "11", countryJP: "カナダ",           countryEN: "Canada"},
+      AU: { julianEnd: "1752-09-02", gregorianStart: "1752-09-14", reformDays: "11", countryJP: "オーストラリア",   countryEN: "Australia"},
+      NZ: { julianEnd: "1752-09-02", gregorianStart: "1752-09-14", reformDays: "11", countryJP: "ニュージーランド", countryEN: "New Zealand"},
+
+      MX: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "メキシコ",         countryEN: "Mexico"},
+      PE: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ペルー",           countryEN: "Peru"},
+      BR: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "ブラジル",         countryEN: "Brazil"},
+      PH: { julianEnd: "1582-10-04", gregorianStart: "1582-10-15", reformDays: "10", countryJP: "フィリピン",       countryEN: "Philippines"}
+    };
+    // DEFAULT は内部的に JP にマップする
+    if (region === "DEFAULT") {
+        region = "JP";
+    }
+    // ReformTable に存在する地域だけ採用
+    if (this.ReformTable[region]) {
+        this.region = region;
+    } else {
+        this.region = "JP"; // フォールバック
+    }
+
     this.SecMS = 1000;
     this.MinMS = 60 * this.SecMS;
     this.HourMS = 60 * this.MinMS;
@@ -57,6 +177,7 @@ class N6LDate {
         this.wk = ya.wk;
         this.pastdays = ya.pastdays;
         this.region = ya.region;
+        this.regionW = ya.regionW;
       }
       // 標準の Date オブジェクトの場合
       else if (ya instanceof Date) {
@@ -228,12 +349,25 @@ class N6LDate {
   //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
   calendarToDay(val, flg = false) {
     if(!this.afterGregorian(val)) {
+      var reform = this.ReformTable[this.region];
+      var jed = this.parseDate(reform.julianEnd);
+      var gsd = this.parseDate(reform.gregorianStart);
+      gsd = this.suboneday(gsd);
+      var rd = Math.floor(reform.reformDays);
+      var cc = { ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0, region: this.region };
+      var med = this.getMonthEnd(new N6LDate(cc.ya,cc.ma,cc.da,cc.ho,cc.mo,cc.so,cc.ms,cc.region),false);
+      if(jed.ma == gsd.ma) med = gsd.da;
+      if(((val.ya == jed.ya && val.ma == jed.ma && jed.da < val.da && val.da <= med))||
+         ((val.ya == gsd.ya && val.ma == gsd.ma && 0 < val.da && val.da <= gsd.da))) {
+        return this.julianDayRaw(cc, flg);
+      }
       return this.julianDayRaw(val, flg);
     }
     else {
       var reform = this.ReformTable[this.region];
       var jed = this.parseDate(reform.julianEnd);
       var gsd = this.parseDate(reform.gregorianStart);
+      gsd = this.suboneday(gsd);
       var rd = Math.floor(reform.reformDays);
       var cc = { ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0, region: this.region };
       var med = this.getMonthEnd(new N6LDate(cc.ya,cc.ma,cc.da,cc.ho,cc.mo,cc.so,cc.ms,cc.region),false);
@@ -244,6 +378,24 @@ class N6LDate {
       }
       return (this.gregorianDayRaw(val, flg) - this.gregorianDayRaw(cc, flg) + this.julianDayRaw(cc, flg) - rd);
     }
+  }
+
+  //前日に変換
+  suboneday(val){
+    val.da--;
+    if(val.da < 1){
+      val.ma--;
+      while(12 < val.ma){
+        val.ya++;
+        val.ma -= 12;
+      }
+      while(val.ma < 1){
+        val.ya--;
+        val.ma += 12;
+      }
+      val.da = this.mdays[val.ma] + val.da;
+    }
+    return val;
   }
 
   //日付解析
@@ -261,10 +413,16 @@ class N6LDate {
     return val.wk;
   }
 
-  //通算ミリセカンド取得
+  //通算ミリセカンド取得チックタイム(元期1/1/1:0:0:0.000)
   getMS(){
     var val = this.adjustCalendar();
     return val.ms;
+  }
+
+  //通算日数取得(元期1/1/1:0:0:0.000)
+  getPDays(){
+    var val = this.adjustCalendar();
+    return val.pastdays;
   }
 
   //時間取得
@@ -288,11 +446,63 @@ class N6LDate {
     return Math.floor(val.pastdays / 7);
   }
 
+  //ISO Week Date（ISO 8601）
+  getISOWeekDate(){
+    var base = this.clone();
+    var isoWeekDay = (base.wk + 2) % 7 + 1;
+    var thursday = base.clone().addDays(4 - isoWeekDay);
+    var isoYear = thursday.ya;
+    var jan4 = new N6LDate(isoYear, 1, 4).normalize();
+    var jan4_isoWeekDay = (jan4.wk + 2) % 7 + 1;
+    var firstThursday = jan4.clone().addDays(4 - jan4_isoWeekDay);
+    var isoWeek = Math.floor((thursday.getPDays() - firstThursday.getPDays()) / 7) + 1;
+    return {isoYear: isoYear, isoWeek: isoWeek, isoWeekDay: isoWeekDay};
+  }
+
+  //ISO 8601 Time Duration（期間表記）
+  getISOTimeDuration(target){
+    var ms = this.diffMS(target);
+    var sign = ms < 0 ? "-" : "";
+    ms = Math.abs(ms);
+    var year = Math.floor(ms / this.YearMS)
+    ms -= year * this.YearMS
+    var month = Math.floor(ms / this.MonMS)
+    ms -= month * this.MonMS
+    var day = Math.floor(ms / this.DayMS)
+    ms -= day * this.DayMS
+    var hour = Math.floor(ms / this.HourMS)
+    ms -= hour * this.HourMS
+    var minute = Math.floor(ms / this.MinMS)
+    ms -= minute * this.MinMS
+    var second = ms / this.SecMS   // 小数秒
+    var str = `${sign}P${year}Y${month}M${day}DT${hour}H${minute}M${second.toFixed(3)}S`;
+    return str;
+  }
+
+  //改暦情報
+  getReformInfo(region = "GB", lng = "DEFAULT") {
+    const reform = this.ReformTable[region] || this.ReformTable["GB"];
+    var cnt;
+    var jed = reform.julianEnd;
+    var gsd = reform.gregorianStart;
+    var rd = reform.reformDays;
+    var str;
+    if(lng === "DEFAULT"){
+      cnt = reform.countryEN;
+      str = `In ${cnt}, due to the calendar reform, the day following ${jed} was ${gsd}, and ${rd} days were skipped.`;
+    } else {
+      cnt = reform.countryJP;
+      str = `${cnt}は改暦により ${jed} の翌日が ${gsd} となり、${rd} 日が欠落しました。`;
+    }
+    return str;
+  }
+
   //ユリウス暦グレゴリオ暦改暦
   afterGregorian(val){
     var reform = this.ReformTable[this.region];
     var jed = this.parseDate(reform.julianEnd);
     var gsd = this.parseDate(reform.gregorianStart);
+    gsd = this.suboneday(gsd);
     var rd = Math.floor(reform.reformDays);
     var cc = { ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0, region: val.region };
     var med = this.getMonthEnd(new N6LDate(cc.ya,cc.ma,cc.da,cc.ho,cc.mo,cc.so,cc.ms,cc.region),false);
@@ -326,7 +536,7 @@ class N6LDate {
     //安全に
     while(wk.da < 1){
       wk.ma--;
-      wk.da = this.mdays[wk.ma] + wk.da - 1;
+      wk.da = this.mdays[wk.ma] + wk.da;
       if(wk.ma < 1) {
         wk.ya--;
         wk.ma += 12;
@@ -381,6 +591,7 @@ class N6LDate {
       this.wk = val.wk;
       this.pastdays = val.pastdays;
       this.region = val.region;
+      this.regionW = val.regionW;
     }
     return this;
   }
@@ -476,17 +687,9 @@ class N6LDate {
     var reform = this.ReformTable[this.region];
     var jed = this.parseDate(reform.julianEnd);
     var gsd = this.parseDate(reform.gregorianStart);
-    var med = this.mdays[jed.ma];
-    if(med < gsd.da + 1){
-      gsd.ma++;
-      gsd.da = 0;
-    }
-    else if(jed.ma + 1 == gsd.ma){
-      ;
-    }
     var rd = Math.floor(reform.reformDays);
     var julianEndDay = this.calendarToDay({ ya: jed.ya, ma: jed.ma, da: jed.da, ho: 0, mo: 0, so: 0, ms: 0 });
-    var gregorianStartDay = this.calendarToDay({ ya: gsd.ya, ma: gsd.ma, da: gsd.da + 1, ho: 0, mo: 0, so: 0, ms: 0 });
+    var gregorianStartDay = this.calendarToDay({ ya: gsd.ya, ma: gsd.ma, da: gsd.da, ho: 0, mo: 0, so: 0, ms: 0 });
 
     // 5. 改暦をまたいだかの判定（必要に応じて ccflg などの拡張用）
     var ccflg = 0;
@@ -514,14 +717,45 @@ class N6LDate {
   normalize(){
     // 単純に現在の自分の値をベースに adjustCalendar(0) を走らせることで、
     // 繰り上げ・繰り下げや日付の正規化を行う
-    var val = this.adjustCalendar();
-    if(12 < val.ma){
-      val.ma -= 12;
-      val.ya++;
+    var val = new N6LDate(this);
+    if(this.region === "SE"){//スウェーデン特殊歴
+      // 1712-02-30 はそのまま許可
+      if(val.ya === 1712 && val.ma === 2 && val.da === 30){
+        return val;
+      }
+      // 1700-02-29 は存在しない → 1700-03-01 に補正
+      if(val.ya === 1700 && val.ma === 2 && val.da === 29){
+        val.ma = 3;
+        val.da = 1;
+      }
+      // 1712-02-30 の翌日は 1712-03-01
+      if(val.ya === 1712 && val.ma === 2 && val.da === 31){
+        val.ma = 3;
+        val.da = 1;
+      }
+      // 1700～1712 の特殊暦期間はユリウス暦 +1 日として扱う
+      if(val.ya >= 1700 && val.ya <= 1712){
+        // Julian +1 day
+        // （あなたの calendarToDay / fromJD が自動で整合する）
+        val = this.adjustCalendar(1);
+      }
+    }
+    else {
+      val = this.adjustCalendar();
+      while(val.ma < 1){
+        val.ma += 12;
+        val.ya--;
+      }
+      while(12 < val.ma){
+        val.ma -= 12;
+        val.ya++;
+      }
     }
     this.SetVal(val);
     return this;
   }
+
+
 
   // 差分ミリセカンド取得 (this - target)
   diffMS(target) {
@@ -571,7 +805,7 @@ class N6LDate {
     const min = String(this.mo).padStart(2, '0');
     const s = String(this.so).padStart(2, '0');
     const mss = String(Math.floor(this.ms % this.SecMS)).padStart(3, '0');
-    const w = this.weeks[this.wk] || "";
+    const w = this.weeks[this.regionW][this.wk] || "";
     switch(fmtsw){
     case N6LDate.N6LDATE_FMT_ISO_D_NW:
              return `${y}-${m}-${d}`;
@@ -595,6 +829,62 @@ class N6LDate {
     default:
              return `${y}/${m}/${d}(${w}) ${h}:${min}:${s}.${mss}`;
     }
+  }
+
+  // カスタムフォーマット出力
+  // 例: date.format("YYYY-MM-DD hh:mm:ss.SSS (W)")
+  format(pattern) {
+    var wk = new N6LDate(this).normalize();
+
+    var year = wk.ya;
+    var month = wk.ma;
+    var day = wk.da;
+
+    var monthName = (wk.months && wk.months[wk.regionW])
+      ? wk.months[wk.regionW][month - 1]
+      : month;
+
+    var totalSec = Math.floor(wk.ms / 1000);
+    var ms = wk.ms % 1000;
+    var second = totalSec % 60;
+    var totalMin = Math.floor(totalSec / 60);
+    var minute = totalMin % 60;
+    var totalHour = Math.floor(totalMin / 60);
+    var hour = totalHour % 24;
+    var hour12 = hour % 12 === 0 ? 12 : hour % 12;
+    var ampm = hour < 12 ? "AM" : "PM";
+
+    var weekIndex = typeof wk.getWeek === "function" ? wk.getWeek() : 0;
+    var weekStr = (wk.weeks && wk.weeks[wk.regionW][weekIndex]) ? wk.weeks[wk.regionW][weekIndex] : "";
+
+    var pad = (n, len = 2) => String(n).padStart(len, '0');
+
+    const map = {
+      "YYYY": year,
+      "YY": String(year).slice(-2),
+      "MMMM": monthName,
+      "MMM": monthName.slice(0,3),
+      "MM": pad(month),
+      "M": month,
+      "DD": pad(day),
+      "D": day,
+      "hh": pad(hour),
+      "h": hour,
+      "HH": pad(hour),
+      "mm": pad(minute),
+      "m": minute,
+      "ss": pad(second),
+      "s": second,
+      "SSS": pad(ms,3),
+      "A": ampm,
+      "W": weekStr
+    };
+
+    // 長いトークンを優先して正規表現で一括置換
+    return pattern.replace(
+      /YYYY|YY|MMMM|MMM|MM|M|DD|D|hh|h|HH|mm|m|ss|s|SSS|A|W/g,
+      token => map[token]
+    );
   }
 
   // Dateオブジェクト出力
@@ -629,7 +919,14 @@ class N6LDate {
     var F = (rh + 0.5) - Z;
 
     var A = Z;
-    if(Z >= 2299161){
+
+    var reform = this.ReformTable[this.region];
+    var gsd = this.parseDate(reform.gregorianStart);
+    gsd = this.suboneday(gsd);
+    var cc = new N6LDate(gsd.ya, gsd.ma, gsd.da, 0, 0, 0, 0, this.region).normalize();
+    var daysgsd = this.calendarToDay(cc);
+    var jdepoch = 1721424; //1/1/1のJD
+    if(Z >= jdepoch + daysgsd){
       var alpha = Math.floor((Z - 1867216.25) / 36524.25);
       A = Z + 1 + alpha - Math.floor(alpha / 4);
     }
@@ -639,14 +936,14 @@ class N6LDate {
     var D = Math.floor(this.JDYear * C);
     var E = Math.floor((B - D) / this.JDMon);
 
-    var day = B - D - Math.floor(30.6001 * E) + F;
+    var day = B - D - Math.floor(this.JDMon * E) + F;
     var month = (E < 14) ? E - 1 : E - 13;
     var year = (month > 2) ? C - 4716 : C - 4715;
 
     var ms = Math.floor((day % 1) * this.DayMS);
     day = Math.floor(day);
 
-    return new N6LDate(year, month, day).normalize().addMSs(ms).normalize();
+    return new N6LDate(year, month, day, 0, 0, 0, 0, this.region).normalize().addMSs(ms).normalize();
   }
 
   // 修正ユリウス日

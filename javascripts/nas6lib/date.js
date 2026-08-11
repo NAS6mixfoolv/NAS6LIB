@@ -4,7 +4,7 @@
 class N6LDate {
 
   //var dt = new N6LDate().normalize();のように.normalize()を必ずつけてください
-  constructor(ya, ma, da, ho, mo, so, ms, region = "DEFAULT", regionW = "DEFAULT") {
+  constructor(ya, ma, da, ho, mo, so, ms, region = "DEFAULT", regionW = "DEFAULT", fpd = 0) {
     this.typename = "N6LDate";
     this.ya = 1;
     this.ma = 1;
@@ -12,9 +12,9 @@ class N6LDate {
     this.ho = 0;
     this.mo = 0;
     this.so = 0;
-    this.ms = 0; // tick: 通算ミリセカンドとして保持
+    this.ms = 0;
     this.wk = 0;
-    this.pastdays = 0;
+    this.pastdays = fpd ? fpd : 0;
     this.region = "DEFAULT";
     this.regionW = "DEFAULT";
     this.weeks = {
@@ -163,6 +163,7 @@ class N6LDate {
       this.mo = now.getMinutes();
       this.so = now.getSeconds();
       this.ms = now.getMilliseconds();
+      this.pastdays += this.tempPDays(this);
     } 
     else if (ya !== undefined && ya !== null) {
       // まず N6LDate インスタンス（または同等オブジェクト）の場合の処理
@@ -175,7 +176,7 @@ class N6LDate {
         this.so = ya.so;
         this.ms = ya.ms;
         this.wk = ya.wk;
-        this.pastdays = ya.pastdays;
+        this.pastdays += ya.pastdays;
         this.region = ya.region;
         this.regionW = ya.regionW;
       }
@@ -187,7 +188,8 @@ class N6LDate {
         this.ho = ya.getUTCHours();
         this.mo = ya.getMinutes();
         this.so = ya.getSeconds();
-        this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + ya.getMilliseconds();
+        this.ms = ya.getMilliseconds();
+        this.pastdays += this.tempPDays(this);
       }
       else if (typeof ya.getFullYear === "function") {
         // その他の getter 持ちオブジェクト
@@ -197,7 +199,8 @@ class N6LDate {
         this.ho = ya.getUTCHours();
         this.mo = ya.getMinutes();
         this.so = ya.getSeconds();
-        this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + ya.getMilliseconds();
+        this.ms = ya.getMilliseconds();
+        this.pastdays += this.tempPDays(this);
       } 
       else if (typeof ya === "string") {
         // 文字列からの生成
@@ -209,7 +212,8 @@ class N6LDate {
           this.ho = d.getUTCHours();
           this.mo = d.getMinutes();
           this.so = d.getSeconds();
-          this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + d.getMilliseconds();
+          this.ms = d.getMilliseconds();
+          this.pastdays += this.tempPDays(this);
         }
       } 
       else if (typeof ya === "number") {
@@ -222,67 +226,19 @@ class N6LDate {
           this.ho = d.getUTCHours();
           this.mo = d.getMinutes();
           this.so = d.getSeconds();
-          this.ms = this.ho * this.HourMS + this.mo * this.MinMS + this.so * this.SecMS + d.getMilliseconds();
+          this.ms = d.getMilliseconds();
+          this.pastdays += this.tempPDays(this);
         } else {
-          var dms = 0;
-          if (ms !== undefined && ms !== null) { 
-            var totalMS = ms; 
-            var extraSecs = Math.floor(totalMS / 1000);    // 1000ms分を計算 (1秒)
-            if (so === undefined || so === null) so = 0;
-            so += extraSecs;                               // 秒に加算
-            ms = totalMS % 1000;                           // 残りのms (～.999秒)
-            this.ms = ms;                                  // ms
-          }
-          if (so !== undefined && so !== null) {
-            var totalSec = so; 
-            var extraMins = Math.floor(totalSec / 60);     // 60s分を計算 (1分)
-            if (mo === undefined || mo === null) mo = 0;
-            mo += extraMins;                               // 分に加算
-            so = totalSec % 60;                            // 残りのs (～59秒)
-            this.so = Math.floor(so);                      // so
-            dms += so * this.SecMS;
-          }
-          if (mo !== undefined && mo !== null) {
-            var totalMins = mo; 
-            var extraHours = Math.floor(totalMins / 60);    // 60分を計算 (1時間)
-            if (ho === undefined || ho === null) ho = 0;
-            ho += extraHours;                               // 時に加算
-            mo = totalMins % 60;                            // 残りのmin (～59分)
-            this.mo = Math.floor(mo);                       // mo
-            dms += mo * this.MinMS;
-          }
-          if (ho !== undefined && ho !== null) {
-            var totalHours = ho; 
-            var extraDays = Math.floor(totalHours / 24);    // 24時間を計算 (1日)
-            if (da === undefined || da === null) da = 0;
-            da += extraDays;                                // 日に加算
-            ho = totalHours % 24;                           // 残りのh (～23時間)
-            this.ho = Math.floor(ho);                       // ho
-            dms += ho * this.HourMS;
-          }
-          if (da !== undefined && da !== null) {
-            var totalDays = da; 
-            var extraMons = Math.floor(totalDays / 31);     // 31日を計算 (1月)
-            if (ma === undefined || ma === null) ma = 0;
-            ma += extraMons;                                // 月に加算
-            da = totalDays % 31;                            // 残りのday (～31日)
-            this.da = Math.floor(da);                       // da
-            dms += (da - Math.floor(da)) * this.DayMS;
-          }
-          // 例：ma が 15.5 の場合
-          var totalMonths = ma; 
-          var extraYears = Math.floor(totalMonths / 12); // 12ヶ月分を計算 (1年)
-          ya += extraYears;                              // 年に加算
-          ma = totalMonths % 12;                         // 残りの月 (3.5月)
-          // その上で、ma の整数部分と小数部分を分ける
-          this.ya = Math.floor(ya);
-          dms += (ya - Math.floor(ya)) * this.YearMS;
-          this.ma = Math.floor(ma);                     // 3月
-          dms += (ma - Math.floor(ma)) * this.MonMS;    // 残りの 0.5月分をミリ秒(dms)に変換
-          // 注意：日（da）月（ma）や年（ya）の整数部分はカレンダーのグリッド座標（西暦・何月何日）なので、
-          // 年や月の「平均ミリ秒」をそのまま dms に足すとカレンダーの絶対位置が狂ってしまうため、
-          // 年月はあくまで ya と ma に持たせ、時刻・日数の端数分を dms（通算ミリ秒）として加算します。
-          this.ms += dms;
+          var val = {ya: ya, ma: ma, da: da, ho: ho, mo: mo, so: so, ms: ms, dms: 0, pastdays: 0};
+          val = this.adjustTime(val);
+          this.ya = val.ya;
+          this.ma = val.ma;
+          this.da = val.da;
+          this.ho = val.ho;
+          this.mo = val.mo;
+          this.so = val.so;
+          this.ms = val.ms;
+          this.pastdays += val.pastdays;
         }
       }
     }
@@ -291,6 +247,86 @@ class N6LDate {
   //クローン
   clone() {
     return new N6LDate(this).normalize();
+  }
+
+
+  tempPDays(val){
+    return (val.ho * this.HourMS + val.mo * this.MinMS + val.so * this.SecMS + val.ms) / this.DayMS;
+  }
+
+  adjustTime(val){
+    // 前回の dms があれば、まずミリ秒側に足し戻す
+    var currentMS = (val.ms !== undefined) ? val.ms : 0;
+    if (val.dms !== undefined) {
+      currentMS += val.dms; // 持ち越した端数ミリ秒を加算
+    }
+
+    var ret = {ya: 0, ma: 0, da: 0, ho: 0, mo: 0, so: 0, ms: 0, dms: 0, pastdays: 0};
+
+    // --- ここから下位から上位への繰り上げ・繰り下げ計算 ---
+    // (例: currentMS から秒、分、時、日、月、年へ分解し、
+    //  どうしても割り切れない真の端数だけを ret.dms に残す)
+      var totalMS = currentMS; 
+      var extraSec = Math.floor(totalMS / 1000);    // 1000ms分を計算 (1秒)
+      if (val.so === undefined || val.so === null) val.so = 0;
+      val.so += extraSec;                               // 秒に加算
+      ret.ms = Math.floor(totalMS % 1000);               // 残りのms (～.999秒)
+    if (val.so !== undefined && val.so !== null) {
+      var totalSec = val.so; 
+      var extraMin = Math.floor(totalSec / 60);     // 60秒を超えた分（分への繰り上げ）
+      if (val.mo === undefined || val.mo === null) val.mo = 0;
+      val.mo += extraMin;                          
+      var remainingSec = totalSec % 60;              // 残りの秒（0?59.999...）
+      ret.so = Math.floor(remainingSec);             // 整数部分の秒
+       // ★ 秒の「小数点以下の端数」だけを dms に送る（あるいはミリ秒に換算）
+      var secFraction = remainingSec - ret.so;
+      ret.dms += secFraction * this.SecMS;          
+    }
+    if (val.mo !== undefined && val.mo !== null) {
+      var totalMin = val.mo; 
+      var extraHour = Math.floor(totalMin / 60);     
+      if (val.ho === undefined || val.ho === null) val.ho = 0;
+      val.ho += extraHour;                          
+      var remainingMin = totalMin % 60;              
+      ret.mo = Math.floor(remainingMin);             
+      var minFraction = remainingMin - ret.mo;
+      ret.dms += minFraction * this.MinMS;          
+    }
+    if (val.ho !== undefined && val.ho !== null) {
+      var totalHour = val.ho; 
+      var extraDay = Math.floor(totalHour / 24);     
+      if (val.da === undefined || val.da === null) val.da = 1;
+      val.da += extraDay;                          
+      var remainingHour = totalHour % 24;              
+      ret.ho = Math.floor(remainingHour);             
+      var hourFraction = remainingHour - ret.ho;
+      ret.dms += hourFraction * this.HourMS;          
+    }
+    if (val.da !== undefined && val.da !== null) {
+      var totalDay = val.da; 
+      var extraMon = Math.floor(totalDay / 31);     
+      if (val.ma === undefined || val.ma === null) val.ma = 1;
+      val.ma += extraMon;                          
+      var remainingDay = totalDay % 31;              
+      ret.da = Math.floor(remainingDay);             
+      var dayFraction = remainingDay - ret.da;
+      ret.dms += dayFraction * this.DayMS;          
+    }
+      // 例：ma が 15.5 の場合
+      var totalMon = val.ma; 
+      var extraYear = Math.floor(totalMon / 12); // 12ヶ月分を計算 (1年)
+      val.ya += extraYear;                              // 年に加算
+      var remainingMon = totalMon % 12;              
+      ret.ma = Math.floor(remainingMon);             
+      var monFraction = remainingMon - ret.ma;
+      ret.dms += monFraction * 31 * this.DayMS;          
+      ret.ya = Math.floor(val.ya);
+      ret.dms += (val.ya - Math.floor(val.ya)) * 12 * 31 * this.DayMS;
+    // 浮動小数点の誤差対策として、収束判定にはイプシロンを使う
+    // if (Math.abs(ret.dms) > 1e-6) { ... }
+    if(Math.abs(ret.dms) > 1e-6) ret = this.adjustTime(ret);
+    ret.pastdays = this.tempPDays(ret);
+    return ret;
   }
 
   //ユリウス暦通算日数取得誤差含む
@@ -309,7 +345,7 @@ class N6LDate {
         Math.floor(val.da) - 429
     ) + 2;
     var ret2 = 0;
-    if(flg) ret2 = (val.ho * this.HourMS + val.mo * this.MinMS + val.so * this.SecMS + (val.ms % this.SecMS)) / this.DayMS;
+    if(flg) ret2 = (val.ho * this.HourMS + val.mo * this.MinMS + val.so * this.SecMS + val.ms) / this.DayMS;
     return ret + ret2;
   }
 
@@ -330,7 +366,7 @@ class N6LDate {
         Math.floor(val.da) - 429
     ) + 2;
     var ret2 = 0;
-    if(flg) ret2 = (val.ho * this.HourMS + val.mo * this.MinMS + val.so * this.SecMS + (val.ms % this.SecMS)) / this.DayMS;
+    if(flg) ret2 = (val.ho * this.HourMS + val.mo * this.MinMS + val.so * this.SecMS + val.ms) / this.DayMS;
     return ret + ret2;
   }
 
@@ -404,8 +440,7 @@ class N6LDate {
 
   //通算ミリセカンド取得チックタイム(元期1/1/1:0:0:0.000)
   getMS(){
-    var val = this.adjustCalendar();
-    return val.ms;
+    return this.getPDays() * this.DayMS;
   }
 
   //通算日数取得(元期1/1/1:0:0:0.000)
@@ -646,8 +681,7 @@ class N6LDate {
     val.so = Math.floor(t / this.SecMS);
     t %= this.SecMS;
 
-    // ms を通算ミリ秒に復元//this.ms//通算チックタイム
-    val.ms = msTick;
+    val.ms = Math.floor(t);
     return val;
   }
 
@@ -669,8 +703,8 @@ class N6LDate {
       addDays = rh;
     }
 
-    // 3. 目的地のトータル通算日//this.ms//通算チックタイム
-    var targetDay = sourceDays + addDays + ( this.ms % this.DayMS ) / this.DayMS;
+    // 3. 目的地のトータル通算日//this.pastdays//通算チックタイム
+    var targetDay = sourceDays + addDays + (this.pastdays - Math.floor(this.pastdays));
 
     // 4. 改暦境界の通算日を定義（ユリウス暦最終日とグレゴリオ暦開始日）
     var reform = this.ReformTable[this.region];
@@ -806,7 +840,7 @@ class N6LDate {
     const h = String(this.ho).padStart(2, '0');
     const min = String(this.mo).padStart(2, '0');
     const s = String(this.so).padStart(2, '0');
-    const mss = String(Math.floor(this.ms % this.SecMS)).padStart(3, '0');
+    const mss = String(this.ms).padStart(3, '0');
     const w = this.weeks[this.regionW][this.wk] || "";
     switch(fmtsw){
     case N6LDate.N6LDATE_FMT_ISO_D_NW:
@@ -891,7 +925,7 @@ class N6LDate {
 
   // Dateオブジェクト出力
   toDate() {
-    return new Date(this.ya, this.ma - 1, this.da, this.ho, this.mo, this.so, Math.floor(this.ms % this.SecMS));
+    return new Date(this.ya, this.ma - 1, this.da, this.ho, this.mo, this.so, this.ms);
   }
 
   //現在日時でクリエイト
@@ -908,7 +942,7 @@ class N6LDate {
     }
     var A = Math.floor(wk.ya / 100);
     var B = 2 - A + Math.floor(A / 4);
-    var C = Math.floor(wk.ms % this.DayMS) / this.DayMS;
+    var C = ((wk.pastdays % 1) + 1) % 1;
 
     var JD = Math.floor(this.JDYear * (wk.ya + 4716))
       + Math.floor(this.JDMon * (wk.ma + 1))
@@ -942,10 +976,10 @@ class N6LDate {
     var month = (E < 14) ? E - 1 : E - 13;
     var year = (month > 2) ? C - 4716 : C - 4715;
 
-    var ms = Math.floor((day % 1) * this.DayMS);
+    var fpd = ((day * this.DayMS) % this.DayMS) / this.DayMS;
     day = Math.floor(day);
 
-    return new N6LDate(year, month, day, 0, 0, 0, 0, this.region).normalize().addMSs(ms).normalize();
+    return new N6LDate(year, month, day, 0, 0, 0, 0, this.region, this.regionW, fpd).normalize();
   }
 
   // 修正ユリウス日
@@ -978,40 +1012,211 @@ class N6LDate {
     return this.fromJD(jd).normalize();
   }
 
+  //シリアライズ
+  //const dt = new N6LDate(2030, 9, 15, 12, 34, 56, 789).normalize();
+  //dt.region = "JP";
+  //const json = JSON.stringify(dt);          // toJSONが自動呼び出し
+  // → {"year":2030,"month":9,"day":15,...}
+  //const restored = N6LDate.fromJSON(JSON.parse(json));
+  //console.log(restored.toString());         // 2030/09/15(Sun) 12:34:56.788
+  toJSON() {
+    // normalize() 済みであることを前提（または内部で軽くチェック）
+    return {
+      // 暦値（コンストラクタで使う用）
+      year: this.ya,
+      month: this.ma,
+      day: this.da,
+      hour: this.ho,
+      minute: this.mo,
+      second: this.so,
+      ms: this.ms,
+
+      // 設定
+      region: this.region,
+      regionW: this.regionW,
+
+      // 高精度復元用（優先度高い）
+      unixms: this.toUNIXms(),
+      jd: this.toJD(),
+
+      // 参考情報
+      pastday: this.pastdays,
+      week: this.getWeek(),
+    };
+  }
+
+
+  static fromJSON(json) {
+    var dt;
+
+    // 1. 暦値が揃っている場合はそれを優先（今回の方式）
+    if (json.year != null) {
+      dt = new N6LDate(
+        json.year,
+        json.month  || 1,
+        json.day    || 1,
+        json.hour   || 0,
+        json.minute || 0,
+        json.second || 0,
+        json.ms     || 0
+      );
+    }
+    // 2. unixms がある場合
+    else if (json.unixms != null) {
+      dt = new N6LDate(json.unixms);
+    }
+    // 3. jd がある場合
+    else if (json.jd != null) {
+      dt = new N6LDate().fromJD(json.jd);
+    }
+    else {
+      throw new Error("Invalid JSON for N6LDate");
+    }
+
+    if (json.region)  dt.region  = json.region;
+    if (json.regionW) dt.regionW = json.regionW;
+
+    // pastdays の事前セット（今回のやり方を維持）
+    if (typeof dt.tempPDays === "function") {
+      dt.pastdays = dt.tempPDays(dt);
+    }
+
+    return dt.normalize();
+  }
+
+  startOf(unit) {
+    var dt = this.clone();  // 破壊的にしない場合
+
+    switch (unit) {
+    case 'day':
+      dt.ho = 0;
+      dt.mo = 0;
+      dt.so = 0;
+      dt.ms = 0;          // または this のミリ秒部分を0に
+      break;
+
+    case 'month':
+      dt.da = 1;
+      dt.ho = 0;
+      dt.mo = 0;
+      dt.so = 0;
+      dt.ms = 0;
+      break;
+
+    case 'year':
+      dt.ma = 1;
+      dt.da = 1;
+      dt.ho = 0;
+      dt.mo = 0;
+      dt.so = 0;
+      dt.ms = 0;
+      break;
+
+    case 'week':
+      // 例: 月曜日始まりの場合
+      const weekDay = dt.getWeek();  // 既存の getWeek() を活用
+      // 必要日数を引く
+      dt = dt.addDays( -((weekDay + 5) % 7) );  // 調整
+      dt.ho = 0;
+      dt.mo = 0;
+      dt.so = 0;
+      dt.ms = 0;
+      break;
+    default:
+      break;
+    }
+    var fpd = dt.tempPDays(dt);
+    dt.pastdays = fpd;
+    return dt.normalize();  // ここが重要
+  }
+
+  endOf(unit) {
+    var dt = this.clone();  // 破壊的にしない場合
+
+    switch (unit) {
+    case 'day':
+      dt.ho = 23;
+      dt.mo = 59;
+      dt.so = 59;
+      dt.ms = 999;
+      break;
+
+    case 'month':
+      dt.da = dt.getMonthEnd(dt);
+      dt.ho = 23;
+      dt.mo = 59;
+      dt.so = 59;
+      dt.ms = 999;
+      break;
+
+    case 'year':
+      dt.ma = 12;
+      dt.da = 31;
+      dt.ho = 23
+      dt.mo = 59;
+      dt.so = 59;
+      dt.ms = 999;
+      break;
+
+    case 'week':
+      // 例: 月曜日始まりの場合
+      const weekDay = dt.getWeek();  // 既存の getWeek() を活用
+      // 必要日数を足す
+      dt = dt.addDays( ((weekDay + 1) % 7) );  // 調整
+      dt.ho = 23;
+      dt.mo = 59;
+      dt.so = 59;
+      dt.ms = 999;
+      break;
+    default:
+      break;
+    }
+    var fpd = dt.tempPDays(dt);
+    dt.pastdays = fpd;
+    return dt.normalize();  // ここが重要
+  }
+
   // 各種加算//引数を少数を含む経過日にしてadjustCalendarを叩くだけ
   addYears(rh) {
+    var wk = this.clone();
     var rhdays = rh * this.YearMS / this.DayMS;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
   addMonths(rh) {
+    var wk = this.clone();
     var rhdays = rh * this.MonMS / this.DayMS;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
   addDays(rh) {
+    var wk = this.clone();
     var rhdays = rh;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
   addHours(rh) {
+    var wk = this.clone();
     var rhdays = rh * this.HourMS / this.DayMS;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
   addMinutes(rh) {
+    var wk = this.clone();
     var rhdays = rh * this.MinMS / this.DayMS;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
   addSeconds(rh) {
+    var wk = this.clone();
     var rhdays = rh * this.SecMS / this.DayMS;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
   addMSs(rh) {
+    var wk = this.clone();
     var rhdays = rh / this.DayMS;
-    return this.adjustCalendar(rhdays);
+    return wk.adjustCalendar(rhdays);
   }
 
 }

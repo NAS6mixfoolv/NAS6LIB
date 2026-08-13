@@ -249,11 +249,12 @@ class N6LDate {
     return new N6LDate(this).normalize();
   }
 
-
+  //N6LDays.pastdaysに仮置きするために1日のうちの時間成分の小数部を計算
   tempPDays(val){
     return (val.ho * this.HourMS + val.mo * this.MinMS + val.so * this.SecMS + val.ms) / this.DayMS;
   }
 
+  //時間情報の繰り上げ下げ
   adjustTime(val){
     // 前回の dms があれば、まずミリ秒側に足し戻す
     var currentMS = (val.ms !== undefined) ? val.ms : 0;
@@ -330,7 +331,7 @@ class N6LDate {
   }
 
   //ユリウス暦通算日数取得誤差含む
-  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
+  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayから取得してください
   julianDayRaw(val, flg = false){
     // x は3月1日を起点とした年内日数
     // 1～2月は前年の13・14月として扱う（フェアフィールド方式）
@@ -350,7 +351,7 @@ class N6LDate {
   }
 
   //グレゴリオ暦通算日数取得誤差含む
-  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
+  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayから取得してください
   gregorianDayRaw(val, flg = false){
     // x は3月1日を起点とした年内日数
     // 1～2月は前年の13・14月として扱う（フェアフィールド方式）
@@ -371,7 +372,7 @@ class N6LDate {
   }
 
   //通算日数取得(ユリウス暦・グレゴリオ暦自動処理)誤差含む
-  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
+  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayから取得してください
   calendarToDay(val, flg = false) {
     if(!this.afterGregorian(val)) {
       var reform = this.ReformTable[this.region];
@@ -521,7 +522,7 @@ class N6LDate {
     return str;
   }
 
-  //ユリウス暦グレゴリオ暦改暦
+  //ユリウス暦グレゴリオ暦改暦判定
   afterGregorian(val){
     var reform = this.ReformTable[this.region];
     var jed = this.parseDate(reform.julianEnd);
@@ -602,7 +603,7 @@ class N6LDate {
     return ret;
   }
 
-  //this内容変更含む
+  //副作用注意：this内容変更含む
   SetVal(val){
     if(val && val.typename == "N6LDate"){
       this.ya = val.ya;
@@ -621,6 +622,7 @@ class N6LDate {
   }
 
   // 通算日からグレゴリオ暦の日付オブジェクトを生成する
+  //副作用注意：this内容変更含む
   gregorianDayToDate(targetDay, flg = true) {
     var val = new N6LDate(this);
     var day = Math.floor(targetDay);             // 処理対象の通算日
@@ -686,11 +688,13 @@ class N6LDate {
   }
 
   // ユリウス暦加算処理（通算日からユリウス暦の日付オブジェクトを生成）
+  //副作用注意：this内容変更含む
   julianDayToDate(targetDay, flg = false) {
     return this.gregorianDayToDate(targetDay, false);
   }
 
   // 日付調整処理（ユリウス暦・グレゴリオ暦自動処理）
+  //副作用注意：this内容変更含む
   adjustCalendar(rh = null) {
     // 1. 起点となる現在の日付（this）の通算日を取得
     var sourceDays = this.calendarToDay(this);
@@ -735,7 +739,7 @@ class N6LDate {
   }
 
   //[!!!通算ミリ秒!!!][日時週]正規化
-  //this内容変更含む
+  //副作用注意：this内容変更含む
   // 自身の日付・時間を正規化する（再帰を起こさない安全な実装）
   normalize(){
     // 単純に現在の自分の値をベースに adjustCalendar(0) を走らせることで、
@@ -927,8 +931,17 @@ class N6LDate {
   toDate() {
     return new Date(this.ya, this.ma - 1, this.da, this.ho, this.mo, this.so, this.ms);
   }
+  // Temporalオブジェクト出力
+  toTemporal() {
+    if (typeof Temporal === "undefined" || !Temporal.Instant) {
+      throw new Error("Temporal API (Temporal.Instant) が利用できない環境です");
+    }
 
-  //現在日時でクリエイト
+    const ms = this.toUNIXms();
+    return Temporal.Instant.fromEpochMilliseconds(ms);
+  }
+
+  //現在日時で構築
   Now(){
     return new N6LDate().normalize();
   }
@@ -1018,7 +1031,7 @@ class N6LDate {
   //const json = JSON.stringify(dt);          // toJSONが自動呼び出し
   // → {"year":2030,"month":9,"day":15,...}
   //const restored = N6LDate.fromJSON(JSON.parse(json));
-  //console.log(restored.toString());         // 2030/09/15(Sun) 12:34:56.788
+  //console.log(restored.toString());         // 2030/09/15(Sun) 12:34:56.789
   toJSON() {
     // normalize() 済みであることを前提（または内部で軽くチェック）
     return {
@@ -1085,7 +1098,7 @@ class N6LDate {
   }
 
   startOf(unit) {
-    var dt = this.clone();  // 破壊的にしない場合
+    var dt = this.clone();  // イミュータブル
 
     switch (unit) {
     case 'day':
@@ -1131,7 +1144,7 @@ class N6LDate {
   }
 
   endOf(unit) {
-    var dt = this.clone();  // 破壊的にしない場合
+    var dt = this.clone();  // イミュータブル
 
     switch (unit) {
     case 'day':
@@ -1178,43 +1191,43 @@ class N6LDate {
 
   // 各種加算//引数を少数を含む経過日にしてadjustCalendarを叩くだけ
   addYears(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh * this.YearMS / this.DayMS;
     return wk.adjustCalendar(rhdays);
   }
 
   addMonths(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh * this.MonMS / this.DayMS;
     return wk.adjustCalendar(rhdays);
   }
 
   addDays(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh;
     return wk.adjustCalendar(rhdays);
   }
 
   addHours(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh * this.HourMS / this.DayMS;
     return wk.adjustCalendar(rhdays);
   }
 
   addMinutes(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh * this.MinMS / this.DayMS;
     return wk.adjustCalendar(rhdays);
   }
 
   addSeconds(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh * this.SecMS / this.DayMS;
     return wk.adjustCalendar(rhdays);
   }
 
   addMSs(rh) {
-    var wk = this.clone();
+    var wk = this.clone();  // イミュータブル
     var rhdays = rh / this.DayMS;
     return wk.adjustCalendar(rhdays);
   }

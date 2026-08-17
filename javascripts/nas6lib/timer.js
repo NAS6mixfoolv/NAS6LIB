@@ -84,7 +84,9 @@ class N6LTimerMan {
     }
   }
   clone() {
-    return new N6LTimerMan(this);
+    var ret = new N6LTimerMan(this);
+    for(var i = 0; i < this.timer.length; i++) ret = this.timer[i].clone();
+    return ret;
   };
 
   add() {
@@ -98,7 +100,7 @@ class N6LTimerMan {
     this.interval = int;
     var me = this;
     var i;
-    for(i = 0; i < this.timer,length; i++) this.timer[i].interval = int;
+    for(i = 0; i < this.timer.length; i++) this.timer[i].interval = int;
   };
   start() {
     this.enable = true;

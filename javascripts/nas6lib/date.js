@@ -537,6 +537,17 @@ class N6LDate {
     return ed;
   }
 
+  //周期カウントアップ
+  collection(y,ry,term){
+    var nextterm = ry + (term - ry % term);
+    var ret = 0;
+    while(nextterm < y) {
+      ret++;
+      nextterm += term;
+    }
+    return ret;
+  }
+
   //通算閏年取得
   getLeap(val) {
     var flg = this.afterGregorian(val);
@@ -549,7 +560,7 @@ class N6LDate {
     var ret = Math.floor(tmp.ya / 4);
     var reform = this.ReformTable[this.region];
     var gsd = this.parseDate(reform.gregorianStart);
-    if(flg) ret += (-Math.floor((tmp.ya - gsd.ya - (4 - gsd.ya % 4)) / 100) + Math.floor((tmp.ya - gsd.ya - (4 - gsd.ya % 4)) / 400));
+    if(flg) ret += -this.collection(tmp.ya,gsd.ya,100) + this.collection(tmp.ya,gsd.ya,400);
     return ret;
   }
 

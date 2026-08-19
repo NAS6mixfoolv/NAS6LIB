@@ -93,31 +93,42 @@ xyz is the Euler angle to check for consistency
   
 ## Quick Start  
   
-### 1. Load the Library  
+### 1. Loading the Library  
   
-Include the necessary JavaScript files in your HTML. You'll typically need `vector.js` and `matrix.js` as core components.  
-Add other modules like `quaternion.js`, `planet.js`, etc., as needed for your specific use case.  
+NAS6LIB is primarily designed to be loaded via **standard `<script>` tags** (the static version).  
+Please include the necessary JavaScript files in your HTML.  
   
-```html  
+```html
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/vector.js"></script>
-<script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script>
+<script src="https://nas6lib/javascripts/nas6lib/matrix.js"></script>
+<script src="https://nas6lib/javascripts/nas6lib/quaternion.js"></script>
+<script src="https://nas6lib/javascripts/nas6lib/planet.js"></script>
 ```
   
-If you need the ES Module version, please use the `xxx.module.js` file.  
-Many of these were created by simply adding `export` statements programmatically,    
-so I apologize in advance if there are any issues.  
+Add files such as `vector.js`, `matrix.js`, `quaternion.js`, or `planet.js`  
+depending on your specific use case.  
   
-### 2. Minimum Sample (2D Vector Addition)  
-Here's a simple JavaScript example to get started:  
   
-```JavaScript  
+### About the ES Module Version  
   
-var v1 = new N6LVector([1, 2]);  
-var v2 = new N6LVector([3, 4]);  
-var v3 = v1.Add(v2);  
-console.log(v3.x); // Result: [4, 6]  
+If you wish to use **ES Modules (`import`/`export`)**,  
+you can use the corresponding `xxx.module.js` files.  
   
-```  
+```js
+import { N6LVector } from "./vector.module.js";  
+```
+  
+> **Note:**  
+> Many of the `.module.js` files are minimal implementations created by  
+> simply adding `export` statements programmatically.  
+> Consequently, files with structures unsuitable for modularization  
+> **may encounter issues.**  
+> If you encounter problems, please submit an issue or a pull request.  
+> NAS6LIB is primarily intended for use via the static version (standard `<script>` tags).  
+> Support for ES Modules is being added incrementally based on need,  
+> so **not all parts of the library are fully modularized.**  
+> If the module version does not work, please use the static version.  
+   
   
 ### Core Features & Modules Overview  
 NAS6LIB is a collection of JavaScript modules, each providing specific functionalities:  

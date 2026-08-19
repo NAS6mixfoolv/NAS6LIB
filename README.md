@@ -103,6 +103,10 @@ Add other modules like `quaternion.js`, `planet.js`, etc., as needed for your sp
 <script src="https://nas6mixfoolv.github.io/NAS6LIB/javascripts/nas6lib/matrix.js"></script>
 ```
   
+If you need the ES Module version, please use the `xxx.module.js` file.  
+Many of these were created by simply adding `export` statements programmatically,    
+so I apologize in advance if there are any issues.  
+  
 ### 2. Minimum Sample (2D Vector Addition)  
 Here's a simple JavaScript example to get started:  
   

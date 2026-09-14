@@ -175,35 +175,35 @@ being succeeded by the current JavaScript version in 2016. The original developm
 around 2000. It may return again and become VC#+WASM in the future.  
 
 ### Version History  
-Programed by NAS6
-note:NAS6LIB_1_2_0(2016/06/26):note:renewal
-note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js
-note:NAS6LIB_1_4_0(2016/07/31):note:N6LMatrix.Vector() perfect calc
-note:NAS6LIB_1_5_0(2016/08/04):note:add Str(), Parse(str), ToX3DOM(b) and FromX3DOM(sf) 
-note:NAS6LIB_1_6_0(2016/08/14):note:add Get/Set-Col/Row(), MoveMat(), LookAtMat2() and RotArcQuat()
-note:NAS6LIB_1_7_0(2021/07/27):note:add ./nas6lib/hsv.js
-note:NAS6LIB_1_8_0(2021/09/28):note:corrected to class description
-note:NAS6LIB_1_9_0(2024/03/22):note:refine ToSchwartz()
-note:NAS6LIB_1_9_1(2024/03/25):note:add GetEccentricity()
-note:NAS6LIB_1_9_2(2024/04/09):note:add comment
-note:NAS6LIB_2_0_0(2025/05/25):note:improved error handling
-note:NAS6LIB_2_0_1(2025/05/26):note:Adaptation to the X3DOM environment
-note:NAS6LIB_2_0_2(2025/06/08):note:N6LQuaternion bugfix
-note:NAS6LIB_2_0_3(2025/06/10):note:N6LQuaternion & N6LLnQuaternion more bugfix
-note:NAS6LIB_2_1_0(2025/06/11):note:add GetAccessor/Get/Set/Create
-note:NAS6LIB_2_1_1(2025/06/14):note:refine Comp/Equal/EpsComp/EpsEqual
-note:NAS6LIB_2_1_2(2025/06/17):note:Licensing arrangement
-note:NAS6LIB_2_1_3(2025/10/11):note:N6LLnQuaternion bugfix
-note:NAS6LIB_2_1_4(2025/11/04):note:N6LRngKt bugfix
-note:NAS6LIB_2_1_5(2025/12/24):note:add clone()
-note:NAS6LIB_2_1_6(2026/01/01):note:output log
-note:NAS6LIB_2_1_7(2026/01/07):note:add ToGravityRadiationLoss()
-note:NAS6LIB_2_1_8(2026/01/17):note:output log
-note:NAS6LIB_2_2_0(2026/06/21):note:keplerWithAGM
-note:NAS6LIB_2_2_1(2026/07/05):note:BugFix ToSchwartz, add timer.module.js, keyboard.module.js
-note:NAS6LIB_2_2_2(2026/07/27):note:add ringbuffer.js, managedclass.js
-note:NAS6LIB_2_2_3(2026/07/29):note:add date.js
-note:NAS6LIB_2_2_4(2026/08/17):note:BugFix date.js
-note:NAS6LIB_2_3_0(2026/08/19):note:supports ES modules.
-note:NAS6LIB_2_3_1(2026/09/14):note:add BigIntCalculator.js BigFloatCalculator.js
-licence:GPL-3.0
+Programed by NAS6  
+note:NAS6LIB_1_2_0(2016/06/26):note:renewal  
+note:NAS6LIB_1_3_0(2016/07/29):note:add ./nas6lib/keyboard.js  
+note:NAS6LIB_1_4_0(2016/07/31):note:N6LMatrix.Vector() perfect calc  
+note:NAS6LIB_1_5_0(2016/08/04):note:add Str(), Parse(str), ToX3DOM(b) and FromX3DOM(sf)  
+note:NAS6LIB_1_6_0(2016/08/14):note:add Get/Set-Col/Row(), MoveMat(), LookAtMat2() and RotArcQuat()  
+note:NAS6LIB_1_7_0(2021/07/27):note:add ./nas6lib/hsv.js  
+note:NAS6LIB_1_8_0(2021/09/28):note:corrected to class description  
+note:NAS6LIB_1_9_0(2024/03/22):note:refine ToSchwartz()  
+note:NAS6LIB_1_9_1(2024/03/25):note:add GetEccentricity()  
+note:NAS6LIB_1_9_2(2024/04/09):note:add comment  
+note:NAS6LIB_2_0_0(2025/05/25):note:improved error handling  
+note:NAS6LIB_2_0_1(2025/05/26):note:Adaptation to the X3DOM environment  
+note:NAS6LIB_2_0_2(2025/06/08):note:N6LQuaternion bugfix  
+note:NAS6LIB_2_0_3(2025/06/10):note:N6LQuaternion & N6LLnQuaternion more bugfix  
+note:NAS6LIB_2_1_0(2025/06/11):note:add GetAccessor/Get/Set/Create  
+note:NAS6LIB_2_1_1(2025/06/14):note:refine Comp/Equal/EpsComp/EpsEqual  
+note:NAS6LIB_2_1_2(2025/06/17):note:Licensing arrangement  
+note:NAS6LIB_2_1_3(2025/10/11):note:N6LLnQuaternion bugfix  
+note:NAS6LIB_2_1_4(2025/11/04):note:N6LRngKt bugfix  
+note:NAS6LIB_2_1_5(2025/12/24):note:add clone()  
+note:NAS6LIB_2_1_6(2026/01/01):note:output log  
+note:NAS6LIB_2_1_7(2026/01/07):note:add ToGravityRadiationLoss()  
+note:NAS6LIB_2_1_8(2026/01/17):note:output log  
+note:NAS6LIB_2_2_0(2026/06/21):note:keplerWithAGM  
+note:NAS6LIB_2_2_1(2026/07/05):note:BugFix ToSchwartz, add timer.module.js, keyboard.module.js  
+note:NAS6LIB_2_2_2(2026/07/27):note:add ringbuffer.js, managedclass.js  
+note:NAS6LIB_2_2_3(2026/07/29):note:add date.js  
+note:NAS6LIB_2_2_4(2026/08/17):note:BugFix date.js  
+note:NAS6LIB_2_3_0(2026/08/19):note:supports ES modules.  
+note:NAS6LIB_2_3_1(2026/09/14):note:add BigIntCalculator.js BigFloatCalculator.js  
+licence:GPL-3.0  

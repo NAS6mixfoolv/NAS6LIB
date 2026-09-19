@@ -1267,67 +1267,9 @@ class N6LBigFloatCalculator {
     return new N6LBigFloatCalculator("0.57721566490153286060651209008240243104215933593992");
   }
 
-/*
   // ------------------------------------------------------------
-  // 任意精度 π（アルキメデス＆ピタゴラスの多角形近似・桁落ち対策版）
-  // ------------------------------------------------------------
-  static calcPI(fp = 30, maxSteps = 100) {
-    fp = Number(fp);
-    maxSteps = Number(maxSteps);
-
-    let two = new N6LBigFloatCalculator("2");
-    let zero = new N6LBigFloatCalculator("0");
-
-    // 初期設定：正4角形（第一象限ベース）
-    // 初期の an = 0 からスタートする場合、初期の sn^2 に相当するのは 2 - 0 = 2
-    let an = new N6LBigFloatCalculator("0");
-    let edges = new N6LBigFloatCalculator("1"); 
-    
-    // snの二乗（または前ステップの分子）を保持する変数
-    // 初回（step=1の時）の 2 - an の分子は "2"
-    let prevTwoSubAn = new N6LBigFloatCalculator("2");
-
-    let pi = new N6LBigFloatCalculator("0");
-    let bpi = null;
-
-    let ffp = fp - Math.floor(fp / 10);
-    let eeps = Number("1e-"+String(ffp));
-
-    for (let step = 1; step <= maxSteps; step++) {
-      bpi = pi.clone();
-
-      // 辺の倍加
-      edges = edges.mul("2", fp);
-
-      // an = sqrt(2 + an)
-      let twoPlusAn = two.add(an, fp);
-      an = N6LBigFloatCalculator.sqrt(twoPlusAn, fp);
-
-      // 【桁落ち対策】直接 2 - an を引くのではなく、割る形に変形する！
-      // 2 - an = (2 - an_prev) / (2 + an)  ==>  prevTwoSubAn / (2 + an)
-      let denominator = two.add(an, fp);
-      let twoSubAn = prevTwoSubAn.div(denominator, fp);
-
-      // 次回のために分子を更新
-      prevTwoSubAn = twoSubAn;
-
-      // 新しい一辺 sn = sqrt( 2 - an )
-      let sn = N6LBigFloatCalculator.sqrt(twoSubAn, fp);
-
-      // pi = sn * edges
-      pi = sn.mul(edges, fp);
-
-      // 収束判定
-      if (bpi !== null) {
-        let diff = pi.sub(bpi, fp);
-        if (zero.epsCmp(diff, eeps)) {
-          break;
-        }
-      }
-    }
-*/
-  // ------------------------------------------------------------
-  // 任意精度 π（アルキメデス＆ピタゴラス：上下限ガードレール版）
+  // 任意精度 π（アルキメデス＆ピタゴラスの多角形近似 漸化式：上下限ガードレール版）
+  // 3.141592653647406523266274689024
   // ------------------------------------------------------------
   static calcPI(fp = 30, maxSteps = 50) {
     fp = Number(fp);
@@ -1344,8 +1286,8 @@ class N6LBigFloatCalculator {
     let pi = new N6LBigFloatCalculator("0");
     
     // 第一象限の限界値（π/2 ≒ 1.570796... を安全に挟む防壁）
-    let up = new N6LBigFloatCalculator("1.5707963268237032616331373446");
-    let low = new N6LBigFloatCalculator("1.5707963268237032616331373444");
+    let up = new N6LBigFloatCalculator("1.570796327");
+    let low = new N6LBigFloatCalculator("1.570796325");
     let bpi = null;
 
     let ffp = fp - Math.floor(fp / 10);
@@ -1390,66 +1332,9 @@ class N6LBigFloatCalculator {
     // 第一象限の弧長（π/2）を求めているため、最後に 2 を掛けて全体の π にする
     return pi.mul("2", fp);
   }
-/*
   // ------------------------------------------------------------
-  // 任意精度 π（アルキメデス＆ピタゴラスの多角形近似 漸化式版）
-  // ------------------------------------------------------------
-  static calcPI(fp = 30, maxSteps = 50) {
-    fp = Number(fp);
-    maxSteps = Number(maxSteps);
-
-    let two = new N6LBigFloatCalculator("2");
-    let one = new N6LBigFloatCalculator("1");
-    let zero = new N6LBigFloatCalculator("0");
-
-    // 初期設定：正4角形（第一象限ベース）
-    // an = 0.0 からスタート
-    let an = new N6LBigFloatCalculator("0");
-    let edges = new N6LBigFloatCalculator("1"); // 使用辺数（第一象限での倍率管理）
-    
-    let pi = new N6LBigFloatCalculator("0");
-    let up = new N6LBigFloatCalculator("1.58");
-    let low = new N6LBigFloatCalculator("1.56");
-    let bpi = null;
-
-    let ffp = fp - Math.floor(fp / 10);
-    let eeps = Number("1e-"+String(ffp));
-
-    for (let step = 1; step <= maxSteps; step++) {
-      // 変化検知用の前ステップ保存
-      // ※ N6LBigFloatCalculator のオブジェクト構造に合わせた比較・保持方法を想定
-      bpi = pi.clone();
-
-      // 辺の倍加（edges *= 2）
-      edges = edges.mul("2", fp);
-
-      // an = sqrt(2 + an)
-      let twoPlusAn = two.add(an, fp);
-      an = N6LBigFloatCalculator.sqrt(twoPlusAn, fp);
-
-      // sn = sqrt(2 - an) （新しい一辺）
-      let twoSubAn = two.sub(an, fp);
-      let sn = N6LBigFloatCalculator.sqrt(twoSubAn, fp);
-
-      // pi = sn * edges （※正確には π/2 の近似値としての累積長）
-      pi = sn.mul(edges, fp);
-
-      // 収束判定（前回値との差がイプシロン以下になったらブレイク）
-      if (bpi !== null) {
-        let diff = pi.sub(bpi, fp);
-        // 絶対値比較（または epsCmp）
-        if (zero.epsCmp(diff, eeps)) {
-          break;
-        }
-      }
-    }
-
-    // 第一象限の弧長（π/2）を求めているため、最後に 2 を掛けて全体の π にする
-    return pi.mul("2", fp);
-  }
-*/
-  // ------------------------------------------------------------
-  // 任意精度 π（マクローリン展開）//3.108268566698946130001699549352e+0
+  // 任意精度 π（マクローリン展開）
+  // 3.108268566698946130001699549352
   // ------------------------------------------------------------
   static calcPI2(fp = 30, mac = 100) {
     fp = Number(fp);
@@ -2124,7 +2009,7 @@ class N6LBigFloatCalculator {
   // ============================================================
   // sin (マクローリン展開・漸化式版)
   // ============================================================
-  static sin(x, fp = 30, mac = 30, negf = false) {
+  static sin(x, fp = 30, mac = 30) {
     fp = Number(fp);
     mac = Number(mac);
     let X = 
@@ -2216,9 +2101,6 @@ class N6LBigFloatCalculator {
     if (negate) {
       sum.isNegative = !sum.isNegative;
     }
-    if (negf) {
-      sum.isNegative = !sum.isNegative;
-    }
 
     return sum;
   }
@@ -2245,18 +2127,13 @@ class N6LBigFloatCalculator {
     let xx = new N6LBigFloatCalculator(X.toString());
     let divResult = xx.div(twoPi, fp);
     xx = divResult.mod; // 余りが新しい xx になる（通常は [0, 2π]) の範囲）
-    let negate = false;
-
-    if (xx.compareTo(halfPi) >= 0) {
-        negate = !negate;
-    }
 
     // π/2 - x を計算
     let target = new N6LBigFloatCalculator(halfPi.toString());
     target = target.sub(X, fp);
 
     // 完成した sin をそのまま利用
-    return N6LBigFloatCalculator.sin(target, fp, mac, negate);
+    return N6LBigFloatCalculator.sin(target, fp, mac);
   }
 
   // ============================================================

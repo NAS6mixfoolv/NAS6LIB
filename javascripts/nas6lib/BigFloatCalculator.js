@@ -1619,23 +1619,24 @@ class N6LBigFloatCalculator {
     return y;
   }
 
-  // BigFloat 版 Lanczos Gamma
+
+
+// BigFloat 版 Lanczos Gamma（最初のJS版の構造に合わせた安全な実装）
   static gammaBF(z, fp = 50) {
-    let PI = new N6LBigFloatCalculator("3.141592653589793238462643383279502884");
+    let PI = N6LBigFloatCalculator.PI50();
     let ONE = new N6LBigFloatCalculator("1");
     let HALF = new N6LBigFloatCalculator("0.5");
 
-    // Lanczos 係数（BigFloat 化）
+    // 最初のJS版と同じ 8個の係数セット
     let p = [
-        "0.99999999999980993",
-        "676.5203681218851",
-        "-1259.1392167224028",
-        "771.32342877765313",
-        "-176.61502916214059",
-        "12.507343278693805",
-        "-0.13857109526572012",
-        "9.9843695780195716e-6",
-        "1.5056327351493116e-7"
+      "676.5203681218851",
+      "-1259.1392167224028",
+      "771.3234287776531",
+      "-176.6150291621406",
+      "12.507343278693805",
+      "-0.13857109526572012",
+      "9.984369578019572e-6",
+      "1.5056327351493116e-7"
     ].map(v => new N6LBigFloatCalculator(v));
 
     let Z = new N6LBigFloatCalculator(z.toString());
@@ -1650,16 +1651,21 @@ class N6LBigFloatCalculator {
         return PI.div(sinTerm.mul(gammaTerm, fp), fp).quot;
     }
 
-    // Lanczos 本体
-    Z = Z.sub(ONE, fp);  // z -= 1
+    // Lanczos 本体 (z -= 1)
+    Z = Z.sub(ONE, fp);
 
-    let x = p[0].clone();
-    for (let i = 1; i < p.length; i++) {
-        let denom = Z.add(new N6LBigFloatCalculator(String(i)), fp);
-        x = x.add(p[i].div(denom, fp).quot, fp);
+    // 初期値 y = 0.999...
+    let y = new N6LBigFloatCalculator("0.999999999999997");
+    
+    for (let i = 0; i < p.length; i++) {
+        // denom = z + i + 1
+        let denom = Z.add(new N6LBigFloatCalculator(String(i + 1)), fp);
+        let term = p[i].div(denom, fp).quot;
+        y = y.add(term, fp);
     }
 
-    let t = Z.add(new N6LBigFloatCalculator(String(p.length - 1.5)), fp);
+    // t = z + p.length - 0.5 (8個なので z + 7.5)
+    let t = Z.add(new N6LBigFloatCalculator(String(p.length - 0.5)), fp);
 
     let sqrt2pi = N6LBigFloatCalculator.sqrt(
         PI.mul(new N6LBigFloatCalculator("2"), fp),
@@ -1677,15 +1683,20 @@ class N6LBigFloatCalculator {
         fp
     );
 
-    return sqrt2pi.mul(powTerm, fp).mul(expTerm, fp).mul(x, fp);
+    return sqrt2pi.mul(powTerm, fp).mul(expTerm, fp).mul(y, fp);
   }
 
   // BigFloat 版 実数階乗
   static realFactorialBF(x, fp = 50) {
     let X = new N6LBigFloatCalculator(x.toString());
+    let dec = N6LBigFloatCalculator.getDecimal(X);
+    if (dec.digits.length === 1 && dec.digits[0] === 0) {
+      return N6LBigFloatCalculator.factorialInt(X, fp);
+    }
     X = X.add(new N6LBigFloatCalculator("1"), fp);
     return N6LBigFloatCalculator.gammaBF(X, fp);
   }
+
 
   // ============================================================
   // 2. ベルヌーイ数（必要最小限：B2, B4, B6, B8, B10）

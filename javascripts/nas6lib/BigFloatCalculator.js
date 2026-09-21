@@ -383,10 +383,12 @@ class N6LBigFloatCalculator {
     // digits は下位→上位なので、下位桁を捨てる
     // ------------------------------
     if (resultDigits.length > fp) {
-      let cut = resultDigits.length - fp;
-      resultDigits.splice(0, cut);  // 下位桁を捨てる
-      // scale は小数部の桁数なので、下位桁を捨てた分だけ減らす
-      me.scale = maxScale - cut;
+      if(fp < me.scale) {
+        let cut = me.scale - fp;
+        resultDigits.splice(0, cut);  // 下位桁を捨てる
+        // scale は小数部の桁数なので、下位桁を捨てた分だけ減らす
+        me.scale = maxScale - cut;
+      }
     } else {
       me.scale = maxScale;
     }
@@ -493,10 +495,12 @@ class N6LBigFloatCalculator {
     // digits は下位→上位なので、下位桁を捨てる
     // ------------------------------
     if (resultDigits.length > fp) {
-      let cut = resultDigits.length - fp;
-      resultDigits.splice(0, cut);  // 下位桁を捨てる
-      // scale は小数部の桁数なので、下位桁を捨てた分だけ減らす
-      me.scale = maxScale - cut;
+      if(fp < me.scale) {
+        let cut = me.scale - fp;
+        resultDigits.splice(0, cut);  // 下位桁を捨てる
+        // scale は小数部の桁数なので、下位桁を捨てた分だけ減らす
+        me.scale = maxScale - cut;
+      }
     } else {
       me.scale = maxScale;
     }
@@ -1267,6 +1271,10 @@ class N6LBigFloatCalculator {
     return new N6LBigFloatCalculator("0.57721566490153286060651209008240243104215933593992");
   }
 
+  static LN1050() {
+    return new N6LBigFloatCalculator("2.30258509299404568401799145468436420760110148862877");
+  }
+
   // ------------------------------------------------------------
   // 任意精度 π（アルキメデス＆ピタゴラスの多角形近似 漸化式：上下限ガードレール版）
   // 3.141592653647406523266274689024
@@ -1919,11 +1927,12 @@ class N6LBigFloatCalculator {
   }
 
   // ============================================================
-  // log (自然対数・全区間高速収束版: 逆双曲線関数ベース)
+  // log (自然対数・科学用表記分解による全区間高精度・高速版)
   // ============================================================
-  static log(x, fp = 30, mac = 40) {
+  static log(x, fp = 30, mac = 200) {
     fp = Number(fp);
     mac = Number(mac);
+    mac = Math.max(mac, 200);
     let X = 
       (typeof x === "string")
         ? new N6LBigFloatCalculator(x)
@@ -1934,23 +1943,39 @@ class N6LBigFloatCalculator {
     let zero = new N6LBigFloatCalculator("0");
     let one = new N6LBigFloatCalculator("1");
     let two = new N6LBigFloatCalculator("2");
-    let negate = false;
 
-    if (X.toString() === "1" || (X.digits.length === 1 && X.digits[0] === 0 && !X.isNegative)) {
-      // log(1) = 0
+    // 1 の判定
+    if (X.compareTo(one) === 0 || (X.digits.length === 1 && X.digits[0] === 0 && !X.isNegative)) {
       return new N6LBigFloatCalculator("0");
     }
     if (X.isNegative || (X.digits.length === 1 && X.digits[0] === 0)) {
       throw new Error("log の定義域外 (0 以下は指定できません)");
     }
-    if (X.compareTo(one) < 0) {
-      negate = true;
+
+    // ------------------------------------------------------------
+    // 巨大な数・小さな数対策：科学用表記に一度バラして ln(A) + B * ln(10) に変換する
+    // ------------------------------------------------------------
+    let sciStr = X.toStringScientific(); // 例: "1.23456e+12"
+    // パース: "AAAeBBB" から仮数部と指数部を抽出
+    let parts = sciStr.split('e');
+    let mantissaStr = parts[0];
+    let expVal = parseInt(parts[1], 10); // 指数 B
+
+    // もし指数 B が 0 以外、または仮数部が 1 に近い安全圏 ($0.1 < X < 10$) から外れている場合は分解公式を使う
+    if (expVal !== 0) {
+      // 1. 1?10未満の仮数部だけの log を計算 (これはすぐ収束する)
+      let logMantissa = N6LBigFloatCalculator.log(mantissaStr, fp, mac);
+
+      // 2. B * ln(10) を計算
+      // ln(10) の高精度定数
+      let ln10 = N6LBigFloatCalculator.LN1050();
+      let expTerm = ln10.mul(new N6LBigFloatCalculator(String(expVal)), fp);
+
+      // 3. 足し合わせる: log(A) + B * ln(10)
+      return logMantissa.add(expTerm, fp);
     }
 
-    // 技法: ln(x) = 2 * ( z + z^3/3 + z^5/5 + ... )  where z = (x - 1) / (x + 1)
-    // この変形を使うと、どんな大きな数や小さな数でも z は必ず -1 < z < 1 の安全圏に収まり、
-    // 奇数項のみの非常に綺麗な漸化式で爆速収束します。
-
+    // --- 以下、1?10付近の通常計算（逆双曲線関数ベース） ---
     // num = x - 1
     let num = new N6LBigFloatCalculator(X.toString());
     num = num.sub(one, fp);
@@ -1965,21 +1990,17 @@ class N6LBigFloatCalculator {
     let sum = new N6LBigFloatCalculator(z.toString());
     let term = new N6LBigFloatCalculator(z.toString());
 
-    // z の 2乗 (毎回の項で z^2 を掛けていく)
+    // z の 2乗
     let z2 = new N6LBigFloatCalculator(z.toString()).mul(z, fp);
 
     let ffp = fp - Math.floor(fp / 10);
     let eeps = N6LBigFloatCalculator.epsilon(ffp);
 
     for (let k = 1; k < mac; k++) {
-      // term = term * z^2
       term = term.mul(z2, fp);
-
-      // 係数は分母が奇数 (2k + 1)
       let denomVal = 2 * k + 1;
       let denom = new N6LBigFloatCalculator(String(denomVal));
 
-      // t = term / (2k + 1)
       let t = new N6LBigFloatCalculator(term.toString());
       t = t.div(denom, fp).quot;
 
@@ -1991,18 +2012,36 @@ class N6LBigFloatCalculator {
     // 最後に 2 を掛ける (ln(x) = 2 * sum)
     sum = sum.mul(two, fp);
 
-    if (negate) {
-      sum.isNegative = !sum.isNegative;
-    }
     return sum;
   }
 
   // ============================================================
   // logBase
   // ============================================================
+  static logBase(x, y, fp = 30, mac = 50) {
+    fp = Number(fp);
+    mac = Number(mac);
+    let ten = new N6LBigFloatCalculator("10");
+    if(ten.compareTo(y) === 0) {
+      let ln = N6LBigFloatCalculator.LN1050();
+      return N6LBigFloatCalculator.log(x, fp, mac).div(ln, fp).quot;
+    }
+    return N6LBigFloatCalculator.log(x, fp, mac).div(N6LBigFloatCalculator.log(y, fp, mac), fp).quot;
+  }
+
+  static LN1050() {
+    return new N6LBigFloatCalculator("2.30258509299404568401799145468436420760110148862877");
+  }  // ============================================================
+  // logBase
+  // ============================================================
   static logBase(x, y, fp = 30, mac = 30) {
     fp = Number(fp);
     mac = Number(mac);
+    let ten = new N6LBigFloatCalculator("10");
+    if(ten.compareTo(y) === 0) {
+      let ln = N6LBigFloatCalculator.LN1050();
+      return N6LBigFloatCalculator.log(x, fp, mac).div(ln, fp).quot;
+    }
     return N6LBigFloatCalculator.log(x, fp, mac).div(N6LBigFloatCalculator.log(y, fp, mac), fp).quot;
   }
 
@@ -2058,6 +2097,7 @@ class N6LBigFloatCalculator {
     } 
     else if (xx.compareTo(halfPi) >= 0) {
       xx = xx.sub(piVal, fp);
+      negate = !negate;
     }
     else if (xx.compareTo(neghalfPi) < 0) {
       xx = xx.add(piVal, fp);
@@ -2153,15 +2193,18 @@ class N6LBigFloatCalculator {
       // 例: 無限大を表す値を返す、あるいはエラーとするなど
       throw new Error("Division by zero in tan(x): x is too close to an asymptote (odd multiples of π/2).");
     }
-    return s.div(c, fp).quot;
+    let ret = s.div(c, fp).quot;
+    //if(x.isNegative) ret.isNegative = !ret.isNegative;
+    return ret;
   }
 
   // ============================================================
   // atan (マクローリン展開・compareTo 活用全区間対応版)
   // ============================================================
-  static atan(x, fp = 30, mac = 40) {
+  static atan(x, fp = 30, mac = 500) {
     fp = Number(fp);
     mac = Number(mac);
+    mac = Math.max(mac, 500);
     let X = 
       (typeof x === "string")
         ? new N6LBigFloatCalculator(x)
@@ -2192,8 +2235,9 @@ class N6LBigFloatCalculator {
       res = res.sub(subAtan, fp);
 
       if (X.isNegative) {
-        res.isNegative = !res.isNegative;
+        res = res.sub(N6LBigFloatCalculator.PI50());
       }
+
       return res;
     }
 
@@ -2229,9 +2273,10 @@ class N6LBigFloatCalculator {
   // ============================================================
   // asin
   // ============================================================
-  static asin(x, fp = 30, mac = 40) {
+  static asin(x, fp = 30, mac = 500) {
     fp = Number(fp);
     mac = Number(mac);
+    mac = Math.max(mac, 500);
     let X = 
       (typeof x === "string")
         ? new N6LBigFloatCalculator(x)
@@ -2243,11 +2288,18 @@ class N6LBigFloatCalculator {
     // |x| > 1 の定義域チェックを compareTo(1) で行う
     let absX = new N6LBigFloatCalculator(X.toString());
     absX.isNegative = false;
+    if (absX.compareTo(one) === 0) {
+        // asin(±1) = ±π/2
+        // acos(±1) = 0 or π
+        let halfpi = N6LBigFloatCalculator.PI50().mul("0.5", fp);
+        halfpi.isNegative = X.isNegative;
+        return halfpi;
+    }
     if (absX.compareTo(one) > 0) {
       throw new Error("asin の定義域外 (-1 から 1 の間で指定してください)");
     }
 
-    let t = N6LBigFloatCalculator.pow(X, 2);
+    let t = X.mul(X, fp);
     let u = new N6LBigFloatCalculator("1").sub(t, fp);
     let s = N6LBigFloatCalculator.sqrt(u);
 
@@ -2258,9 +2310,10 @@ class N6LBigFloatCalculator {
   // ============================================================
   // acos
   // ============================================================
-  static acos(x, fp = 30, mac = 40) {
+  static acos(x, fp = 30, mac = 500) {
     fp = Number(fp);
     mac = Number(mac);
+    mac = Math.max(mac, 500);
     let X = 
       (typeof x === "string")
         ? new N6LBigFloatCalculator(x)
@@ -2268,10 +2321,23 @@ class N6LBigFloatCalculator {
             ? new N6LBigFloatCalculator(String(x))
             : x;
     let one = new N6LBigFloatCalculator("1");
+    let negone = new N6LBigFloatCalculator("-1");
 
+    if (X.compareTo(one) === 0) {
+      return new N6LBigFloatCalculator("0");
+    }
+    if (X.compareTo(negone) === 0) {
+      return N6LBigFloatCalculator.PI50();
+    }
     // |x| > 1 の定義域チェックを compareTo(1) で行う
     let absX = new N6LBigFloatCalculator(X.toString());
     absX.isNegative = false;
+    if (absX.compareTo(one) === 0) {
+        // asin(±1) = ±π/2
+        // acos(±1) = 0 or π
+        if(X.isNegative) return new N6LBigFloatCalculator("0");
+        else return N6LBigFloatCalculator.PI50();
+    }
     if (absX.compareTo(one) > 0) {
       throw new Error("acos の定義域外 (-1 から 1 の間で指定してください)");
     }
@@ -2288,9 +2354,10 @@ class N6LBigFloatCalculator {
   // ============================================================
   // atan2
   // ============================================================
-  static atan2(y, x, fp = 30, mac = 40) {
+  static atan2(y, x, fp = 30, mac = 500) {
     fp = Number(fp);
     mac = Number(mac);
+    mac = Math.max(mac, 500);
     let Y = 
       (typeof y === "string")
         ? new N6LBigFloatCalculator(y)
@@ -2358,7 +2425,7 @@ class N6LBigFloatCalculator {
 
     let e2 = N6LBigFloatCalculator.exp(negX, fp, mac);
     let ret = e1.sub(e2, fp).div("2", fp).quot;
-    if(X.isNegative) ret.isNegative = !ret.isNegative;
+//    if(X.isNegative) ret.isNegative = !ret.isNegative;
     return ret;
   }
 
@@ -2418,11 +2485,11 @@ class N6LBigFloatCalculator {
             ? new N6LBigFloatCalculator(String(x))
             : x;
     let one = new N6LBigFloatCalculator("1");
-
     let t = N6LBigFloatCalculator.pow(X, 2).add(one, fp);
     let s = N6LBigFloatCalculator.sqrt(t);
-
-    return N6LBigFloatCalculator.log(X.add(s, fp), fp, mac);
+    let ret = N6LBigFloatCalculator.log(X.add(s, fp), fp, mac);
+    ret.isNegative = X.isNegative;
+    return ret;
   }
 
   // ============================================================
@@ -2476,6 +2543,103 @@ class N6LBigFloatCalculator {
 
     return N6LBigFloatCalculator.log(a.div(b, fp).quot, fp, mac).div("2", fp).quot;
   }
+
+  // cosec (csc)
+  static csc(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let s = N6LBigFloatCalculator.sin(X, fp, mac);
+    return one.div(s, fp).quot;
+  }
+
+  // sec
+  static sec(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let c = N6LBigFloatCalculator.cos(X, fp, mac);
+    return one.div(c, fp).quot;
+  }
+
+  // cot
+  static cot(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let t = N6LBigFloatCalculator.tan(X, fp, mac);
+    return one.div(t, fp).quot;
+  }
+
+  // acosec (acsc) -> asin(1 / x)
+  static acsc(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let a = one.div(X, fp).quot;
+    return N6LBigFloatCalculator.asin(a, fp, mac);
+  }
+
+  // asec -> acos(1 / x)
+  static asec(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let a = one.div(X, fp).quot;
+    return N6LBigFloatCalculator.acos(a, fp, mac);
+  }
+
+  // acot -> atan(1 / x)
+  static acot(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let a = one.div(X, fp).quot;
+    return N6LBigFloatCalculator.atan(a, fp, mac);
+  }
+
+  // csch
+  static csch(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let s = N6LBigFloatCalculator.sinh(X, fp, mac);
+    return one.div(s, fp).quot;
+  }
+
+  // sech
+  static sech(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let c = N6LBigFloatCalculator.cosh(X, fp, mac);
+    return one.div(c, fp).quot;
+  }
+
+  // coth
+  static coth(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let t = N6LBigFloatCalculator.tanh(X, fp, mac);
+    return one.div(t, fp).quot;
+  }
+
+  // acsch -> asinh(1 / x)
+  static acsch(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let a = one.div(X, fp).quot;
+    return N6LBigFloatCalculator.asinh(a, fp, mac);
+  }
+
+  // asech -> acosh(1 / x)
+  static asech(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let a = one.div(X, fp).quot;
+    return N6LBigFloatCalculator.acosh(a, fp, mac);
+  }
+
+  // acoth -> atanh(1 / x)
+  static acoth(x, fp = 30, mac = 30) {
+    let X = (typeof x === "string") ? new N6LBigFloatCalculator(x) : (typeof x === "number") ? new N6LBigFloatCalculator(String(x)) : x;
+    let one = new N6LBigFloatCalculator("1");
+    let a = one.div(X, fp).quot;
+    return N6LBigFloatCalculator.atanh(a, fp, mac);
+  }
+
 
 }
 

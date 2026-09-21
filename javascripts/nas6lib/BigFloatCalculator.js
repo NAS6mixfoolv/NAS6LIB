@@ -382,15 +382,14 @@ class N6LBigFloatCalculator {
     // 4) fp（有効桁）で丸める
     // digits は下位→上位なので、下位桁を捨てる
     // ------------------------------
+    me.scale = maxScale;
     if (resultDigits.length > fp) {
-      if(fp < me.scale) {
-        let cut = me.scale - fp;
+      if(fp < maxScale) {
+        let cut = maxScale - fp;
         resultDigits.splice(0, cut);  // 下位桁を捨てる
         // scale は小数部の桁数なので、下位桁を捨てた分だけ減らす
         me.scale = maxScale - cut;
       }
-    } else {
-      me.scale = maxScale;
     }
 
     // ------------------------------
@@ -494,15 +493,14 @@ class N6LBigFloatCalculator {
     // 4) fp（有効桁）で丸める
     // digits は下位→上位なので、下位桁を捨てる
     // ------------------------------
+    me.scale = maxScale;
     if (resultDigits.length > fp) {
-      if(fp < me.scale) {
-        let cut = me.scale - fp;
+      if(fp < maxScale) {
+        let cut = maxScale - fp;
         resultDigits.splice(0, cut);  // 下位桁を捨てる
         // scale は小数部の桁数なので、下位桁を捨てた分だけ減らす
         me.scale = maxScale - cut;
       }
-    } else {
-      me.scale = maxScale;
     }
 
     // ------------------------------

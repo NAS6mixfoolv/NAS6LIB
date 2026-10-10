@@ -1,0 +1,1188 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>
+console.log("enter: " + location.href);
+
+window.addEventListener('error', function(e) {
+    // 親ウィンドウ（チェッカー）が存在し、自分をiframeとして開いている場合
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: "JS Error",
+            url: location.href,
+            msg: e.message,
+            src: e.filename,
+            line: e.lineno,
+            col: e.colno
+        }, "*");
+    }
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: "Promise Rejection",
+            url: location.href,
+            msg: String(e.reason)
+        }, "*");
+    }
+});
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QPTP4QSV32');
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<script src="./javascripts/nas6lib/date.js"></script>
+
+<script>
+
+function calc() {
+
+// ######### TestCode Start #########
+
+//イリーガルな初期化
+const dtz = new N6LDate(2000,15.5,55.5,30).normalize();
+console.log(dtz.toString());
+// → 2001/05/10(Thu) 06:00:00.000
+
+//日付加算
+const dta = new N6LDate(1582,10,4).normalize();
+console.log(dta.addDays(1).toString());
+// → 1582/10/15(Fri) 00:00:00.000
+const dtb = new N6LDate(2026,10,1,6).normalize();
+console.log(dtb.addMonths(-1.5).toString());
+// → 2026/08/16(Sun) 08:23:47.040
+const dtc = new N6LDate(2026,12,15,6).normalize();
+console.log(dtc.addYears(1.25).toString());
+// → 2028/03/15(Wed) 19:30:00.000
+
+//時刻加算
+const dtd = new N6LDate(2026,7,15,12).normalize();
+console.log(dtd.toString());
+// → 2026/07/15(Wed) 12:00:00.000
+console.log(dtd.addDays(0.75).toString());
+// → 2026/07/16(Thu) 06:00:00.000
+const dte = new N6LDate(2026,7,15,12).normalize();
+console.log(dte.addHours(18).toString());
+// → 2026/07/16(Thu) 06:00:00.000
+
+//改暦デフォルト
+const a = new N6LDate(1582,10,4).normalize();
+const b = new N6LDate(1582,10,15).normalize();
+console.log(b.diffDays(a)); // +1
+console.log(a.diffDays(b)); // -1
+
+//改暦日本
+const jedjp = new N6LDate(1582,10,4,0,0,0,0,"JP").normalize();
+const gsdjp = new N6LDate(1582,10,15,0,0,0,0,"JP").normalize();
+console.log(gsdjp.diffDays(jedjp)); // +1
+console.log(jedjp.diffDays(gsdjp)); // -1
+
+//改暦イギリス
+const jedgb = new N6LDate(1752,9,2,0,0,0,0,"GB").normalize();
+const gsdgb = new N6LDate(1752,9,14,0,0,0,0,"GB").normalize();
+console.log(gsdgb.diffDays(jedgb)); // +1
+console.log(jedgb.diffDays(gsdgb)); // -1
+
+//改暦ロシア
+const jedru = new N6LDate(1918,1,31,0,0,0,0,"RU").normalize();
+const gsdru = new N6LDate(1918,2,14,0,0,0,0,"RU").normalize();
+console.log(gsdru.diffDays(jedru)); // +1
+console.log(jedru.diffDays(gsdru)); // -1
+
+//改暦ギリシャ
+const jedgr = new N6LDate(1923,2,15,0,0,0,0,"GR").normalize();
+const gsdgr = new N6LDate(1923,3,1,0,0,0,0,"GR").normalize();
+console.log(gsdgr.diffDays(jedgr)); // +1
+console.log(jedgr.diffDays(gsdgr)); // -1
+
+//各種変換
+const jp2000 = new N6LDate(2000,1,1,0,0,0,0,"JP").normalize();
+console.log(jp2000.toString());      // 2000/01/01(Sat) 00:00:00.000
+const jdjp2000 = jp2000.toJD();
+console.log(jdjp2000);               // 2451544.5
+const fmjdjp2000 = jp2000.fromJD(jdjp2000);
+console.log(fmjdjp2000.toString());  // 2000/01/01(Sat) 00:00:00.000
+const uxjp2000 = jp2000.toUNIX();
+console.log(uxjp2000);               // 946684800
+const fmuxjp2000 = jp2000.fromUNIX(uxjp2000);
+console.log(fmuxjp2000.toString());  // 2000/01/01(Sat) 00:00:00.000
+
+const ru2000 = new N6LDate(2000,1,1,0,0,0,0,"RU").normalize();
+console.log(ru2000.toString());      // 2000/01/01(Sat) 00:00:00.000
+const jdru2000 = ru2000.toJD();
+console.log(jdru2000);               // 2451544.5
+const fmjdru2000 = ru2000.fromJD(jdru2000);
+console.log(fmjdru2000.toString());  // 2000/01/01(Sat) 00:00:00.000
+
+//平年100年400年検証
+const jp19000228 = new N6LDate(1900,2,28,0,0,0,0,"JP").normalize();
+console.log(jp19000228.toString());      // 1900/02/28(Wed) 00:00:00.000
+const jdjp19000228 = jp19000228.toJD();
+console.log(jdjp19000228);               // 2415078.5
+const fmjdjp19000228 = jp19000228.fromJD(jdjp19000228);
+console.log(fmjdjp19000228.toString());  // 1900/02/28(Wed) 00:00:00.000
+const jp19000229 = new N6LDate(1900,2,29,0,0,0,0,"JP").normalize();
+console.log(jp19000229.toString());      // 1900/03/01(Thu) 00:00:00.000
+const jdjp19000229 = jp19000229.toJD();
+console.log(jdjp19000229);               // 2415079.5
+const fmjdjp19000229 = jp19000229.fromJD(jdjp19000229);
+console.log(fmjdjp19000229.toString());  // 1900/03/01(Thu) 00:00:00.000
+const jp19000301 = new N6LDate(1900,3,1,0,0,0,0,"JP").normalize();
+console.log(jp19000301.toString());      // 1900/03/01(Thu) 00:00:00.000
+const jdjp19000301 = jp19000301.toJD();
+console.log(jdjp19000301);               // 2415079.5
+const fmjdjp19000301 = jp19000301.fromJD(jdjp19000301);
+console.log(fmjdjp19000301.toString());  // 1900/03/01(Thu) 00:00:00.000
+
+const jp20000228 = new N6LDate(2000,2,28,0,0,0,0,"JP").normalize();
+console.log(jp20000228.toString());      // 2000/02/28(Mon) 00:00:00.000
+const jdjp20000228 = jp20000228.toJD();
+console.log(jdjp20000228);               // 2451602.5
+const fmjdjp20000228 = jp20000228.fromJD(jdjp20000228);
+console.log(fmjdjp20000228.toString());  // 2000/02/28(Mon) 00:00:00.000
+const jp20000229 = new N6LDate(2000,2,29,0,0,0,0,"JP").normalize();
+console.log(jp20000229.toString());      // 2000/02/29(Tue) 00:00:00.000
+const jdjp20000229 = jp20000229.toJD();
+console.log(jdjp20000229);               // 2451603.5
+const fmjdjp20000229 = jp20000229.fromJD(jdjp20000229);
+console.log(fmjdjp20000229.toString());  // 2000/02/29(Tue) 00:00:00.000
+const jp20000301 = new N6LDate(2000,3,1,0,0,0,0,"JP").normalize();
+console.log(jp20000301.toString());      // 2000/03/01(Wed) 00:00:00.000
+const jdjp20000301 = jp20000301.toJD();
+console.log(jdjp20000301);               // 2451604.5
+const fmjdjp20000301 = jp20000301.fromJD(jdjp20000301);
+console.log(fmjdjp20000301.toString());  // 2000/03/01(Wed) 00:00:00.000
+
+const jp20010228 = new N6LDate(2001,2,28,0,0,0,0,"JP").normalize();
+console.log(jp20010228.toString());      // 2001/02/28(Wed) 00:00:00.000
+const jdjp20010228 = jp20010228.toJD();
+console.log(jdjp20010228);               // 2451968.5
+const fmjdjp20010228 = jp20010228.fromJD(jdjp20010228);
+console.log(fmjdjp20010228.toString());  // 2001/02/28(Wed) 00:00:00.000
+const jp20010229 = new N6LDate(2001,2,29,0,0,0,0,"JP").normalize();
+console.log(jp20010229.toString());      // 2001/03/01(Thu) 00:00:00.000
+const jdjp20010229 = jp20010229.toJD();
+console.log(jdjp20010229);               // 2451969.5
+const fmjdjp20010229 = jp20010229.fromJD(jdjp20010229);
+console.log(fmjdjp20010229.toString());  // 2001/03/01(Thu) 00:00:00.000
+const jp20010301 = new N6LDate(2001,3,1,0,0,0,0,"JP").normalize();
+console.log(jp20010301.toString());      // 2001/03/01(Thu) 00:00:00.000
+const jdjp20010301 = jp20010301.toJD();
+console.log(jdjp20010301);               // 2451969.5
+const fmjdjp20010301 = jp20010301.fromJD(jdjp20010301);
+console.log(fmjdjp20010301.toString());  // 2001/03/01(Thu) 00:00:00.000
+
+const jp2000715 = new N6LDate(2000,7,15).normalize();
+console.log(jp2000715.getISOWeekDate());  // {isoYear: 2000, isoWeek: 29, isoWeekDay: 3}
+const jp2010715 = new N6LDate(2010,7,15).normalize();
+console.log(jp2000715.getISOTimeDuration(jp2010715));  // -P9Y11M28DT3H34M24.960S
+console.log(jp2000715.getReformInfo());  //In UK, due to the calendar reform, the day following 1752-09-02 was 1752-09-14, and 11 days were skipped.
+console.log(jp2000715.format("YYYY-MM-DD hh:mm:ss.SSS (W)")); // 2000-07-15 00:00:00.000 (Sat)
+jp2000715.regionW = "JP";
+console.log(jp2000715.format("YYYY年 MMMM月 DD日 (W)")); // 2000年 7月 15日 (土)
+
+const jp2030915 = new N6LDate(2030,9,15,12).normalize();
+console.log(jp2030915.toString());         //2030/09/15(Sun) 12:00:00.000
+const uxjp2030915 = jp2030915.toUNIX(jp2030915);
+console.log(uxjp2030915);                  //1915704000
+const fmuxjp2030915 = jp2030915.fromUNIX(uxjp2030915);
+console.log(fmuxjp2030915.toString());     //2030/09/15(Sun) 12:00:00.000
+const ctuxjp2030915 = new N6LDate(uxjp2030915*1000).normalize();
+console.log(ctuxjp2030915.toString());     //2030/09/15(Sun) 12:00:00.000
+
+//シリアライズ
+const dtSz = new N6LDate(2030, 9, 15, 12, 34, 56, 789).normalize();
+dtSz.region = "JP";
+const json = JSON.stringify(dtSz);          // toJSONが自動呼び出し
+// → {"year":2030,"month":9,"day":15,...}
+const restored = N6LDate.fromJSON(JSON.parse(json));
+console.log(restored.toString());           // 2030/09/15(Sun) 12:34:56.789
+
+const jp20150606 = new N6LDate(2015, 6, 6, 12, 34, 56, 789).normalize();
+console.log(jp20150606.startOf("day").toString());    //2015/06/06(Sat) 00:00:00.000
+console.log(jp20150606.startOf("month").toString());  //2015/06/01(Mon) 00:00:00.000
+console.log(jp20150606.startOf("year").toString());   //2015/01/01(Thu) 00:00:00.000
+console.log(jp20150606.startOf("week").toString());   //2015/06/01(Mon) 00:00:00.000
+console.log(jp20150606.endOf("day").toString());      //2015/06/06(Sat) 23:59:59.999
+console.log(jp20150606.endOf("month").toString());    //2015/06/30(Tue) 23:59:59.999
+console.log(jp20150606.endOf("year").toString());     //2015/12/31(Thu) 23:59:59.999
+console.log(jp20150606.endOf("week").toString());     //2015/06/07(Sun) 23:59:59.999
+
+// ######### TestCode End #########
+
+  var element = document.getElementById('REGION');
+  var reg = element.value;
+
+  var elm = document.getElementById('TXTY0');
+  var y0 = Number(elm.value);
+  elm = document.getElementById('TXTM0');
+  var m0 = Number(elm.value);
+  elm = document.getElementById('TXTD0');
+  var d0 = Number(elm.value);
+
+  elm = document.getElementById('TXTY1');
+  var y1 = Number(elm.value);
+  elm = document.getElementById('TXTM1');
+  var m1 = Number(elm.value);
+  elm = document.getElementById('TXTD1');
+  var d1 = Number(elm.value);
+
+  elm = document.getElementById('TXTDT');
+  var dt = Number(elm.value);
+
+  // 基準日（日付0）のインスタンス生成
+  var val0 = new N6LDate(y0, m0, d0, 0, 0, 0, 0, reg, reg).normalize();
+  var val;
+  var dadd = 0;
+  var daddms = 0;
+
+  if (0 < y1) {
+    // 日付1が有効な場合：
+    // 「日付1 - 日付0」の差分日数に、入力された加算日数(dt)を足したものがトータルの加算日数
+    var val1 = new N6LDate(y1, m1, d1, 0, 0, 0, 0, reg, reg).normalize();
+    dadd = val1.diffDays(val0) + dt;
+    val = val0.addDays(dadd);
+  } else {
+    // 日付1が無効（未指定など）の場合：
+    // 日付0を基準に加算日数(dt)のみを反映
+    dadd = dt;
+    val = val0.addDays(dadd);
+    dadd += val.pastdays;
+  }
+
+  daddms = dadd * val0.DayMS;
+
+  // 結果の画面反映
+  elm = document.getElementById('TXTCL');
+  elm.value = val.afterGregorian(val) ? "グレゴリオ暦" : "ユリウス暦";
+
+  elm = document.getElementById('TXTYA');
+  elm.value = val.ya;
+  elm = document.getElementById('TXTMA');
+  elm.value = val.ma;
+  elm = document.getElementById('TXTDA');
+  elm.value = val.da;
+
+  elm = document.getElementById('TXTDTA');
+  elm.value = dadd;
+  elm = document.getElementById('TXTWKA');
+  var weekName = (val.weeks && val.weeks[val.regionW])
+      ? val.weeks[val.regionW][val.wk]
+      : val.wk;
+  elm.value = weekName;
+  elm = document.getElementById('TXTMSA');
+  elm.value = daddms;
+}
+
+
+function now() {
+  var dt = new Date();
+  var year = dt.getFullYear();
+  var month = dt.getMonth() + 1; // getMonth() is 0-indexed, so add 1 for actual month
+  var day = dt.getDate();
+  var elm = document.getElementById('TXTY0');
+  elm.value = year;
+  elm = document.getElementById('TXTY1');
+  elm.value = year;
+  elm = document.getElementById('TXTM0');
+  elm.value = month;
+  elm = document.getElementById('TXTM1');
+  elm.value = month;
+  elm = document.getElementById('TXTD0');
+  elm.value = day;
+  elm = document.getElementById('TXTD1');
+  elm.value = day;
+}
+
+function newyear() {
+  elm = document.getElementById('TXTM0');
+  elm.value = 1;
+  elm = document.getElementById('TXTM1');
+  elm.value = 1;
+  elm = document.getElementById('TXTD0');
+  elm.value = 1;
+  elm = document.getElementById('TXTD1');
+  elm.value = 1;
+}
+
+function cls(i) {
+  var elm;
+  if(i == 1) {
+    elm = document.getElementById('TXTY0');
+    elm.value = 1;
+    elm = document.getElementById('TXTM0');
+    elm.value = 1;
+    elm = document.getElementById('TXTD0');
+    elm.value = 1;
+  }
+  else {
+    elm = document.getElementById('TXTY1');
+    elm.value = -1;
+    elm = document.getElementById('TXTM1');
+    elm.value = 1;
+    elm = document.getElementById('TXTD1');
+    elm.value = 1;
+  }
+}
+
+</script>
+<style>
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 4px 8px;
+}
+</style>
+<title>その３２：グレゴリオ暦日付計算ライブラリ化</title>
+</head>
+<body text="black" link="#3333cc" vlink="#663399" alink="#cc0000" bgcolor="#faebf1" background="./img/kumausagineko.jpg">
+<b>
+<h1>その３２：グレゴリオ暦日付計算ライブラリ化</h1>
+<br>
+<br>
+グレゴリオ暦の西暦1/1/1からの経過日数などを計算してみよう<br>
+<br>
+簡単に説明するためにグレゴリオ暦だけで説明<br>
+■閏年法<br>
+・4で割り切れる年を閏年<br>
+・例外として100で割り切れて400で割り切れない年は平年<br>
+・ユリウス暦改暦補正としてそれに2日を加える<br>
+従って暦上のX/1/1の通算日数は<br>
+1/4-1/100+1/400+2+365日*X年<br>
+<br>
+■上記の閏年法とフェアフィールドの公式より<br>
+Y/M/D(※3＜=m＜=14:M:1,2-＞y=Y-1,m=M+12)<br>
+西暦1/1/1からの日数計算<br>
+days = Math.floor((365*y + Math.floor(y/4) - (Math.floor(y/100) - Math.floor(y/400)) ) + Math.floor(306*(m+1)/10)+d-429) + 2;<br>
+西暦1/1/1からの曜日計算(0:土曜日)<br>
+week=days%7<br>
+西暦1/1/1からのミリ秒計算<br>
+days*24*60*60*1000<br>
+西暦Y0/M0/D0から西暦Y1/M1/D1までの日数計算<br>
+days0 = Math.floor((365*y0 + Math.floor(y0/4) - (Math.floor(y0/100) - Math.floor(y0/400)) ) + Math.floor(306*(m0+1)/10)+d0-429) + 2;<br>
+days1 = Math.floor((365*y1 + Math.floor(y1/4) - (Math.floor(y1/100) - Math.floor(y1/400)) ) + Math.floor(306*(m1+1)/10)+d1-429) + 2;<br>
+DAYS=days1-days0<br>
+<br>
+■逆変換<br>
+■年<br>
+var val = { ya: 0, ma: 0, da: 0 };<br>
+var y400 = グレゴリオ暦 ? 146097 : 146100; //365.2425 * 400 : 365.25 * 400<br>
+val.ya = Math.floor(((day+305)*400)/y400);<br>
+■1年間の日数<br>
+if((((day+305)*400)%y400) == 0) val.ya--;<br>
+var x = (day + 305) - Math.floor((val.ya * y400) / 400);<br>
+■閾値以下<br>
+if(x ＜= 0){<br>
+  val.ya--;<br>
+  x = (day + 305) - Math.floor((val.ya * y400) / 400);<br>
+}<br>
+■月の取得<br>
+// x は3月1日を起点とした年内日数<br>
+// 1～2月は前年の13・14月として扱う（フェアフィールド方式）<br>
+var mdays = [0,31,28,31,30,31,30,31,31,30,31,30,31,31,28];<br>
+var m = 3;<br>
+while(mdays[m] < x){<br>
+  x -= mdays[m];<br>
+  m++;<br>
+  if(m == 14) break;<br>
+}<br>
+var wsub = flg ? 0 : 5;<br>
+val.ma = m;<br>
+if(12 ＜ val.ma) { val.ya++; val.ma -= 12; }<br>
+val.da = x;<br>
+//改暦補正は省略<br>
+■週<br>
+var weeka = (day + wsub) % 7;<br>
+■秒<br>
+var msa = (day - days0) * 24 * 60 * 60 * 1000;<br>
+<br>
+<br>
+<hr>
+改暦地域
+<select name="REGION" id="REGION">
+<option value="JP" selected>JP</option>
+<option value="GB">GB</option>
+<option value="RU">RU</option>
+<option value="GR">GR</option>
+<option value="IT">IT</option>
+<option value="ES">ES</option>
+<option value="PT">PT</option>
+<option value="PL">PL</option>
+<option value="FR">FR</option>
+<option value="NL">NL</option>
+<option value="DE">DE</option>
+<option value="DK">DK</option>
+<option value="NO">NO</option>
+<option value="SE">SE</option>
+<option value="CH">CH</option>
+<option value="HU">HU</option>
+<option value="TR">TR</option>
+<option value="BG">BG</option>
+<option value="RO">RO</option>
+<option value="RS">RS</option>
+<option value="AT">AT</option>
+<option value="CZ">CZ</option>
+<option value="SK">SK</option>
+<option value="LT">LT</option>
+<option value="LV">LV</option>
+<option value="EE">EE</option>
+<option value="FI">FI</option>
+<option value="US">US</option>
+<option value="CA">CA</option>
+<option value="AU">AU</option>
+<option value="NZ">NZ</option>
+<option value="MX">MX</option>
+<option value="PE">PE</option>
+<option value="BR">BR</option>
+<option value="PH">PH</option>
+</select>
+<br>
+日付0<br>
+西暦(自動判別)<input type="text" id="TXTY0" value="1">年　<input type="text" id="TXTM0" value="1">月　<input type="text" id="TXTD0" value="1">日<br>
+日付1<br>
+西暦(自動判別)<input type="text" id="TXTY1" value="-1">年　<input type="text" id="TXTM1" value="1">月　<input type="text" id="TXTD1" value="1">日<br>
+加算日数<input type="text" id="TXTDT" value="0">日<br>
+<br>
+解答<br>
+<input type="text" id="TXTCL" value="ユリウス暦" disabled><br>
+<input type="text" id="TXTYA" value="1" disabled>年　<input type="text" id="TXTMA" value="1" disabled>月　<input type="text" id="TXTDA" value="1" disabled>日<br>
+曜日<input type="text" id="TXTWKA" value="土" disabled>曜日<br>
+経過日数<input type="text" id="TXTDTA" value="0" disabled>日<br>
+経過ミリ秒<input type="text" id="TXTMSA" value="0" disabled>ミリ秒<br>
+<br>
+(日付1-)日付0+加算日数<br>
+<input type="button" onclick="calc()"  value="計　算">　<input type="button" onclick="now()"  value="現在日時">　<input type="button" onclick="newyear()"  value="1月1日">
+　<input type="button" onclick="cls(1)"  value="1クリア">　<input type="button" onclick="cls(2)"  value="2クリア"><br>
+<br>
+日付0は基準日であり日付1は比較する日付です<br>
+したがってここで加算日数を0日に設定して計算すれば<br>
+日付1が何日前/後か計算できます<br>
+妊娠の平均日数は280日であり<br>
+○○は14日なので266日で<br>
+日付0に誕生日日付1に-1年加算日数に-266日を設定すると・・・？<br>
+真実の誕生日の推定計算<br>
+<br>
+改暦地域情報<br>
+<div style="background:#4080b0;">
+<pre>
+    this.ReformTable = {
+      JP: { julianEnd: "1582-10-04", gregorianStart: "1582-10-14", reformDays: "10" },//日本
+      GB: { julianEnd: "1752-09-02", gregorianStart: "1752-09-13", reformDays: "11" },//イギリス
+      RU: { julianEnd: "1918-01-31", gregorianStart: "1918-02-13", reformDays: "13" },//ロシア
+      GR: { julianEnd: "1923-02-15", gregorianStart: "1923-02-28", reformDays: "13" },//ギリシャ
+      ...
+    };
+</pre>
+</div>
+境界条件を正確に求めるのに苦労しました<br>
+<br>
+<hr>
+<br>
+var val = new N6LDate(XXX).normalize()<br>
+console.log(val.toString());<br>
+<br>
+    <table>
+        <thead>
+            <tr>
+                <th>テスト日付</th>
+                <th>テスト解説</th>
+                <th>計算結果</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1/1/1(土)</td>
+                <td>西暦開始</td>
+                <td>1/1/1(土)</td>
+            </tr>
+            <tr>
+                <td>1582/10/4(木)</td>
+                <td>改暦</td>
+                <td>1582/10/4(木)</td>
+            </tr>
+            <tr>
+                <td>1582/10/5(金)</td>
+                <td>改暦当日</td>
+                <td>1582/10/4(木)</td>
+            </tr>
+            <tr>
+                <td>1582/10/14(金)</td>
+                <td>改暦</td>
+                <td>1582/10/4(木)</td>
+            </tr>
+            <tr>
+                <td>1582/10/15(金)</td>
+                <td>改暦</td>
+                <td>1582/10/15(金)</td>
+            </tr>
+            <tr>
+                <td>1582/10/16(土)</td>
+                <td>改暦</td>
+                <td>1582/10/16(土)</td>
+            </tr>
+            <tr>
+                <td>1582/10/31(日)</td>
+                <td>改暦</td>
+                <td>1582/10/31(日)</td>
+            </tr>
+            <tr>
+                <td>1582/11/1(月)</td>
+                <td>改暦</td>
+                <td>1582/11/1(月)</td>
+            </tr>
+            <tr>
+                <td>1896/1/1(水)</td>
+                <td>4年</td>
+                <td>1896/1/1(水)</td>
+            </tr>
+            <tr>
+                <td>1896/2/1(土)</td>
+                <td>4年</td>
+                <td>1896/2/1(土)</td>
+            </tr>
+            <tr>
+                <td>1896/2/28(金)</td>
+                <td>4年</td>
+                <td>1896/2/28(金)</td>
+            </tr>
+            <tr>
+                <td>1896/2/29(土)</td>
+                <td>4年</td>
+                <td>1896/2/29(土)</td>
+            </tr>
+            <tr>
+                <td>1896/3/1(日)</td>
+                <td>4年</td>
+                <td>1896/3/1(日)</td>
+            </tr>
+            <tr>
+                <td>1897/1/1(金)</td>
+                <td>4年</td>
+                <td>1897/1/1(金)</td>
+            </tr>
+            <tr>
+                <td>1900/1/1(月)</td>
+                <td>100年</td>
+                <td>1900/1/1(月)</td>
+            </tr>
+            <tr>
+                <td>1900/2/1(木)</td>
+                <td>100年</td>
+                <td>1900/2/1(木)</td>
+            </tr>
+            <tr>
+                <td>1900/2/28(水)</td>
+                <td>100年</td>
+                <td>1900/2/28(水)</td>
+            </tr>
+            <tr>
+                <td>1900/2/29(木)</td>
+                <td>100年は閏年ではない</td>
+                <td>1900/3/1(木)</td>
+            </tr>
+            <tr>
+                <td>1900/3/1(木)</td>
+                <td>100年</td>
+                <td>1900/3/1(木)</td>
+            </tr>
+            <tr>
+                <td>1900/3/2(金)</td>
+                <td>100年</td>
+                <td>1900/3/2(金)</td>
+            </tr>
+            <tr>
+                <td>1901/1/1(火)</td>
+                <td>100年</td>
+                <td>1901/1/1(火)</td>
+            </tr>
+            <tr>
+                <td>2000/1/1(土)</td>
+                <td>400年</td>
+                <td>2000/1/1(土)</td>
+            </tr>
+            <tr>
+                <td>2000/2/1(火)</td>
+                <td>400年</td>
+                <td>2000/2/1(火)</td>
+            </tr>
+            <tr>
+                <td>2000/2/28(月)</td>
+                <td>400年</td>
+                <td>2000/2/28(月)</td>
+            </tr>
+            <tr>
+                <td>2000/2/29(火)</td>
+                <td>400年</td>
+                <td>2000/2/29(火)</td>
+            </tr>
+            <tr>
+                <td>2000/3/1(水)</td>
+                <td>400年</td>
+                <td>2000/3/1(水)</td>
+            </tr>
+            <tr>
+                <td>2001/1/1(月)</td>
+                <td>400年</td>
+                <td>2001/1/1(月)</td>
+            </tr>
+            <tr>
+                <td>2050/1/1(土)</td>
+                <td>フェアフィールド境界</td>
+                <td>2050/1/1(土)</td>
+            </tr>
+            <tr>
+                <td>2050/2/1(火)</td>
+                <td>フェアフィールド境界</td>
+                <td>2050/2/1(火)</td>
+            </tr>
+            <tr>
+                <td>2050/2/28(月)</td>
+                <td>フェアフィールド境界</td>
+                <td>2050/2/28(月)</td>
+            </tr>
+            <tr>
+                <td>2050/2/29(火)</td>
+                <td>フェアフィールド境界</td>
+                <td>2050/3/1(火)</td>
+            </tr>
+            <tr>
+                <td>2051/1/1(日)</td>
+                <td>フェアフィールド境界</td>
+                <td>2051/1/1(日)</td>
+            </tr>
+        </tbody>
+    </table>
+<br>
+<hr>
+<br>
+koyomi.htm<br>
+<div style="background:#4080b0;">
+<pre>
+
+．．．省略．．．
+
+＜script src="./javascripts/nas6lib/date.js"＞＜/script＞
+＜script＞
+
+function calc() {
+
+// ######### TestCode Start #########
+
+//イリーガルな初期化
+const dtz = new N6LDate(2000,15.5,55.5,30).normalize();
+console.log(dtz.toString());
+// → 2001/05/10(Thu) 06:00:00.000
+
+//日付加算
+const dta = new N6LDate(1582,10,4).normalize();
+console.log(dta.addDays(1).toString());
+// → 1582/10/15(Fri) 00:00:00.000
+const dtb = new N6LDate(2026,10,1,6).normalize();
+console.log(dtb.addMonths(-1.5).toString());
+// → 2026/08/16(Sun) 08:23:47.040
+const dtc = new N6LDate(2026,12,15,6).normalize();
+console.log(dtc.addYears(1.25).toString());
+// → 2028/03/15(Wed) 19:30:00.000
+
+//時刻加算
+const dtd = new N6LDate(2026,7,15,12).normalize();
+console.log(dtd.toString());
+// → 2026/07/15(Wed) 12:00:00.000
+console.log(dtd.addDays(0.75).toString());
+// → 2026/07/16(Thu) 06:00:00.000
+const dte = new N6LDate(2026,7,15,12).normalize();
+console.log(dte.addHours(18).toString());
+// → 2026/07/16(Thu) 06:00:00.000
+
+//改暦デフォルト
+const a = new N6LDate(1582,10,4).normalize();
+const b = new N6LDate(1582,10,15).normalize();
+console.log(b.diffDays(a)); // +1
+console.log(a.diffDays(b)); // -1
+
+//改暦日本
+const jedjp = new N6LDate(1582,10,4,0,0,0,0,"JP").normalize();
+const gsdjp = new N6LDate(1582,10,15,0,0,0,0,"JP").normalize();
+console.log(gsdjp.diffDays(jedjp)); // +1
+console.log(jedjp.diffDays(gsdjp)); // -1
+
+//改暦イギリス
+const jedgb = new N6LDate(1752,9,2,0,0,0,0,"GB").normalize();
+const gsdgb = new N6LDate(1752,9,14,0,0,0,0,"GB").normalize();
+console.log(gsdgb.diffDays(jedgb)); // +1
+console.log(jedgb.diffDays(gsdgb)); // -1
+
+//改暦ロシア
+const jedru = new N6LDate(1918,1,31,0,0,0,0,"RU").normalize();
+const gsdru = new N6LDate(1918,2,14,0,0,0,0,"RU").normalize();
+console.log(gsdru.diffDays(jedru)); // +1
+console.log(jedru.diffDays(gsdru)); // -1
+
+//改暦ギリシャ
+const jedgr = new N6LDate(1923,2,15,0,0,0,0,"GR").normalize();
+const gsdgr = new N6LDate(1923,3,1,0,0,0,0,"GR").normalize();
+console.log(gsdgr.diffDays(jedgr)); // +1
+console.log(jedgr.diffDays(gsdgr)); // -1
+
+//各種変換
+const jp2000 = new N6LDate(2000,1,1,0,0,0,0,"JP").normalize();
+console.log(jp2000.toString());      // 2000/01/01(Sat) 00:00:00.000
+const jdjp2000 = jp2000.toJD();
+console.log(jdjp2000);               // 2451544.5
+const fmjdjp2000 = jp2000.fromJD(jdjp2000);
+console.log(fmjdjp2000.toString());  // 2000/01/01(Sat) 00:00:00.000
+const uxjp2000 = jp2000.toUNIX();
+console.log(uxjp2000);               // 946684800
+const fmuxjp2000 = jp2000.fromUNIX(uxjp2000);
+console.log(fmuxjp2000.toString());  // 2000/01/01(Sat) 00:00:00.000
+
+const ru2000 = new N6LDate(2000,1,1,0,0,0,0,"RU").normalize();
+console.log(ru2000.toString());      // 2000/01/01(Sat) 00:00:00.000
+const jdru2000 = ru2000.toJD();
+console.log(jdru2000);               // 2451544.5
+const fmjdru2000 = ru2000.fromJD(jdru2000);
+console.log(fmjdru2000.toString());  // 2000/01/01(Sat) 00:00:00.000
+
+//平年100年400年検証
+const jp19000228 = new N6LDate(1900,2,28,0,0,0,0,"JP").normalize();
+console.log(jp19000228.toString());      // 1900/02/28(Wed) 00:00:00.000
+const jdjp19000228 = jp19000228.toJD();
+console.log(jdjp19000228);               // 2415078.5
+const fmjdjp19000228 = jp19000228.fromJD(jdjp19000228);
+console.log(fmjdjp19000228.toString());  // 1900/02/28(Wed) 00:00:00.000
+const jp19000229 = new N6LDate(1900,2,29,0,0,0,0,"JP").normalize();
+console.log(jp19000229.toString());      // 1900/03/01(Thu) 00:00:00.000
+const jdjp19000229 = jp19000229.toJD();
+console.log(jdjp19000229);               // 2415079.5
+const fmjdjp19000229 = jp19000229.fromJD(jdjp19000229);
+console.log(fmjdjp19000229.toString());  // 1900/03/01(Thu) 00:00:00.000
+const jp19000301 = new N6LDate(1900,3,1,0,0,0,0,"JP").normalize();
+console.log(jp19000301.toString());      // 1900/03/01(Thu) 00:00:00.000
+const jdjp19000301 = jp19000301.toJD();
+console.log(jdjp19000301);               // 2415079.5
+const fmjdjp19000301 = jp19000301.fromJD(jdjp19000301);
+console.log(fmjdjp19000301.toString());  // 1900/03/01(Thu) 00:00:00.000
+
+const jp20000228 = new N6LDate(2000,2,28,0,0,0,0,"JP").normalize();
+console.log(jp20000228.toString());      // 2000/02/28(Mon) 00:00:00.000
+const jdjp20000228 = jp20000228.toJD();
+console.log(jdjp20000228);               // 2451602.5
+const fmjdjp20000228 = jp20000228.fromJD(jdjp20000228);
+console.log(fmjdjp20000228.toString());  // 2000/02/28(Mon) 00:00:00.000
+const jp20000229 = new N6LDate(2000,2,29,0,0,0,0,"JP").normalize();
+console.log(jp20000229.toString());      // 2000/02/29(Tue) 00:00:00.000
+const jdjp20000229 = jp20000229.toJD();
+console.log(jdjp20000229);               // 2451603.5
+const fmjdjp20000229 = jp20000229.fromJD(jdjp20000229);
+console.log(fmjdjp20000229.toString());  // 2000/02/29(Tue) 00:00:00.000
+const jp20000301 = new N6LDate(2000,3,1,0,0,0,0,"JP").normalize();
+console.log(jp20000301.toString());      // 2000/03/01(Wed) 00:00:00.000
+const jdjp20000301 = jp20000301.toJD();
+console.log(jdjp20000301);               // 2451604.5
+const fmjdjp20000301 = jp20000301.fromJD(jdjp20000301);
+console.log(fmjdjp20000301.toString());  // 2000/03/01(Wed) 00:00:00.000
+
+const jp20010228 = new N6LDate(2001,2,28,0,0,0,0,"JP").normalize();
+console.log(jp20010228.toString());      // 2001/02/28(Wed) 00:00:00.000
+const jdjp20010228 = jp20010228.toJD();
+console.log(jdjp20010228);               // 2451968.5
+const fmjdjp20010228 = jp20010228.fromJD(jdjp20010228);
+console.log(fmjdjp20010228.toString());  // 2001/02/28(Wed) 00:00:00.000
+const jp20010229 = new N6LDate(2001,2,29,0,0,0,0,"JP").normalize();
+console.log(jp20010229.toString());      // 2001/03/01(Thu) 00:00:00.000
+const jdjp20010229 = jp20010229.toJD();
+console.log(jdjp20010229);               // 2451969.5
+const fmjdjp20010229 = jp20010229.fromJD(jdjp20010229);
+console.log(fmjdjp20010229.toString());  // 2001/03/01(Thu) 00:00:00.000
+const jp20010301 = new N6LDate(2001,3,1,0,0,0,0,"JP").normalize();
+console.log(jp20010301.toString());      // 2001/03/01(Thu) 00:00:00.000
+const jdjp20010301 = jp20010301.toJD();
+console.log(jdjp20010301);               // 2451969.5
+const fmjdjp20010301 = jp20010301.fromJD(jdjp20010301);
+console.log(fmjdjp20010301.toString());  // 2001/03/01(Thu) 00:00:00.000
+
+const jp2000715 = new N6LDate(2000,7,15).normalize();
+console.log(jp2000715.getISOWeekDate());  // {isoYear: 2000, isoWeek: 29, isoWeekDay: 3}
+const jp2010715 = new N6LDate(2010,7,15).normalize();
+console.log(jp2000715.getISOTimeDuration(jp2010715));  // -P9Y11M28DT3H34M24.960S
+console.log(jp2000715.getReformInfo());  //In UK, due to the calendar reform, the day following 1752-09-02 was 1752-09-14, and 11 days were skipped.
+console.log(jp2000715.format("YYYY-MM-DD hh:mm:ss.SSS (W)")); // 2000-07-15 00:00:00.000 (Sat)
+jp2000715.regionW = "JP";
+console.log(jp2000715.format("YYYY年 MMMM月 DD日 (W)")); // 2000年 7月 15日 (土)
+
+const jp2030915 = new N6LDate(2030,9,15,12).normalize();
+console.log(jp2030915.toString());         //2030/09/15(Sun) 12:00:00.000
+const uxjp2030915 = jp2030915.toUNIX(jp2030915);
+console.log(uxjp2030915);                  //1915704000
+const fmuxjp2030915 = jp2030915.fromUNIX(uxjp2030915);
+console.log(fmuxjp2030915.toString());     //2030/09/15(Sun) 12:00:00.000
+const ctuxjp2030915 = new N6LDate(uxjp2030915*1000).normalize();
+console.log(ctuxjp2030915.toString());     //2030/09/15(Sun) 12:00:00.000
+
+//シリアライズ
+const dtSz = new N6LDate(2030, 9, 15, 12, 34, 56, 789).normalize();
+dtSz.region = "JP";
+const json = JSON.stringify(dtSz);          // toJSONが自動呼び出し
+// → {"year":2030,"month":9,"day":15,...}
+const restored = N6LDate.fromJSON(JSON.parse(json));
+console.log(restored.toString());           // 2030/09/15(Sun) 12:34:56.789
+
+const jp20150606 = new N6LDate(2015, 6, 6, 12, 34, 56, 789).normalize();
+console.log(jp20150606.startOf("day").toString());    //2015/06/06(Sat) 00:00:00.000
+console.log(jp20150606.startOf("month").toString());  //2015/06/01(Mon) 00:00:00.000
+console.log(jp20150606.startOf("year").toString());   //2015/01/01(Thu) 00:00:00.000
+console.log(jp20150606.startOf("week").toString());   //2015/06/01(Mon) 00:00:00.000
+console.log(jp20150606.endOf("day").toString());      //2015/06/06(Sat) 23:59:59.999
+console.log(jp20150606.endOf("month").toString());    //2015/06/30(Tue) 23:59:59.999
+console.log(jp20150606.endOf("year").toString());     //2015/12/31(Thu) 23:59:59.999
+console.log(jp20150606.endOf("week").toString());     //2015/06/07(Sun) 23:59:59.999
+
+// ######### TestCode End #########
+
+  var element = document.getElementById('REGION');
+  var reg = element.value;
+
+  var elm = document.getElementById('TXTY0');
+  var y0 = Number(elm.value);
+  elm = document.getElementById('TXTM0');
+  var m0 = Number(elm.value);
+  elm = document.getElementById('TXTD0');
+  var d0 = Number(elm.value);
+
+  elm = document.getElementById('TXTY1');
+  var y1 = Number(elm.value);
+  elm = document.getElementById('TXTM1');
+  var m1 = Number(elm.value);
+  elm = document.getElementById('TXTD1');
+  var d1 = Number(elm.value);
+
+  elm = document.getElementById('TXTDT');
+  var dt = Number(elm.value);
+
+  // 基準日（日付0）のインスタンス生成
+  var val0 = new N6LDate(y0, m0, d0, 0, 0, 0, 0, reg).normalize();
+  var val;
+  var dadd = 0;
+  var daddms = 0;
+
+  if (0 ＜ y1) {
+    // 日付1が有効な場合：
+    // 「日付1 - 日付0」の差分日数に、入力された加算日数(dt)を足したものがトータルの加算日数
+    var val1 = new N6LDate(y1, m1, d1, 0, 0, 0, 0, reg).normalize();
+    dadd = val1.diffDays(val0) + dt;
+    val = val0.addDays(dadd);
+  } else {
+    // 日付1が無効（未指定など）の場合：
+    // 日付0を基準に加算日数(dt)のみを反映
+    dadd = dt;
+    val = val0.addDays(dadd);
+    dadd += val.pastdays;
+  }
+
+  daddms = dadd * val0.DayMS;
+
+  // 結果の画面反映
+  elm = document.getElementById('TXTCL');
+  elm.value = val.afterGregorian(val) ? "グレゴリオ暦" : "ユリウス暦";
+
+  elm = document.getElementById('TXTYA');
+  elm.value = val.ya;
+  elm = document.getElementById('TXTMA');
+  elm.value = val.ma;
+  elm = document.getElementById('TXTDA');
+  elm.value = val.da;
+
+  elm = document.getElementById('TXTDTA');
+  elm.value = dadd;
+  elm = document.getElementById('TXTWKA');
+  elm.value = val.weeks[Number(val.wk)];
+  elm = document.getElementById('TXTMSA');
+  elm.value = daddms;
+}
+
+
+function now() {
+  var dt = new Date();
+  var year = dt.getFullYear();
+  var month = dt.getMonth() + 1; // getMonth() is 0-indexed, so add 1 for actual month
+  var day = dt.getDate();
+  var elm = document.getElementById('TXTY0');
+  elm.value = year;
+  elm = document.getElementById('TXTY1');
+  elm.value = year;
+  elm = document.getElementById('TXTM0');
+  elm.value = month;
+  elm = document.getElementById('TXTM1');
+  elm.value = month;
+  elm = document.getElementById('TXTD0');
+  elm.value = day;
+  elm = document.getElementById('TXTD1');
+  elm.value = day;
+}
+
+function newyear() {
+  elm = document.getElementById('TXTM0');
+  elm.value = 1;
+  elm = document.getElementById('TXTM1');
+  elm.value = 1;
+  elm = document.getElementById('TXTD0');
+  elm.value = 1;
+  elm = document.getElementById('TXTD1');
+  elm.value = 1;
+}
+
+function cls(i) {
+  var elm;
+  if(i == 1) {
+    elm = document.getElementById('TXTY0');
+    elm.value = 1;
+    elm = document.getElementById('TXTM0');
+    elm.value = 1;
+    elm = document.getElementById('TXTD0');
+    elm.value = 1;
+  }
+  else {
+    elm = document.getElementById('TXTY1');
+    elm.value = -1;
+    elm = document.getElementById('TXTM1');
+    elm.value = 1;
+    elm = document.getElementById('TXTD1');
+    elm.value = 1;
+  }
+}
+
+＜/script＞
+
+．．．省略．．．
+
+＜hr＞
+＜br＞
+日付0＜br＞
+西暦(自動判別)＜input type="text" id="TXTY0" value="1"＞年　＜input type="text" id="TXTM0" value="1"＞月　＜input type="text" id="TXTD0" value="1"＞日＜br＞
+日付1＜br＞
+西暦(自動判別)＜input type="text" id="TXTY1" value="-1"＞年　＜input type="text" id="TXTM1" value="1"＞月　＜input type="text" id="TXTD1" value="1"＞日＜br＞
+加算日数＜input type="text" id="TXTDT" value="0"＞日＜br＞
+＜br＞
+解答＜br＞
+＜input type="text" id="TXTCL" value="ユリウス暦" disabled＞＜br＞
+＜input type="text" id="TXTYA" value="1" disabled＞年　＜input type="text" id="TXTMA" value="1" disabled＞月　＜input type="text" id="TXTDA" value="1" disabled＞日＜br＞
+曜日＜input type="text" id="TXTWKA" value="土" disabled＞曜日＜br＞
+経過日数＜input type="text" id="TXTDTA" value="0" disabled＞日＜br＞
+経過ミリ秒＜input type="text" id="TXTMSA" value="0" disabled＞ミリ秒＜br＞
+＜br＞
+＜input type="button" onclick="calc()"  value="計　算"＞　＜input type="button" onclick="now()"  value="現在日時"＞　＜input type="button" onclick="newyear()"  value="1月1日"＞
+＜input type="button" onclick="cls(1)"  value="1クリア"＞　＜input type="button" onclick="cls(2)"  value="2クリア"＞＜br＞
+＜hr＞
+
+．．．省略．．．
+
+</pre>
+</div>
+<br>
+<br>
+<h3>nas6lib/date.jsメンバ関数</h3>
+<br>
+<div style="background:#4080b0;">
+<pre>
+
+  //var dt = new N6LDate().normalize();のように.normalize()を必ずつけてください
+  constructor(ya, ma, da, ho, mo, so, ms, region = "JP")
+  //クローン
+  clone() 
+  //N6LDays.pastdaysに仮置きするために1日のうちの時間成分の小数部を計算
+  tempPDays(val)
+  adjustTime(val)
+
+  //通算日数取得(ユリウス暦・グレゴリオ暦自動処理)誤差含む
+  //また正確な経過日数はnormalize()かadjustCalendar()後N6LDate.pastdayかN6LDate.msから取得してください
+  calendarToDay(val) 
+
+  //前日に変換
+  suboneday(val)
+  //日付解析
+  parseDate(str)
+
+  //週取得
+  getWeek()
+  //通算ミリセカンド取得チックタイム(元期1/1/1:0:0:0.000)
+  getMS()
+  //通算日数取得(元期1/1/1:0:0:0.000)
+  getPDays()
+  //時間取得
+  getTime()
+  //週番号
+  getWeekNumber()
+  //ISO Week Date（ISO 8601）
+  getISOWeekDate()
+  //ISO 8601 Time Duration（期間表記）
+  getISOTimeDuration(target)
+  //改暦情報
+  getReformInfo(region = "GB", lng = "DEFAULT")
+
+  //ユリウス暦グレゴリオ暦改暦
+  afterGregorian(val)
+  //当年閏年判定
+  isLeap(val, flg = true)
+  //月末判定
+  isMonthEnd(val)
+  //月末取得
+  getMonthEnd(val, flg = true)
+  //周期カウントアップ
+  collection(y,ry,term)
+  //通算閏年取得
+  getLeap(val) 
+
+  //this内容変更含む
+  SetVal(val)
+
+  // 通算日からグレゴリオ暦の日付オブジェクトを生成する
+  gregorianDayToDate(targetDay, flg = true) 
+  // ユリウス暦加算処理（通算日からユリウス暦の日付オブジェクトを生成）
+  julianDayToDate(targetDay, flg = false) 
+  // 日付調整処理（ユリウス暦・グレゴリオ暦自動処理）
+  adjustCalendar(rh = null) 
+  //[!!!通算ミリ秒!!!][日時週]正規化
+  //this内容変更含む
+  // 自身の日付・時間を正規化する（再帰を起こさない安全な実装）
+  normalize()
+
+  // 差分ミリセカンド取得 (this - target)
+  diffMS(target)
+  // 差分日数取得 (this - target)
+  diffDays(target)
+  // 差分構造体取得 (this - target)
+  diffDuration(target)
+
+  //比較演算
+  isBefore(target) 
+  isAfter(target) 
+  isEqual(target, eps = 1e-6)
+
+  // フォーマット出力 (例: "2026/07/29 04:55:04 水")
+  toString(fmtsw = 0)
+  static get N6LDATE_FMT_DEFAULT()  { return 0; }  // "2026/07/29(水) 04:55:04.123"
+  static get N6LDATE_FMT_FULL()     { return 1; }  // "2026/07/29 04:55:04.123 (水)"
+  static get N6LDATE_FMT_NW()       { return 2; }  // "2026/07/29 04:55:04.123"
+  static get N6LDATE_FMT_DATE()     { return 3; }  // "2026/07/29(水)"
+  static get N6LDATE_FMT_DATE_NW()  { return 4; }  // "2026/07/29"
+  static get N6LDATE_FMT_ISO()      { return 5; }  // "2026-07-29(水) T 04:55:04.123 Z"
+  static get N6LDATE_FMT_ISO_W()    { return 6; }  // "2026-07-29 T 04:55:04.123 Z (水)"
+  static get N6LDATE_FMT_ISO_NW()   { return 7; }  // "2026-07-29 T 04:55:04.123 Z"
+  static get N6LDATE_FMT_ISO_D()    { return 8; }  // "2026-07-29(水)"
+  static get N6LDATE_FMT_ISO_D_NW() { return 9; }  // "2026-07-29"
+  // カスタムフォーマット出力
+  // 例: date.format("YYYY-MM-DD hh:mm:ss.SSS (W)")
+  format(pattern)
+
+  // Dateオブジェクト出力
+  toDate() 
+  // Temporalオブジェクト出力
+  toTemporal()
+  //現在日時でクリエイト
+  Now()
+
+  // ユリウス日
+  toJD()
+  fromJD(rh)
+
+  // 修正ユリウス日
+  toMJD()
+  fromMJD(rh)
+
+  // ユニックス時間
+  toUNIX()
+  fromUNIX(rh)
+
+  // ユニックス時間ミリ秒
+  toUNIXms()
+  fromUNIXms(rh)
+
+  //シリアライズ
+  //const dt = new N6LDate(2030, 9, 15, 12, 34, 56, 789).normalize();
+  //dt.region = "JP";
+  //const json = JSON.stringify(dt);          // toJSONが自動呼び出し
+  // → {"year":2030,"month":9,"day":15,...}
+  //const restored = N6LDate.fromJSON(JSON.parse(json));
+  //console.log(restored.toString());         // 2030/09/15(Sun) 12:34:56.789
+  toJSON()
+  static fromJSON(json)
+
+  startOf(unit)
+  endOf(unit)
+ 
+  // 各種加算//引数を少数を含む経過日にしてadjustCalendarを叩くだけ
+  addYears(rh)
+  addMonths(rh)
+  addDays(rh) 
+  addHours(rh)
+  addMinutes(rh)
+  addSeconds(rh)
+  addMSs(rh) 
+
+</pre>
+</div>
+<br>
+<br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<iframe
+  id="LinkFrame"
+  title="LinkFrame"
+  width="800"
+  height="5000"
+  src="./prg3dlink.htm">
+</iframe>
+<script>
+  window.addEventListener("message", function(event) {
+    // セキュリティのため、必要であれば origin を確認する
+    if (event.origin !== "https://nas6.net") return;
+
+    if (event.data && event.data.frameHeight) {
+      const iframe = document.getElementById("LinkFrame");
+      if (iframe) {
+        iframe.style.height = event.data.frameHeight + "px";
+      }
+    }
+  }, false);
+</script>
+<br>
+<br>
+<br>
+<a href="./rel2.htm">＜＜prev</a>　一般相対性理論：シュワルツシルト解の利用法　：　WEBGPUテストと無限透視射影　<a href="./perthWEBGPU.htm">>next＞＞</a><br>
+<br>
+<br>
+<br>
+</b>
+<hr>
+<b>
+<b>
+<br>
+<br>
+<a href="./index.htm">戻る</a>
+<br>
+<br>
+</b>
+<script src="./javascripts/nas6/autoad.js" async></script>
+<div id="ad-container-053"></div>
+</body>
+
+</html>

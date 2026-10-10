@@ -26,6 +26,7 @@ var intvl = 40;
 var bAPHE = false;
 var sVDT = null;
 var bankperiPos = [];
+var bankorbPos = new N6LRingBuffer(10240);
 
 var PeriAPCs = [];
 var ApheAPCs = [];
@@ -50,8 +51,8 @@ var rk = new N6LRngKt();
 
 var certification = 'NAS6OrbitData'; //ファイル認証
 
-
-jQuery(document).ready(function(){
+window.addEventListener('load', function() {
+  log25();
 
   jQuery("#export").click(function(){
     var id = "download";
@@ -62,6 +63,11 @@ jQuery(document).ready(function(){
     ov = commentOutOverview(ov);
     var peri = getperilog();
     peri = commentOutOverview(peri);
+    var vv = Math.sqrt(target.CNST_G*(targetO.m_m + target.m_m)/(target.m_a * target.CNST_AU));
+    var pn1 = ((6 * Math.PI * target.CNST_G * (targetO.m_m + target.m_m)) / 
+                         (Math.pow(target.CNST_C, 2) * (target.m_a * target.CNST_AU) * (1 - Math.pow(target.m_e, 2))));
+    var pn25 = ((-32/5)*(((Math.pow(target.CNST_G,3)*targetO.m_m*target.m_m*
+                             (targetO.m_m + target.m_m))/(Math.pow(target.CNST_C,5)*Math.pow((target.m_a * target.CNST_AU),4)))*vv));
 
     // プロパティ部分の再構築
     var orbitCsvProperty = "# NAS6 Orbit Data Report\n";
@@ -86,8 +92,10 @@ jQuery(document).ready(function(){
         "# [Theory Values]\n" +
         "# rs[m] = 2GM/c^2: " + (2 * target.CNST_G * targetO.m_m / target.CNST_C / target.CNST_C) + "[m]\n" +
         // 1周期あたりの近星点移動角 (rad/rev)
-        "# dphi[rad/rev] = (6πG(M+m))/(c^2a(1-e^2)): " + ((6 * Math.PI * target.CNST_G * (targetO.m_m + target.m_m)) / 
-                         (Math.pow(target.CNST_C, 2) * (target.m_a * target.CNST_AU) * (1 - Math.pow(target.m_e, 2)))) + "[rad/rev]\n" +
+        "# dphi[rad/rev] = (6πG(M+m))/(c^2a(1-e^2)): " + pn1 + "[rad/rev]\n" +
+        "# v[m/s] = √(G(M+m)/a): " + vv + "[m/s]\n" +
+        "# 2.5PN[rad/rev] = (-32/5)((G^2m(M+m))/(c^5a^2))v: " + pn25 + "[rad/rev]\n" +
+        "# 1PN + 2.5PN[rad/rev] : " + (pn1 + pn25) + "[rad/rev]\n" +
         "# [Orbital Elements]\n" +
         "# a: " + target.m_a + "[AU], e: " + target.m_e + ", P: " + target.m_t + "[year]\n" +
         // m_l0は角度なので数値として出力、基準日は別途記載
@@ -144,11 +152,59 @@ jQuery(document).ready(function(){
   init(0);
   myMercury();
   TimerID = TMan.add();
-  TMan.timer[TimerID].setalerm(function() { GLoop(TimerID); }, intvl);}
-);
+  TMan.timer[TimerID].setalerm(function() { GLoop(TimerID); }, intvl);
+});
+function log25() {
+    var E = [-1.8574006315225306e+44, -1.8563859015919914e+44, -1.8566250079256355e+44, -1.8570052918271725e+44, -1.8575197741815903e+44,
+             -1.8581651371673278e+44, -1.8589378646257356e+44, -1.859834233831663e+44,  -1.8608503080569826e+44, -1.861981924587957e+44,
+             -1.8632246894964095e+44, -1.8645739652964386e+44, -1.866024862256942e+44,  -1.8675722298359598e+44, -1.8692154176509927e+44,
+             -1.8709472333823047e+44, -1.8727596557073097e+44, -1.874656843546097e+44,  -1.8766232797190547e+44, -1.878665132324686e+44];
+    
+    var canvas = document.getElementById('cnv25');
+    if (!canvas) { setTimeout(log25, 100); return; }
+    
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    var w = canvas.width;
+    var h = canvas.height;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, w, h);
+    
+    ctx.beginPath();
+    ctx.strokeStyle = '#00c000';
+    ctx.lineWidth = 2;
 
+    var minE = Math.min(...E);
+    var maxE = Math.max(...E);
+    var range = maxE - minE;
+    if (range === 0) range = 1e+43;
 
+    // 余白を10%ずつ設定
+    const padding = 0.1;
+    const top = h * padding;
+    const bottom = h * (1 - padding);
+    const drawHeight = bottom - top;
 
+    for (var i = 0; i < E.length; i++) {
+        var x = i * (w / (E.length - 1));
+        
+        // 正規化：(値 - 最小値) / 範囲
+        // 最小値が bottom に、最大値が top に来るように計算
+        var normalizedY = (E[i] - minE) / range;
+        var y = bottom - (normalizedY * drawHeight);
+        
+        if (i === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    }
+    
+    ctx.stroke();
+}
 function viewp() {
   if(!x3domRuntime) return;
   var selid = document.F1.VP.selectedIndex;
@@ -172,11 +228,51 @@ function viewp() {
 
 
 
+
+// --- Main Animation Loop ---
+// The core loop that updates the simulation and renders the X3D scene.
+function GLoop(id){
+  // 1. x3domRuntime がまだ取得できていない場合は取得を試みる
+  if(x3domRuntime == undefined) {
+    var elem = document.getElementById('x3dabs');
+    if(elem && elem.runtime) {
+      x3domRuntime = elem.runtime;
+    }
+  }
+
+  // 2. ランタイムが取得できている場合のみ処理を実行する
+  if(x3domRuntime != undefined) {
+    try {
+      // 初回ロード中の未初期化によるエラーを防ぐため try...catch で保護
+      viewp(); // Update camera viewpoint based on selected planet
+      drawCnvsPeri();
+      
+      // If waiting for data to be read or during initial setup, perform waiting logic
+      //if(bWaiting || 0 < fFst) onWaiting();
+      
+      // If simulation is set to run, update the simulation frame
+      if(bRunning) onRunning();
+      
+      // Change the timer manager's interval if it differs from the desired 'intvl'
+      if(TMan.interval != intvl) TMan.changeinterval(intvl);
+      
+    } catch(e) {
+      // まだX3DOMの準備が完全に整っていない間のエラーはログに出すだけで、ループを止めない
+      // console.log("X3DOM is initializing...", e);
+    }
+  }
+
+  // 3. 次回のループ予約は確実に行う（これで初期化完了を待てる）
+  TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);
+}
+
+/*
 //メインループ
 function GLoop(id){
   if(x3domRuntime == undefined) x3domRuntime = document.getElementById('x3dabs').runtime;
   else {
     viewp();
+    drawCnvsPeri();
     if(bRunning) onRunning();
     if(TMan.interval != intvl) TMan.changeinterval(intvl);
   }
@@ -190,6 +286,7 @@ function GLoop(id){
   // 2. 新しく「唯一の予約」を入れる
   TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);
 }
+*/
 
 function mySet1(){
      document.F1.my1FormANM.value = my1ANM;
@@ -495,6 +592,7 @@ if(checkList[0].checked){
 
 function onZAP() {
   Speed = eval(document.F1.SPD.value);
+  BankSpd = eval(document.F1.BSPD.value);
   Zoom = eval(document.F1.ZOM.value);
   rk.SpdRate = Speed;
   setmp();
@@ -506,18 +604,86 @@ function onZAP() {
 function onLOOK() {
 //  document.F1.SPD.value = document.F1.my1FormP.value * 2;
   BankSpd = document.F1.my1FormP.value * 2;
+  document.F1.BSPD.value = document.F1.my1FormRA2.value / 2;
   document.F1.ZOM.value = document.F1.my1FormRA2.value / 2;
+}
+
+var tcol = 0;
+function rainbowText() {
+  const text = document.getElementById('progressText');
+  // time が秒やミリ秒など、日数を計算する元データだとします
+  // Constants for time unit conversions (re-declared locally)
+  var msecPerMinute = 1000 * 60;
+  var msecPerHour = msecPerMinute * 60;
+  var msecPerDay = msecPerHour * 24;
+  var unit = ["[msec]","[sec]","[days]","[years]"]
+  var days = Math.abs(time - StTime) / msecPerDay * 1000; // Calculate elapsed days from simulation start time
+  if(isNaN(days)) days = 0;
+  var sgn = 1;
+  if(time - StTime < 0) sgn = -1;
+  var disp = 0;
+  var dispKind = 0;
+  if(days < 1 / 24 / 3600){
+    dispKind = 0;
+    disp = days * 24 * 3600 * 1000;
+  }
+  else if(days < 1){
+    dispKind = 1;
+    disp = days * 24 * 3600;
+  }
+  else if(days < 365.2425){
+    dispKind = 2;
+    disp = days;
+  }
+  else if(365.2425 <= days){
+    dispKind = 3;
+    disp = days / 365.2425;
+  }
+  if(disp === 0) dispKind = 2;
+  // マイナスの場合のみ "-" をつける文字列をテンプレートリテラル内で綺麗にまとめる
+  var signStr = (sgn < 0) ? "-" : "";
+  var timeStr = `Elapsed Simulation Time :\n${signStr}${disp.toFixed(3)} ${unit[dispKind]}`;
+
+  if (bRunning) {
+    text.textContent = `in Progress...\n${timeStr}`;
+    tcol = (tcol + 10) % 360;
+    text.style.color = `hsl(${tcol}, 80%, 50%)`;
+  } else {
+    text.textContent = `on Pause...\n${timeStr}`;
+    text.style.color = "#555";
+  }
+}
+
+function toggleAnimation() {
+  const mover = document.getElementById('progressMover');
+  const girl = document.getElementById('progressGirl');
+  const text = document.getElementById('progressText');
+
+  if (bRunning) {
+    // 動かすときの処理
+    mover.style.animationPlayState = 'running';
+    girl.style.animationPlayState = 'running';
+    //text.textContent = 'in Progress...';
+  } else {
+    // 止めるときの処理
+    mover.style.animationPlayState = 'paused';
+    girl.style.animationPlayState = 'paused';
+    //text.textContent = 'on Pause...';
+  }
+  rainbowText();
 }
 
 function onPOS() {
   bRunning = !bRunning;
   bAPHE = false;
+  toggleAnimation();
 }
 
 function onCLS() {
   bRunning = false;
   init(0);  
   onCAL();
+  toggleAnimation();
 }
 
 function onDEL() {
@@ -536,6 +702,7 @@ function onDEL() {
   setmp();
   setline();
   onCAL();
+  toggleAnimation();
 }
 
 function onCAL() {
@@ -608,6 +775,7 @@ function onCAL() {
     document.F1.my12FormLTT0.value = 0;
   }
   init(1);  
+  toggleAnimation();
 }
 
 function getSatId() {
@@ -652,12 +820,14 @@ function onAPP(flg = false) {
     mySetMP(id, flg); 
     init(1);
   }
+  toggleAnimation();
 }
 
 function onSTP() {
   bRunning = false;
   bAPHE = false;
   //init(1, false);
+  toggleAnimation();
 }
 
 function onREV() {
@@ -671,6 +841,7 @@ function onREV() {
     rk.SpdRate = Speed * BankSpd;
   }
   init(-1);
+  toggleAnimation();
 }
 
 function onRUN() {
@@ -684,6 +855,7 @@ function onRUN() {
     rk.SpdRate = Speed * BankSpd;
   }
   init(1);
+  toggleAnimation();
 }
 
 function init(b, bb = true, bbb = false) {
@@ -741,11 +913,13 @@ function init(b, bb = true, bbb = false) {
     if(planet[id].m_pname) pname0 = planet[id].m_pname;
     idt.setAttribute('string', pname0);
   }
+  StTime = time;
 }
 
 function onRunning() {
   //メインループ
   UpdateFrameRelative();
+  rainbowText();
 }
 
 function InitRelative(b = false) {
@@ -819,7 +993,7 @@ function UpdateFrameRelative() {
 
     setmp();
     settime();
-    drawCnvsPeri();
+    //drawCnvsPeri();
   } 
 }
 
@@ -1028,7 +1202,11 @@ function myMercury(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 338.653;
   var id = getSatId();
-  if(id === 1) BankSpd = 1;
+  if(id === 1) {
+    BankSpd = 1;
+    document.F1.BSPD.value = 1;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.2;
   document.F2.THEO.value = 43.11;
   planet[id].m_pname = "Mercury";
@@ -1056,7 +1234,11 @@ function myVenus(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 160.49;
   var id = getSatId();
-  if(id === 1) BankSpd = 2;
+  if(id === 1) {
+    BankSpd = 2;
+    document.F1.BSPD.value = 2;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.5;
   document.F2.THEO.value = 8.62;
   planet[id].m_pname = "Venus";
@@ -1084,7 +1266,11 @@ function myEarth(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 176.453;
   var id = getSatId();
-  if(id === 1) BankSpd = 2;
+  if(id === 1) {
+    BankSpd = 2;
+    document.F1.BSPD.value = 2;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 1;
   document.F2.THEO.value = 3.84;
   planet[id].m_pname = "Earth";
@@ -1112,7 +1298,11 @@ function myMars(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 68.889;
   var id = getSatId();
-  if(id === 1) BankSpd = 3;
+  if(id === 1) {
+    BankSpd = 3;
+    document.F1.BSPD.value = 3;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 1;
   document.F2.THEO.value = 1.35;
   planet[id].m_pname = "Mars";
@@ -1140,7 +1330,11 @@ function myJupiter(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 273.712;
   var id = getSatId();
-  if(id === 1) BankSpd = 10;
+  if(id === 1) {
+    BankSpd = 10;
+    document.F1.BSPD.value = 10;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 2.5;
   document.F2.THEO.value = 0.06;
   planet[id].m_pname = "Jupiter";
@@ -1168,7 +1362,11 @@ function mySaturn(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 274.229;
   var id = getSatId();
-  if(id === 1) BankSpd = 20;
+  if(id === 1) {
+    BankSpd = 20;
+    document.F1.BSPD.value = 20;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 5;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Saturn";
@@ -1196,7 +1394,11 @@ function myUranus(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 126.044;
   var id = getSatId();
-  if(id === 1) BankSpd = 40;
+  if(id === 1) {
+    BankSpd = 40;
+    document.F1.BSPD.value = 40;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 10;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Uranus";
@@ -1224,7 +1426,11 @@ function myNeptune(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 248.574;
   var id = getSatId();
-  if(id === 1) BankSpd = 60;
+  if(id === 1) {
+    BankSpd = 60;
+    document.F1.BSPD.value = 60;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 15;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Neptune";
@@ -1252,7 +1458,11 @@ function myPluto(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 9.236;
   var id = getSatId();
-  if(id === 1) BankSpd = 90;
+  if(id === 1) {
+    BankSpd = 90;
+    document.F1.BSPD.value = 90;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 20;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Pluto";
@@ -1280,7 +1490,11 @@ function myCeres(){
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 37.9;
   var id = getSatId();
-  if(id === 1) BankSpd = 5;
+  if(id === 1) {
+    BankSpd = 5;
+    document.F1.BSPD.value = 5;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Ceres";
@@ -1308,7 +1522,11 @@ function myPallas(){
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 24.0;
   var id = getSatId();
-  if(id === 1) BankSpd = 5;
+  if(id === 1) {
+    BankSpd = 5;
+    document.F1.BSPD.value = 5;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Pallas";
@@ -1336,7 +1554,11 @@ function myJuno(){
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 251.4;
   var id = getSatId();
-  if(id === 1) BankSpd = 5;
+  if(id === 1) {
+    BankSpd = 5;
+    document.F1.BSPD.value = 5;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Juno";
@@ -1364,7 +1586,11 @@ function myVesta(){
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 280.7;
   var id = getSatId();
-  if(id === 1) BankSpd = 5;
+  if(id === 1) {
+    BankSpd = 5;
+    document.F1.BSPD.value = 5;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 1.5;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Vesta";
@@ -1392,7 +1618,11 @@ function myChiron(){
   document.F1.my1FormTT0.value = 25.77209506078195;
   document.F1.my1FormLTT0.value = 357.5;
   var id = getSatId();
-  if(id === 1) BankSpd = 40;
+  if(id === 1) {
+    BankSpd = 40;
+    document.F1.BSPD.value = 40;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 9;
   document.F2.THEO.value = 0.01;
   planet[id].m_pname = "Chiron";
@@ -1420,13 +1650,49 @@ function myHalley(){
   document.F1.my1FormTT0.value = 24.129174452589716;
   document.F1.my1FormLTT0.value = 38.38;
   var id = getSatId();
-  if(id === 1) BankSpd = 60;
+  if(id === 1) {
+    BankSpd = 60;
+    document.F1.BSPD.value = 60;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 15;
   document.F2.THEO.value = 1.958;
   planet[id].m_pname = "Halley";
   document.F1.my1FormNM.value = "Halley";
   planet[0].m_pname = "Sun";
   document.F1.my1FormANM.value = "Sun";
+  onAPP();
+}
+
+function myE095(){
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.95;
+  document.F1.my1FormRA1.value = 0.586;
+  document.F1.my1FormRA2.value = 35.08;
+  document.F1.my1FormP.value = 75;
+  document.F1.my1FormM2.value = 1E+15;
+  document.F1.my1FormM1.value = 2e+30;
+  document.F1.my1FormOMG.value = 0;
+  document.F1.my1FormINC.value = 0;
+  document.F1.my1FormOmg.value = 0;
+  document.F1.my1FormTT0.value = 0;
+  document.F1.my1FormLTT0.value = 0;
+  var id = getSatId();
+  if(id === 1) {
+    BankSpd = 60;
+    document.F1.BSPD.value = 60;
+  }
+  document.F1.SPD.value = 1;
+  document.F1.ZOM.value = 15;
+  document.F2.THEO.value = 1.958;
+  planet[id].m_pname = "Object";
+  document.F1.my1FormNM.value = "Object";
+  planet[0].m_pname = "Attractor";
+  document.F1.my1FormANM.value = "Attractor";
   onAPP();
 }
 
@@ -1477,7 +1743,11 @@ function myPSRB1913A(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.001;
+  if(id === 1) {
+    BankSpd = 0.001;
+    document.F1.BSPD.value = 0.001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.01;
   document.F2.THEO.value = 1519200;
   planet[id].m_pname = "PSRB1913+16";
@@ -1505,7 +1775,11 @@ function myPSRB1913B(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.001;
+  if(id === 1) {
+    BankSpd = 0.001;
+    document.F1.BSPD.value = 0.001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.01;
   document.F2.THEO.value = 1519200;
   planet[id].m_pname = "PSRB1913B";
@@ -1536,7 +1810,11 @@ function myPSRJ0737A(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.0001;
+  if(id === 1) {
+    BankSpd = 0.0001;
+    document.F1.BSPD.value = 0.0001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.0025;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "PSRJ0737-3039";
@@ -1567,7 +1845,11 @@ function myPSRJ0737B(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.0001;
+  if(id === 1) {
+    BankSpd = 0.0001;
+    document.F1.BSPD.value = 0.0001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.0025;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "PSRJ0737B";
@@ -1595,7 +1877,11 @@ function mySgrAStar(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 10;
+  if(id === 1) {
+    BankSpd = 10;
+    document.F1.BSPD.value = 10;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 500;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "SgrAStar";
@@ -1623,7 +1909,11 @@ function myBHPrimaryA(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.00001;
+  if(id === 1) {
+    BankSpd = 0.00001;
+    document.F1.BSPD.value = 0.00001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.0003;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "BHPrimaryA";
@@ -1651,7 +1941,11 @@ function myBHPrimaryB(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.0001;
+  if(id === 1) {
+    BankSpd = 0.0001;
+    document.F1.BSPD.value = 0.0001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.005;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "BHPrimaryB";
@@ -1679,7 +1973,11 @@ function myBHPrimaryC(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.00001;
+  if(id === 1) {
+    BankSpd = 0.00001;
+    document.F1.BSPD.value = 0.00001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.0008;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "BHPrimaryC";
@@ -1707,7 +2005,11 @@ function myBHPrimaryD(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.00001;
+  if(id === 1) {
+    BankSpd = 0.00001;
+    document.F1.BSPD.value = 0.00001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.0008;
   document.F2.THEO.value = 608400;
   planet[id].m_pname = "BHPrimaryD";
@@ -1717,16 +2019,16 @@ function myBHPrimaryD(){
   onAPP();
 }
 
-function myOrbitHartMark(){
+function myBHPrimaryE(){
   var radioList = document.getElementsByName("calc1");
   radioList[0].checked = true;
   radioList = document.getElementsByName("deg");
   radioList[0].checked = true;
   document.F1.my1FormT0.value = 0;
   document.F1.my1FormE.value = 0.1;
-  document.F1.my1FormRA1.value = 0.0013264238028072798;
-  document.F1.my1FormRA2.value = 0.0016211846478755647;
-  document.F1.my1FormP.value = 0.000007;
+  document.F1.my1FormRA1.value = 0.000016824814321703178;
+  document.F1.my1FormRA2.value = 0.00002056366194874833;
+  document.F1.my1FormP.value = 1e-8;
   document.F1.my1FormM2.value = 5.9e+31;
   document.F1.my1FormM1.value = 7.1e+31;
   document.F1.my1FormOMG.value = 0;
@@ -1735,21 +2037,88 @@ function myOrbitHartMark(){
   document.F1.my1FormTT0.value = 0;
   document.F1.my1FormLTT0.value = 0;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.000033;
-  document.F1.ZOM.value = 0.0015;
-  document.F2.THEO.value = 608400;
-  planet[id].m_pname = "OrbitHartMark";
-  document.F1.my1FormNM.value = "OrbitHartMark";
+  if(id === 1) {
+    BankSpd = 2e-8;
+    document.F1.BSPD.value = 2e-8;
+  }
+  document.F1.SPD.value = 1;
+  document.F1.ZOM.value = 0.000010281830974374165;
+  document.F2.THEO.value = 1355442036344960.2;
+  planet[id].m_pname = "BHPrimaryE";
+  document.F1.my1FormNM.value = "BHPrimaryE";
   planet[0].m_pname = "Attractor";
   document.F1.my1FormANM.value = "Attractor";
-  var checkList2 = document.getElementsByName("VDT");
-  checkList2[0].checked = false;
-  if (typeof checkList2[0].onclick == "function") {
-      checkList2[0].onclick();
-  }
-//  onAPP(true);
   onAPP();
 }
+
+function myOrbitHartMark(){
+  onCLS();
+  var radioList = document.getElementsByName("PUTSEL");
+  radioList[0].checked = true;
+  var radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0;
+  document.F1.my1FormE.value = 0.2056;
+  document.F1.my1FormRA1.value = 663.743713149915;
+  document.F1.my1FormRA2.value = 1007.3129664822982;
+  document.F1.my1FormP.value = 0.2409;
+  document.F1.my1FormM2.value = 3.301e+23;
+  document.F1.my1FormM1.value = 2e+40;
+  document.F1.my1FormOMG.value = 48.335;
+  document.F1.my1FormINC.value = 7.005;
+  document.F1.my1FormOmg.value = 29.023967;
+  document.F1.my1FormTT0.value = 26.49764538385719;
+  document.F1.my1FormLTT0.value = 338.653;
+  var id = getSatId();
+  if(id === 1) {
+    BankSpd = 1;
+    document.F1.BSPD.value = 1;
+  }
+  document.F1.SPD.value = 1;
+  document.F1.ZOM.value = 500;
+  document.F2.THEO.value = 200202777.80640692;
+  planet[id].m_pname = "VirtualMercuryA";
+  document.F1.my1FormNM.value = "VirtualMercuryA";
+  planet[0].m_pname = "VirtualSun";
+  document.F1.my1FormANM.value = "VirtualSun";
+  onAPP();
+  radioList = document.getElementsByName("PUTSEL");
+  radioList[1].checked = true;
+  radioList = document.getElementsByName("calc1");
+  radioList[0].checked = true;
+  radioList = document.getElementsByName("deg");
+  radioList[0].checked = true;
+  document.F1.my1FormT0.value = 0.03;
+  document.F1.my1FormE.value = 0.2056;
+  document.F1.my1FormRA1.value = 663.743713149915;
+  document.F1.my1FormRA2.value = 1007.3129664822982;
+  document.F1.my1FormP.value = 0.2409;
+  document.F1.my1FormM2.value = 3.301e+23;
+  document.F1.my1FormM1.value = 2e+40;
+  document.F1.my1FormOMG.value = 48.335;
+  document.F1.my1FormINC.value = 7.005;
+  document.F1.my1FormOmg.value = 29.023967;
+  document.F1.my1FormTT0.value = 26.49764538385719;
+  document.F1.my1FormLTT0.value = 338.653;
+  id = getSatId();
+  if(id === 1) {
+    BankSpd = 1;
+    document.F1.BSPD.value = 1;
+  }
+  document.F1.SPD.value = 1;
+  document.F1.ZOM.value = 500;
+  document.F2.THEO.value = 200202777.80640692;
+  planet[id].m_pname = "VirtualMercuryB";
+  document.F1.my1FormNM.value = "VirtualMercuryB";
+  planet[0].m_pname = "VirtualSun";
+  document.F1.my1FormANM.value = "VirtualSun";
+  onAPP();
+  radioList = document.getElementsByName("PUTSEL");
+  radioList[0].checked = true;
+}
+
 
 function myISS(){
   var radioList = document.getElementsByName("calc1");
@@ -1769,7 +2138,11 @@ function myISS(){
   document.F1.my1FormTT0.value = 44.156034388347386;
   document.F1.my1FormLTT0.value = 268.6108;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.001;
+  if(id === 1) {
+    BankSpd = 0.001;
+    document.F1.BSPD.value = 0.001;
+  }
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 0.00003;
   document.F2.THEO.value = 25000;
   planet[id].m_pname = "ISS";
@@ -1797,7 +2170,10 @@ function myVirtualEarth(){
   document.F1.my1FormTT0.value = 26.49764538385719;
   document.F1.my1FormLTT0.value = 176.453;
   var id = getSatId();
-  if(id === 1) BankSpd = 0.4;
+  if(id === 1) {
+    BankSpd = 0.4;
+    document.F1.BSPD.value = 0.4;
+  }
   document.F1.SPD.value = 10;
   document.F1.ZOM.value = 1370;
   document.F2.THEO.value = 3.84;
@@ -1831,6 +2207,8 @@ function mySwingby() {
   document.F1.my1FormLTT0.value = 0;
   document.F1.myFormTIME.value = 0;
   BankSpd = 7;
+  document.F1.BSPD.value = 7;
+  document.F1.SPD.value = 1;
   document.F1.ZOM.value = 4;
   document.F2.THEO.value = 0.01;
   planet[1].m_pname = "Jupiter";
@@ -1899,11 +2277,11 @@ var IdleLaps = 50, bcalc = false, SumLaps = 0;//スライドなし
 var FstPeriPos = null, FstAphePos = null, FstSidePos = null, bInit = 0;
 var vx = null, vy = null, vz = null;
 //var nextLogTime = null, lastPos = null, lastTime = null;
-var theory = 0, theoryrad = 0;
+var theory = 0, theoryrad = 0, theorypn25 = 0;
 var nextLogTime = null, lastPos = null, lastVel = null, lastTimeMS = null;
 var MaxCsvLogLine = 0;
 var orbitCsvContent = "";
-var lap = 0, PeriAve = 0, ApheAve = 0, PeriAveRad = 0, ApheAveRad = 0, targettheta = null;
+var lap = 0, PeriAve = 0, ApheAve = 0, PeriAveRad = 0, ApheAveRad = 0, targettheta = null, StTime = null;
 
 function OrbitElementCalc(q, t, m1, m2){
 // t (年) を秒に変換
@@ -1967,7 +2345,14 @@ function clearLog() {
     PeriSumDelta = 0, ApheSumDelta = 0, PeriSumDeltaRad = 0, ApheSumDeltaRad = 0, PeriCurrent = 0, ApheCurrent = 0, FstPeriTheta = 0, FstApheTheta = 0, PeriNum = 0, ApheNum = 0;
     lap = 0, PeriAve = 0, ApheAve = 0, PeriAveRad = 0, ApheAveRad = 0, targettheta = null;
     StDate = null;
+    StTime = null;
     bankperiPos = [];
+    var bankorbPos = new N6LRingBuffer(10240);
+    nextLogTimeUser = null;
+    nextLogTime1024  = null;
+    lastPos = null;
+    lastVel = null;
+    lastSimTimeMS = null;
 
     //IdleLaps = 50, bcalc = true, SumLaps = 0;//スライドあり
     IdleLaps = 50, bcalc = false, SumLaps = 0;//スライドなし
@@ -1981,6 +2366,9 @@ function clearLog() {
                          (Math.pow(target.CNST_C, 2) * (target.m_a * target.CNST_AU) * (1 - Math.pow(target.m_e, 2))))
     theory = convertToArcsecPerCentury(theoryrad, pt, 1);
     document.F2.THEO.value = theory;
+    var vv = Math.sqrt(target.CNST_G*(targetO.m_m + target.m_m)/(target.m_a * target.CNST_AU));
+    theorypn25 = ((-32/5)*(((Math.pow(target.CNST_G,3)*targetO.m_m*target.m_m*
+                             (targetO.m_m + target.m_m))/(Math.pow(target.CNST_C,5)*Math.pow((target.m_a * target.CNST_AU),4)))*vv));
 
 
 // フォームから最新の制限値を取得
@@ -2023,6 +2411,7 @@ function getCoordinates(logText) {
 
     return new N6LVector([x, y, z], false);
 }
+
 function NormalizeRad(th) {
   // 1. まず -2π ～ 2π の範囲に収める
   var ret = th % (Math.PI * 2.0);
@@ -2035,7 +2424,18 @@ function NormalizeRad(th) {
   
   return ret;
 }
-
+/*
+function NormalizeRad(th) {
+    const TWO_PI = Math.PI * 2;
+    let ret = th - Math.floor(th / TWO_PI + 0.5) * TWO_PI;  // 中央寄せ
+    
+    // 必要なら -π ~ π に確実に収める
+    if (ret > Math.PI) ret -= TWO_PI;
+    if (ret < -Math.PI) ret += TWO_PI;
+    
+    return ret;
+}
+*/
 function addlog2(str = ""){
     var q = rk.mp[1].lastQ;
     var t = rk.mp[1].lastT;
@@ -2070,6 +2470,9 @@ function addlog2(str = ""){
     var logperirad = [Math.log(Math.abs(theoryrad)), Math.log(Math.abs(PeriAveRad))]
     var deltaperirad = (logperirad[0] - logperirad[1]) / logperirad[0] * 100;
     var accuracyrad = (100 - deltaperirad); // 対数再現率
+    var logperipn25 = [Math.log(Math.abs(theoryrad + theorypn25)), Math.log(Math.abs(PeriAveRad))]
+    var deltaperipn25 = (logperipn25[0] - logperipn25[1]) / logperipn25[0] * 100;
+    var accuracypn25 = (100 - deltaperipn25); // 対数再現率
     str = str + "\n[近日点の進動角の評価 [rad/rev]]";
     str = str + "\n理論値 (Theory) = " + theoryrad.toExponential(6);
     str = str + "\n実測値 (Measured) = " + PeriAveRad.toExponential(6);
@@ -2084,6 +2487,11 @@ function addlog2(str = ""){
     str = str + "\n理論値 (Theory) = " + theory.toExponential(6);
     str = str + "\n実測値 (Measured) = " + PeriAve.toExponential(6);
     str = str + "\n対数再現率 (Accuracy)[%] = " + accuracy.toFixed(3);
+    str = str + "\n[1PN+2.5PNの進動角の評価 [rad/rev]]";
+    str = str + "\n2.5PN理論値 (Theory) = " + theorypn25.toExponential(6);
+    str = str + "\n理論値 (Theory) = " + (theoryrad+theorypn25).toExponential(6);
+    str = str + "\n実測値 (Measured) = " + PeriAveRad.toExponential(6);
+    str = str + "\n対数再現率 (Accuracy)[%] = " + accuracypn25.toFixed(3);
     str = str + "\n[古典軌道要素の再評価]";
     str = str + "\n近日点距離理論値 [AU] = " + rk.planet[1].m_ra.toExponential(6);
     str = str + "\n近日点距離実測値 [AU] = " + q.toExponential(6);
@@ -2128,7 +2536,7 @@ function updateAve(posx) {
     var logpos = new N6LVector([parseFloat(dataArray[4]), parseFloat(dataArray[5]), parseFloat(dataArray[6])]);
 
     if(vx !== null){
-      targettheta = rk.calculateTheta(logpos);
+      targettheta = NormalizeRad(rk.calculateTheta(logpos));
     }
 
     //3.近日点と遠日点のふりわけ
@@ -2176,7 +2584,7 @@ function updateAve(posx) {
     if((FstPeriTheta === 0)||(FstApheTheta === 0)) return;
     if((PeriNum < 2)||(ApheNum < 2)) return;
 
-    if(StDate === null) StDate = new Date();
+    if(StDate === null){ StDate = new Date(); }
 
     var str = "";
     str = addlog2(str);
@@ -2241,6 +2649,12 @@ N6LRngKt.prototype.onPerihelion = function (i, lr, pos, time) {
           pos.x[2]
       );
       bankperiPos.push(periPos);
+      // --- 最大数を超えたら先頭から取り除く（上限を例えば 128 や MaxCsvLogLine にする場合） ---
+      var maxPeriLogCount = 1280; // または MaxCsvLogLine など任意の制限値
+      while (bankperiPos.length > maxPeriLogCount) {
+          bankperiPos.shift(); // 先頭（一番古いデータ）を削除
+      }
+
   }
 };
 //遠日点イベント 天体番号、距離、座標を通知
@@ -2371,30 +2785,41 @@ return;
   }
 }
 
+// クラスのプロパティや外部スコープで管理する想定の変数（もし毎回リセットされるなら初期化に注意してください）
+// ※ 初回やリセット時に null にする変数群
+var nextLogTimeUser = null;
+var nextLogTime1024  = null;
+var lastPos = null;
+var lastVel = null;
+var lastSimTimeMS = null;
 
 N6LRngKt.prototype.OnDispLog = function (i, pos, vel) {
   if (i !== 1) return;
 
   // --- 動的インターバル計算 (ミリ秒) ---
   var orbitLogNum = eval(document.getElementById('LAPLOGLINE').value); 
-  // i 番目の惑星の周期を直接参照し、ミリ秒に変換する
   var orbitPeriodMS = this.planet[i].m_t * 3600 * 24 * 365.2425 * 1000;
-  var minIntervalMS = Math.max(orbitPeriodMS / orbitLogNum, 1000);
+  
+  // ユーザー指定分割用と、1024分割用の最小インターバル
+  var minIntervalMS = orbitPeriodMS / orbitLogNum;
+  var minIntervalMS1024 = orbitPeriodMS / 1024;
 
   var currentSimTimeMS = this.epoch.getTime() + this.time * 1000;
 
-  if (nextLogTime === null) {
-    nextLogTime = currentSimTimeMS; 
+  if (nextLogTimeUser === null) {
+    nextLogTimeUser = currentSimTimeMS;
+    nextLogTime1024 = currentSimTimeMS;
     lastPos = new N6LVector(pos);
     lastVel = new N6LVector(vel);
     lastSimTimeMS = currentSimTimeMS;
     return;
   }
 
-  if (nextLogTime <= currentSimTimeMS) {
+  // 1. ユーザー指定（orbitLogNum）のログ処理
+  if (nextLogTimeUser <= currentSimTimeMS) {
     var stepDeltaMS = currentSimTimeMS - lastSimTimeMS;
     if (stepDeltaMS > 0) {
-      var t = Math.max(0, Math.min(1, (stepDeltaMS - (currentSimTimeMS - nextLogTime)) / stepDeltaMS));
+      var t = Math.max(0, Math.min(1, (stepDeltaMS - (currentSimTimeMS - nextLogTimeUser)) / stepDeltaMS));
 
       var adjustedPos = lastPos.Add(pos.Sub(lastPos).Mul(t));
       var adjustedVel = lastVel.Add(vel.Sub(lastVel).Mul(t));
@@ -2406,14 +2831,11 @@ N6LRngKt.prototype.OnDispLog = function (i, pos, vel) {
 
       var e = (1.0 / 2.0) * rk.planet[i].m_m * mv * mv - rk.CNST_G * rk.planet[0].m_m * rk.planet[i].m_m / mr;
 
-      // 表示用とCSV記録用のDateオブジェクト
-      var displayDate = new Date(nextLogTime);
-      
-      // CSV用：世界標準のISO形式 (例: 2026-04-03T12:00:00.000Z)
+      var displayDate = new Date(nextLogTimeUser);
       var dateStr = displayDate.toISOString(); 
 
       var csvLine = dateStr + "," + 
-                    nextLogTime + "," +  
+                    nextLogTimeUser + "," +  
                     adjustedPos.x[0].toFixed(12) + "," +  
                     adjustedPos.x[1].toFixed(12) + "," +  
                     adjustedPos.x[2].toFixed(12) + "," +  
@@ -2425,15 +2847,44 @@ N6LRngKt.prototype.OnDispLog = function (i, pos, vel) {
                     "E:" + e.toFixed(6) + "\n";  
       
       orbitCsvContent += csvLine;
-      orbitCsvContent = MaxLineLog(orbitCsvContent, MaxCsvLogLine); 
+      orbitCsvContent = MaxLineLog(orbitCsvContent, MaxCsvLogLine);  
 
-      // 画面表示は人間が見やすい形式で
+      // 画面表示はユーザー指定のときだけ行う等の切り分けも可能
       var str = "[" + displayDate.toLocaleString() + "] R[AU]:" + r.toFixed(6) + " V[c/s]:" + v.toFixed(6) + " E[J]:" + e.toFixed(6);
       updateLog(str, document.getElementById('log-output3'));
     }
 
-    while (nextLogTime <= currentSimTimeMS) {
-        nextLogTime += minIntervalMS;
+    //進み過ぎの処理
+    while (nextLogTimeUser <= currentSimTimeMS) {
+        nextLogTimeUser += minIntervalMS;
+    }
+  }
+
+  // 2. 「1024個分割」用のログ処理（必要に応じて別の変数やCSVに蓄積できます）
+  if (nextLogTime1024 <= currentSimTimeMS) {
+    var stepDeltaMS = currentSimTimeMS - lastSimTimeMS;
+    if (stepDeltaMS > 0) {
+      var t = Math.max(0, Math.min(1, (stepDeltaMS - (currentSimTimeMS - nextLogTime1024)) / stepDeltaMS));
+
+      var adjustedPos1024 = lastPos.Add(pos.Sub(lastPos).Mul(t));
+      var adjustedVel1024 = lastVel.Add(vel.Sub(lastVel).Mul(t));
+      
+      var r1024 = adjustedPos1024.Abs();
+      var v1024 = adjustedVel1024.Abs();
+      
+      // 1024個用のCSVや処理をここで行う（例: 別変数 orbitCsvContent1024 に格納するなど）
+      // 近日点の座標（例：mp[selid] から取得したもの）
+      var orbPos = new x3dom.fields.SFVec3f(
+          adjustedPos1024.x[1], 
+          -adjustedPos1024.x[0], 
+          adjustedPos1024.x[2]
+      );
+      bankorbPos.PushNew(orbPos);
+    }
+
+    //進み過ぎの処理
+    while (nextLogTime1024 <= currentSimTimeMS) {
+        nextLogTime1024 += minIntervalMS1024;
     }
   }
 
@@ -2441,6 +2892,7 @@ N6LRngKt.prototype.OnDispLog = function (i, pos, vel) {
   lastVel = new N6LVector(vel);
   lastSimTimeMS = currentSimTimeMS;
 };
+
 
 function MaxLineLog(str, maxline) {
   // 文字列を行に分割して制限をチェック
@@ -2499,30 +2951,31 @@ function getperilog(str = null) {
 }
 
 
-    //schwartz correction term//シュワルツシルト補正項
-N6LRngKt.prototype.ToSchwartz = function (v, e) {
+//1PN
+//schwartz correction term//シュワルツシルト補正項
+N6LRngKt.prototype.ToSchwartz = function (v, e, m, m0, r) {
      var radioList = document.getElementsByName("CALCMODE");
      if(radioList[0].checked) {
-        var ret = 3.0 * v * v / ( 1.0 - (e * e)); //楕円一般相対論//eは一周の積分するときに必要
-        if(0.95 < e) ret = -0.5 * v * v;          //直線特殊相対論
+        //var ret = (-6.0 * Math.PI * this.CNST_G * (m0 + m) /(this.CNST_C * this.CNST_C * r * (1 - e * e)));  //一般相対論
+        var ret = 3.0 * v * v;//一般相対論
         return ret;//相対論
      }
      return 0;//古典論
 };
 
-//2.5PN
-N6LRngKt.prototype.ToGravityRadiationLoss = function (v, m1, m2, r){
-    var radioList = document.getElementsByName("CALCMODE");
-     if(radioList[0].checked) {
+//2.5PN重力放射減衰
+N6LRngKt.prototype.ToGravityRadiationLoss = function (v, m1, m2, r, t = -1){
       //NAS6定数//解析的デバッグにより推定
       const VAL_NAS6 = 1.35 - 3.3e+8 / r;
       const CNST_NAS6 = -4.5e-1;
-      const CNST = this.CNST_C * CNST_NAS6 * VAL_NAS6;
-      var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 3) * m1 * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 5) * Math.pow(r, 4))) * v * this.CNST_C;
-      return ret;//相対論
-   }
-   return 0;//古典論
-};
+      //const CNST = this.CNST_C * CNST_NAS6 * VAL_NAS6;
+      const CNST = 1.0;
+      //var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 3) * m1 * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 4) * Math.pow(r, 4))) * v;
+      //var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 3) * m1 * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 4) * Math.pow(r, 4))) * v * this.dt / t;
+      var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 3) * m1 * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 4) * Math.pow(r, 4))) * v / t;
+//      var ret = (-32 * CNST / 5) * ((Math.pow(this.CNST_G, 2) * m2 * (m1 + m2))/(Math.pow(this.CNST_C, 4) * Math.pow(r, 2))) * v;
+      return ret;
+    };
 
 function oncalcPeri(){
   var checkList = document.getElementsByName("calcPeri");
@@ -2544,15 +2997,76 @@ function oncalcPeri(){
 
 
 function drawCnvsPeri(){
+var checkList = document.getElementsByName("DPH");
+    if(checkList[0].checked === false) return;
+
+    var canvas = document.getElementById('perihelionCanvas');
+    var dpr = window.devicePixelRatio || 1;
+
+    var ctx = canvas.getContext('2d');
+    
+    // --- 【対策1】Canvasの内部ピクセル数を実際の表示サイズに完全に一致させる ---
+    var displayWidth = canvas.clientWidth * dpr;
+    var displayHeight = canvas.clientHeight * dpr;
+    
+    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var sx = canvas.width, sy = canvas.height;
+    
+    // --- 完全にクリア ---
+    ctx.clearRect(0, 0, sx, sy);
+/*
     var checkList = document.getElementsByName("DPH");
     if(checkList[0].checked === false) return;
 
     var i;
     var canvas = document.getElementById('perihelionCanvas');
     var ctx = canvas.getContext('2d');
-    var sx = 400, sy = 400;
+    var sx = canvas.width, sy = canvas.height;
     ctx.clearRect(0,0,sx,sy);
+
+*/
     ctx.lineWidth = 3;
+
+if(0 < bankorbPos.length) {
+      var bp = bankorbPos.GetStart();
+
+    // 近日点の座標（例：mp[selid] から取得したもの）
+    var orbPos = new x3dom.fields.SFVec3f(
+          bp.x / Zoom, 
+          bp.y / Zoom, 
+          bp.z / Zoom
+
+      );
+      // 変換の実行
+  var pos2D = project3DToCanvas(orbPos, canvas);
+  if(pos2D !== null) {
+    ctx.strokeStyle = "#886644";
+    ctx.beginPath();
+    ctx.moveTo(pos2D.x, pos2D.y);
+
+    for(i = 1; i < bankorbPos.length - 1; i++){
+      var np = bankorbPos.GetStart(i);
+      // 近日点の座標（例：mp[selid] から取得したもの）
+      orbPos = new x3dom.fields.SFVec3f(
+          np.x / Zoom, 
+          np.y / Zoom, 
+          np.z / Zoom
+
+      );
+      // 変換の実行
+      pos2D = project3DToCanvas(orbPos, canvas);
+      if(pos2D === null) continue;
+
+      ctx.lineTo(pos2D.x, pos2D.y);
+    }
+    ctx.stroke();
+  }
+}
 
     for(i = 0; i < bankperiPos.length; i++){
 
@@ -2586,16 +3100,15 @@ function project3DToCanvas(pos3D, canvas) {
     if (!x3dElem || !x3dElem.runtime) return null;
 
     const runtime = x3dElem.runtime;
-    
-    // getProjectionMatrix() ではなく、現在のビューポート設定を含む行列を取得
     const viewMat = runtime.viewMatrix();
     const projMat = runtime.projectionMatrix();
 
-    if (!viewMat || !projMat || isNaN(viewMat._00) || isNaN(projMat._00)) {
-        return null; 
-    }
+    if (!viewMat || !projMat) return null;
 
+    // MVP = Projection × View
     const mvpMat = projMat.mult(viewMat);
+
+    // 3D → 4D 変換
     const p = mvpMat.multMatrixPnt(pos3D);
 
 // 【修正ポイント】wを固定値ではなく行列の4行目から計算する
@@ -2603,15 +3116,19 @@ function project3DToCanvas(pos3D, canvas) {
     // w成分は M41*x + M42*y + M43*z + M44 です。
     const w = mvpMat._30 * pos3D.x + mvpMat._31 * pos3D.y + mvpMat._32 * pos3D.z + mvpMat._33;
 
-    // wが0（カメラの真横や後ろ）でない場合のみ除算
     if (Math.abs(w) < 0.0001) return null;
-    // 【重要】w で除算して -1.0 ? 1.0 の範囲（NDC座標）に正規化する
+
+    // 正規化（NDC）
     const ndcX = p.x / w;
     const ndcY = p.y / w;
 
-    // Canvas座標へのマッピング
-    const x = (canvas.width / 2) + (ndcX * canvas.width / 2);
-    const y = (canvas.height / 2) - (ndcY * canvas.height / 2);
-    return { x: x, y: y, z: p.z };
+    // Canvas 座標へ
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+
+    const x = cw * 0.5 + ndcX * cw * 0.5;
+    const y = ch * 0.5 - ndcY * ch * 0.5;
+
+    return { x, y };
 }
 

@@ -45,7 +45,7 @@ var rk = new N6LRngKt();  // Runge-Kutta solver for N-body simulation (N6LRngKt 
 
 // --- Initialization on Document Ready ---
 // Executed when the entire HTML document has been loaded and parsed.
-jQuery(document).ready(function(){
+window.addEventListener('load', function() {
 //  settestday(); // Commented out: Function to set a specific test date for debugging
   onNOW(); // Set current date and stop simulation
   onOO();  // Reset time and speed related form fields in the UI
@@ -56,6 +56,44 @@ jQuery(document).ready(function(){
 
 // --- Main Animation Loop ---
 // The core loop that updates the simulation and renders the X3D scene.
+// --- Main Animation Loop ---
+// The core loop that updates the simulation and renders the X3D scene.
+function GLoop(id){
+  // 1. x3domRuntime がまだ取得できていない場合は取得を試みる
+  if(x3domRuntime == undefined) {
+    var elem = document.getElementById('x3dabs');
+    if(elem && elem.runtime) {
+      x3domRuntime = elem.runtime;
+    }
+  }
+
+  // 2. ランタイムが取得できている場合のみ処理を実行する
+  if(x3domRuntime != undefined) {
+    try {
+      // 初回ロード中の未初期化によるエラーを防ぐため try...catch で保護
+      viewp(); // Update camera viewpoint based on selected planet
+      
+      // If waiting for data to be read or during initial setup, perform waiting logic
+      if(bWaiting || 0 < fFst) onWaiting();
+      
+      // If simulation is set to run, update the simulation frame
+      if(bRunning) onRunning();
+      
+      // Change the timer manager's interval if it differs from the desired 'intvl'
+      if(TMan.interval != intvl) TMan.changeinterval(intvl);
+      
+    } catch(e) {
+      // まだX3DOMの準備が完全に整っていない間のエラーはログに出すだけで、ループを止めない
+      // console.log("X3DOM is initializing...", e);
+    }
+  }
+
+  // 3. 次回のループ予約は確実に行う（これで初期化完了を待てる）
+  TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);
+}
+
+
+/*
 function GLoop(id){
   // Initialize x3domRuntime if not already obtained
   if(x3domRuntime == undefined) x3domRuntime = document.getElementById('x3dabs').runtime;
@@ -75,6 +113,7 @@ function GLoop(id){
   // Reschedule the main loop to run again after 'intvl' milliseconds using the timer manager
   TMan.timer[id].setalerm(function() { GLoop(id); }, intvl);
 }
+*/
 
 // --- Control Functions (Triggered by UI, assumed form F1) ---
 
@@ -107,10 +146,78 @@ function onOUT() {
   onSTP(); // Stop the simulation
 }
 
+var tcol = 0;
+function rainbowText() {
+  const text = document.getElementById('progressText');
+  // time が秒やミリ秒など、日数を計算する元データだとします
+  // Constants for time unit conversions (re-declared locally)
+  var msecPerMinute = 1000 * 60;
+  var msecPerHour = msecPerMinute * 60;
+  var msecPerDay = msecPerHour * 24;
+  var unit = ["[msec]","[sec]","[days]","[years]"]
+  var days = Math.abs(time) / msecPerDay * 1000; // Calculate elapsed days from simulation start time
+  if(isNaN(days)) days = 0;
+  var sgn = 1;
+  if(time < 0) sgn = -1;
+  var disp = 0;
+  var dispKind = 0;
+  if(days < 1 / 24 / 3600){
+    dispKind = 0;
+    disp = days * 24 * 3600 * 1000;
+  }
+  else if(days < 1){
+    dispKind = 1;
+    disp = days * 24 * 3600;
+  }
+  else if(days < 365.2425){
+    dispKind = 2;
+    disp = days;
+  }
+  else if(365.2425 <= days){
+    dispKind = 3;
+    disp = days / 365.2425;
+  }
+  if(disp === 0) dispKind = 2;
+  // マイナスの場合のみ "-" をつける文字列をテンプレートリテラル内で綺麗にまとめる
+  var signStr = (sgn < 0) ? "-" : "";
+  var timeStr = `Elapsed Simulation Time :\n${signStr}${disp.toFixed(3)} ${unit[dispKind]}`;
+
+  if (bRunning) {
+    text.textContent = `in Progress...\n${timeStr}`;
+    tcol = (tcol + 10) % 360;
+    text.style.color = `hsl(${tcol}, 80%, 50%)`;
+  } else {
+    text.textContent = `on Pause...\n${timeStr}`;
+    text.style.color = "#555";
+  }
+}
+
+function toggleAnimation() {
+  const mover = document.getElementById('progressMover');
+  const girl = document.getElementById('progressGirl');
+  const text = document.getElementById('progressText');
+
+  if (bRunning) {
+    // 動かすときの処理
+    mover.style.animationPlayState = 'running';
+    girl.style.animationPlayState = 'running';
+    //text.textContent = 'in Progress...';
+  } else {
+    // 止めるときの処理
+    mover.style.animationPlayState = 'paused';
+    girl.style.animationPlayState = 'paused';
+    //text.textContent = 'on Pause...';
+  }
+  rainbowText();
+}
+
+
+
 // Stop the simulation and reset its state.
 function onSTP() {
   bRunning = false; // Set the running flag to false
   init(0); // Re-initialize the simulation in a stopped state (direction 0)
+  toggleAnimation();
 }
 
 // Initialize the simulation for reverse playback.
@@ -181,7 +288,10 @@ function onWaiting() {
     fFst = -1; // Set flag to indicate that initial setup is complete but not yet running
     setmp(); // Update the positions of mass points (planets) in the X3DOM scene
     setline(); // Placeholder for a function to update orbit lines
-    if(bBBB) bRunning = true; // If 'bBBB' (animation direction) is set, start the simulation
+    if(bBBB){
+      bRunning = true; // If 'bBBB' (animation direction) is set, start the simulation
+      toggleAnimation();
+    }
   }
 }
 
@@ -203,6 +313,7 @@ function onRunning() {
   // Call the appropriate frame update function based on the calculation method
   if(CalcWay) UpdateFrameRelative(); // Update frame using N-body simulation
   else UpdateFrameKepler(); // Update frame using Keplerian orbital calculations
+  rainbowText();
 }
 
 // Retrieves the current date and time from the UI input fields (F1).

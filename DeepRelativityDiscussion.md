@@ -344,6 +344,17 @@ When I made these corrections, it became closer to the Schwarzschild radius of t
 | Uranus      | 2966.06647243991             | 2966.06646783855         |  
 | Neptune     | 2961.6535882982              | 2961.65358537239         |  
   
+| Planet name | Period P[year] | Eccentricity e | Average orbital velocity V[m/s] | Special effect SSR=(-1/2)(V/c)^2 | General effect SGR=(3/(1-e^2))(V/c)^2 | General effect 100 years [seconds/100 years]= $SGR \times 360 \times 3600 \times (\frac{100}{P})$ |  
+| :---------- | :---------- | :---------- | :---------- | :---------- | :---------- | :---------- |  
+| Mercury | 0.2409 | 0.2056 | 47872.5 | -1.274972e-08 | 7.987476e-08 | 42.9712306162 |  
+| Venus | 0.6152 | 0.0068 | 35021.4 | -6.823318e-09 | 4.094180e-08 | 8.6249306621 |  
+| Earth | 1.0 | 0.0167 | 29780.0 | -4.933760e-09 | 2.961082e-08 | 3.8375617302 |  
+| Mars | 1.8809 | 0.0934 | 24130.9 | -3.239483e-09 | 1.960795e-08 | 1.3510499306 |  
+| Jupiter | 11.862 | 0.0484 | 13069.7 | -9.502980e-10 | 5.715176e-09 | 0.0624419882 |  
+| Saturn | 29.458 | 0.0555 | 9672.4 | -5.204717e-10 | 3.132479e-09 | 0.0137812906 |  
+| Uranus | 84.022 | 0.0463 | 6800.0 | -2.572447e-10 | 1.546784e-09 | 0.0023858419 |  
+| Neptune | 164.79 | 0.009 | 5500.0 | -1.682883e-10 | 1.009812e-09 | 0.0007941720 |  
+  
 ---  
 
 # Understanding the Calculations: Connecting Orbital Mechanics to Spacetime  

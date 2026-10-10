@@ -817,8 +817,10 @@ v:軌道速度[m/s]|r:距離[m]|m1:重力源質量[kg]|m2:質量[kg]|G:万有引
 <h2>内部ログ</h2>
 最大行数<input type="text" name="MAXLINE" id="MAXLINE" value="1000">　<input type="button" name="LOGCLS" value="LOGCLS" onclick="clearLog();">　ログ出力<input type="checkbox" name="calcPeri" onclick="oncalcPeri();">　ログ出力時可変DT<input type="checkbox" name="VDT" onclick="oncalcPeri();" checked>　近日点プロット<input type="checkbox" name="DPH" checked><br>
 理論値[秒角/100年]<input type="text" name="THEO" value="43.11">　CSV最大ログ<input type="text" name="MAXLOGLINE" id="MAXLOGLINE" value="1000">　1周毎のログ数<input type="text" name="LAPLOGLINE" id="LAPLOGLINE" value="3"><br>
+<!--
 <input type="button" value="save" id="export">
 <a id="download" target="_blank">download NAS6OrbitData.csv</a><br>
+//--!>
 <div id="log-output"></div>
 <div id="log-output2"></div>
 <div id="log-output3"></div>
@@ -831,10 +833,10 @@ v:軌道速度[m/s]|r:距離[m]|m1:重力源質量[kg]|m2:質量[kg]|G:万有引
 <hr>
 <b>
 <br>
-<br>
-<a href="https://nas6mixfoolv.github.io/NAS6LIB/solarsystem.htm">太陽系惑星シミュレート</a><br>
-<a href="https://nas6mixfoolv.github.io/NAS6LIB/satellite.htm?logcheck=false">【一般鑑賞向け】ログ出力なしで再読み込み</a><br>
-<a href="https://nas6mixfoolv.github.io/NAS6LIB/satellite.htm?logcheck=true">【研究者向け】精密解析設定ログ出力ありで再読み込み</a><br>
+ログ出力が可能なリンク<br>
+<a href="https://nas6.net/solarsystem.htm">太陽系惑星シミュレート</a><br>
+<a href="https://nas6.net/satellite.htm?logcheck=false">【一般鑑賞向け】ログ出力なしで再読み込み</a><br>
+<a href="https://nas6.net/satellite.htm?logcheck=true">【研究者向け】精密解析設定ログ出力ありで再読み込み</a><br>
 <br>
 <div><pre>
 /**

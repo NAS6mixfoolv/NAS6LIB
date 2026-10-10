@@ -1,0 +1,663 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    
+    <title>任意桁電卓 JavaScript - N6LBigFloat Calculator - </title>
+    <meta name="description" content="JavaScriptで動作する高精度な任意桁関数電卓です。文字列変換の任意桁配列演算で高精度な計算や特殊関数の演算が行えます。">
+
+    <!-- OGP Tags for SEO & Social Sharing -->
+    <meta property="og:title" content="任意桁電卓 JavaScript - N6LBigFloat Calculator - ">
+    <meta property="og:description" content="JavaScriptで動作する高精度な任意桁関数電卓です。特殊関数の演算などをブラウザ上で実行できます。">
+    <meta property="og:type" content="website">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QPTP4QSV32');
+    </script>
+
+    <!-- External Libraries -->
+    <script src="./javascripts/nas6lib/BigFloatCalculator.js"></script>
+
+    <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 30px 0;
+      background-image: url("./img/kumausagineko.jpg");
+      background-repeat: repeat;
+      background-size: auto;
+      background-attachment: fixed;
+    }
+    .calculator {
+      background: #bbb;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 600px;
+      max-width: 90%;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #555;
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .operators {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    button.calc-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button.calc-btn:hover {
+      background-color: #0056b3;
+    }
+    button.cls-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #bb7b7b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button.cls-btn:hover {
+      background-color: #885656;
+    }
+    .result-section {
+      margin-top: 20px;
+      border-top: 1px solid #eee;
+      padding-top: 12px;
+    }
+    .result-item {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+    .result-item span {
+      display: block;
+      font-family: monospace;
+      font-weight: bold;
+      word-break: break-all;
+      white-space: pre-wrap;
+      background: #f8f9fa;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      margin-top: 4px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    </style>
+
+    <script>
+    console.log("enter: " + location.href);
+
+    window.addEventListener('error', function(e) {
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: "JS Error",
+                url: location.href,
+                msg: e.message,
+                src: e.filename,
+                line: e.lineno,
+                col: e.colno
+            }, "*");
+        }
+    });
+
+    window.addEventListener('unhandledrejection', function(e) {
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: "Promise Rejection",
+                url: location.href,
+                msg: String(e.reason)
+            }, "*");
+        }
+    });
+    </script>
+</head>
+
+<body>
+
+<div class="calculator">
+    <h1>任意桁浮動小数点関数電卓 - N6LBigFloat Calculator - </h1>
+
+    <div class="input-group">
+        <label for="val1">値 1 (f1):</label>
+        <input type="text" id="val1" value="123.456e+10">
+    </div>
+
+    <div class="input-group">
+        <label for="val2">値 2 (f2):</label>
+        <input type="text" id="val2" value="0.000789e-5">
+    </div>
+
+    <div class="input-group">
+        <label for="fp">精度 (fp):</label>
+        <input type="text" id="fp" value="30">
+    </div>
+
+    <div class="input-group">
+        <label for="mac">マクローリン回数 (mac):</label>
+        <input type="text" id="mac" value="30">
+    </div>
+
+    <button class="cls-btn" id="clsBtn">C</button>
+
+    <h3>四則演算（2 引数）</h3>
+    <div class="operators">
+        <label><input type="radio" name="op" value="add" checked> ＋ 加算</label>
+        <label><input type="radio" name="op" value="sub"> － 減算</label>
+        <label><input type="radio" name="op" value="mul"> × 乗算</label>
+        <label><input type="radio" name="op" value="div"> ÷ 除算</label>
+        <label><input type="radio" name="op" value="pow"> ＾ べき乗</label>
+    </div>
+
+    <h3>関数（1 引数）</h3>
+    <div class="operators">
+        <label><input type="radio" name="op" value="exp"> exp</label>
+        <label><input type="radio" name="op" value="log"> log</label>
+        <label><input type="radio" name="op" value="log10"> log10</label>
+    </div>
+
+    <div class="operators">
+        <label><input type="radio" name="op" value="sin"> sin</label>
+        <label><input type="radio" name="op" value="cos"> cos</label>
+        <label><input type="radio" name="op" value="tan"> tan</label>
+        <label><input type="radio" name="op" value="asin"> asin</label>
+        <label><input type="radio" name="op" value="acos"> acos</label>
+        <label><input type="radio" name="op" value="atan"> atan</label>
+    </div>
+
+    <div class="operators">
+        <label><input type="radio" name="op" value="sinh"> sinh</label>
+        <label><input type="radio" name="op" value="cosh"> cosh</label>
+        <label><input type="radio" name="op" value="tanh"> tanh</label>
+        <label><input type="radio" name="op" value="asinh"> asinh</label>
+        <label><input type="radio" name="op" value="acosh"> acosh</label>
+        <label><input type="radio" name="op" value="atanh"> atanh</label>
+    </div>
+
+    <div class="operators">
+        <label><input type="radio" name="op" value="csc"> csc</label>
+        <label><input type="radio" name="op" value="sec"> sec</label>
+        <label><input type="radio" name="op" value="cot"> cot</label>
+        <label><input type="radio" name="op" value="acsc"> acsc</label>
+        <label><input type="radio" name="op" value="asec"> asec</label>
+        <label><input type="radio" name="op" value="acot"> acot</label>
+    </div>
+
+    <div class="operators">
+        <label><input type="radio" name="op" value="csch"> csch</label>
+        <label><input type="radio" name="op" value="sech"> sech</label>
+        <label><input type="radio" name="op" value="coth"> coth</label>
+        <label><input type="radio" name="op" value="acsch"> acsch</label>
+        <label><input type="radio" name="op" value="asech"> asech</label>
+        <label><input type="radio" name="op" value="acoth"> acoth</label>
+    </div>
+
+    <div class="operators">
+        <label><input type="radio" name="op" value="pi"> π（関数）</label>
+        <label><input type="radio" name="op" value="piC"> π（定数）</label>
+        <label><input type="radio" name="op" value="e"> e（関数）</label>
+        <label><input type="radio" name="op" value="eC"> e（定数）</label>
+        <label><input type="radio" name="op" value="fac"> ！ 階乗</label>
+    </div>
+
+    <button class="calc-btn" id="calcBtn">＝ 計算実行</button>
+
+    <div class="result-section">
+        <div class="result-item">通常形式: <span id="resNormal">-</span></div>
+        <div class="result-item">科学用形式: <span id="resScientific">-</span></div>
+    </div>
+</div>
+
+<hr style="border: none; background-color: #888; width: 100%; height: 2px; margin: 20px 0;">
+<h3>関数チェック：符号・計算値自動検証</h3>
+error : <input type="text" id="dbgerr" value="1e-4" style="width: 300px !important;"><br>
+<button onclick="onchecks()">デバッグ用：関数チェック</button>
+<h3>関数チェック済みなので誤差はあるでしょうが実用的には妥当な範囲だと思います</h3>
+<hr style="border: none; background-color: #888; width: 100%; height: 2px; margin: 20px 0;">
+
+<script>
+function decimalFactorial(x) {
+  function gamma(z) {
+    if (z < 0.5) {
+      return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+    }
+    z -= 1;
+    const p = [
+      676.5203681218851, -1259.1392167224028, 771.3234287776531,
+      -176.6150291621406, 12.507343278693805, -0.13857109526572012,
+      9.984369578019572e-6, 1.5056327351493116e-7
+    ];
+    let y = 0.999999999999997, i;
+    for (i = 0; i < p.length; i++) {
+      y += p[i] / (z + i + 1);
+    }
+    const t = z + p.length - 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * y;
+  }
+  return gamma(x + 1);
+}
+
+function checksign(check, verify, r, r2, fn){
+  if(Number.isNaN(r)) return false;
+  if(check === undefined) return false;
+  if(fn === "add" || fn === "sub" || fn === "mul" || fn === "div" || fn === "pow"){
+    if(0 <= verify){
+      if(check.isNegative){
+        alert(`${fn}:${r}, ${r2} |(符号エラー) v:+ c:-`);
+        return false;
+      }
+    } else {
+      if(!check.isNegative){
+        alert(`${fn}:${r}, ${r2} |(符号エラー) v:- c:+`);
+        return false;
+      }
+    }
+    return true;
+  }
+  if(0 <= verify){
+    if(check.isNegative){
+      alert(`${fn}:${r} |(符号エラー) v:+ c:-`);
+      return false;
+    }
+  } else {
+    if(!check.isNegative){
+      alert(`${fn}:${r} |(符号エラー) v:- c:+`);
+      return false;
+    }
+  }
+  return true;
+}
+
+function checkval(check, verify, r, r2, fn, eps = 1e-3, flg = true){
+  if(!flg) return true;
+  if(Number.isNaN(r)) return true;
+  if(check === undefined) return false;
+  if(verify === 0 || !Number.isFinite(verify)) return true;
+  
+  let veri = new N6LBigFloatCalculator(String(verify));
+  let sub = check.sub(veri);
+  
+  if(fn === "add" || fn === "sub" || fn === "mul" || fn === "div" || fn === "pow"){
+    if(Math.abs(verify) < 1e-4) {
+      let absError = N6LBigFloatCalculator.abs(sub);
+      let absEps = new N6LBigFloatCalculator("1e-5");
+      if(absError.compareTo(absEps) > 0){
+        alert(`${fn}:${r}, ${r2} |(絶対誤差超過)\nv:${veri.toString()}\nc:${check.toString()}`);
+        return false;
+      }
+      return true;
+    }
+    let eeps = new N6LBigFloatCalculator(String(eps));
+    let error = N6LBigFloatCalculator.abs(sub.div(veri).quot);
+    if(error.compareTo(eeps) > 0){
+      alert(`${fn}:${r}, ${r2} |(相対誤差超過)\nv:${veri.toString()}\nc:${check.toString()}`);
+      return false;
+    }
+    return true;
+  }
+
+  if(Math.abs(verify) < 1e-4) {
+    let absError = N6LBigFloatCalculator.abs(sub);
+    let absEps = new N6LBigFloatCalculator("1e-5");
+    if(absError.compareTo(absEps) > 0){
+      alert(`${fn}:${r} |(絶対誤差超過)\nv:${veri.toString()}\nc:${check.toString()}`);
+      return false;
+    }
+    return true;
+  }
+
+  let eeps = new N6LBigFloatCalculator(String(eps));
+  let error = N6LBigFloatCalculator.abs(sub.div(veri).quot);
+  if(error.compareTo(eeps) > 0){
+    alert(`${fn}:${r} |(相対誤差超過)\nv:${veri.toString()}\nc:${check.toString()}`);
+    return false;
+  }
+  return true;
+}
+
+function chkmthd(r, r2, idx, flg){
+    const elm = document.getElementById("dbgerr");
+    let x = new N6LBigFloatCalculator(String(r));
+    let x2 = new N6LBigFloatCalculator(String(r2));
+    let verify, check;
+    const err = Number(elm.value);
+    
+    check = N6LBigFloatCalculator.exp(x);
+    verify = Math.exp(r);
+    flg = flg & checksign(check, verify, r, r2, "exp");
+    flg = flg & checkval(check, verify, r, r2, "exp", err);
+    if(0 < r){
+      check = N6LBigFloatCalculator.log(x);
+      verify = Math.log(r);
+      flg = flg & checksign(check, verify, r, r2, "log");
+      flg = flg & checkval(check, verify, r, r2, "log", err);
+      check = N6LBigFloatCalculator.logBase(x, "10");
+      verify = Math.log10(r);
+      flg = flg & checksign(check, verify, r, r2, "log10");
+      flg = flg & checkval(check, verify, r, r2, "log10", err);
+    }
+    check = N6LBigFloatCalculator.sin(x);
+    verify = Math.sin(r);
+    flg = flg & checksign(check, verify, r, r2, "sin");
+    flg = flg & checkval(check, verify, r, r2, "sin", err);
+    check = N6LBigFloatCalculator.cos(x);
+    verify = Math.cos(r);
+    flg = flg & checksign(check, verify, r, r2, "cos");
+    flg = flg & checkval(check, verify, r, r2, "cos", err);
+    check = N6LBigFloatCalculator.tan(x);
+    verify = Math.tan(r);
+    flg = flg & checksign(check, verify, r, r2, "tan");
+    flg = flg & checkval(check, verify, r, r2, "tan", err);
+    if(-1 <= r && r <= 1) {
+      if(r <= -0.8 || (-0.6 <= r && r <= 0.6) || 0.8 <= r) {
+        check = N6LBigFloatCalculator.asin(x);
+        verify = Math.asin(r);
+        flg = flg & checksign(check, verify, r, r2, "asin");
+        flg = flg & checkval(check, verify, r, r2, "asin", err);
+        check = N6LBigFloatCalculator.acos(x);
+        verify = Math.acos(r);
+        flg = flg & checksign(check, verify, r, r2, "acos");
+        flg = flg & checkval(check, verify, r, r2, "acos", err);
+      }
+      if(r !== -1 && r !== 1) {
+        check = N6LBigFloatCalculator.atanh(x);
+        verify = Math.atanh(r);
+        flg = flg & checksign(check, verify, r, r2, "atanh");
+        flg = flg & checkval(check, verify, r, r2, "atanh", err);
+      }
+    }
+    if((-0.9 <= r && r <= 0.9) || (r <= -1.1) || (1.1 <= r)) {
+      check = N6LBigFloatCalculator.atan(x);
+      verify = Math.atan(r);
+      flg = flg & checksign(check, verify, r, r2, "atan");
+      flg = flg & checkval(check, verify, r, r2, "atan", err);
+    }
+    check = N6LBigFloatCalculator.sinh(x);
+    verify = Math.sinh(r);
+    flg = flg & checksign(check, verify, r, r2, "sinh");
+    flg = flg & checkval(check, verify, r, r2, "sinh", err);
+    check = N6LBigFloatCalculator.cosh(x);
+    verify = Math.cosh(r);
+    flg = flg & checksign(check, verify, r, r2, "cosh");
+    flg = flg & checkval(check, verify, r, r2, "cosh", err);
+    check = N6LBigFloatCalculator.tanh(x);
+    verify = Math.tanh(r);
+    flg = flg & checksign(check, verify, r, r2, "tanh");
+    flg = flg & checkval(check, verify, r, r2, "tanh", err);
+    if(-1e5 < r && r < 1e5){
+      check = N6LBigFloatCalculator.asinh(x);
+      verify = Math.asinh(r);
+      flg = flg & checksign(check, verify, r, r2, "asinh");
+      flg = flg & checkval(check, verify, r, r2, "asinh", err);
+      if(1 <= r){
+        check = N6LBigFloatCalculator.acosh(x);
+        verify = Math.acosh(r);
+        flg = flg & checksign(check, verify, r, r2, "acosh");
+        flg = flg & checkval(check, verify, r, r2, "acosh", err);
+      }
+    }
+    let vvv = Math.sin(r);
+    if(vvv != 0){
+      check = N6LBigFloatCalculator.csc(x);
+      verify = 1 / vvv;
+      flg = flg & checksign(check, verify, r, r2, "csc");
+      flg = flg & checkval(check, verify, r, r2, "csc", err);
+    }
+    vvv = Math.cos(r);
+    if(vvv != 0){
+      check = N6LBigFloatCalculator.sec(x);
+      verify = 1 / vvv;
+      flg = flg & checksign(check, verify, r, r2, "sec");
+      flg = flg & checkval(check, verify, r, r2, "sec", err);
+    }
+    vvv = Math.tan(r);
+    if(vvv != 0){
+      check = N6LBigFloatCalculator.cot(x);
+      verify = 1 / vvv;
+      flg = flg & checksign(check, verify, r, r2, "cot");
+      flg = flg & checkval(check, verify, r, r2, "cot", err);
+    }
+    if(r != 0){
+      if(r <= -1 || 1 <= r){
+        if(r <= -1.5 || (-1.3 <= r && r <= 1.3) || 1.5 <= r) {
+          check = N6LBigFloatCalculator.acsc(x);
+          verify = Math.asin(1 / r);
+          flg = flg & checksign(check, verify, r, r2, "acsc");
+          flg = flg & checkval(check, verify, r, r2, "acsc", err);
+          check = N6LBigFloatCalculator.asec(x);
+          verify = Math.acos(1 / r);
+          flg = flg & checksign(check, verify, r, r2, "asec");
+          flg = flg & checkval(check, verify, r, r2, "asec", err);
+        }
+      }
+      if(r < -1.1 || (-0.9 <= r && r <= 0.9) || 1.1 <= r){
+        check = N6LBigFloatCalculator.acot(x);
+        verify = Math.atan(1 / r);
+        flg = flg & checksign(check, verify, r, r2, "acot");
+        flg = flg & checkval(check, verify, r, r2, "acot", err);
+      }
+    }
+    vvv = Math.sinh(r);
+    if(vvv != 0){
+      check = N6LBigFloatCalculator.csch(x);
+      verify = 1 / vvv;
+      flg = flg & checksign(check, verify, r, r2, "csch");
+      flg = flg & checkval(check, verify, r, r2, "csch", err);
+    }
+    vvv = Math.cosh(r);
+    if(vvv != 0){
+      check = N6LBigFloatCalculator.sech(x);
+      verify = 1 / vvv;
+      flg = flg & checksign(check, verify, r, r2, "sech");
+      flg = flg & checkval(check, verify, r, r2, "sech", err);
+    }
+    vvv = Math.tanh(r);
+    if(vvv != 0){
+      check = N6LBigFloatCalculator.coth(x);
+      verify = 1 / vvv;
+      flg = flg & checksign(check, verify, r, r2, "coth");
+      flg = flg & checkval(check, verify, r, r2, "coth", err);
+    }
+    if(r != 0 && (r < -1e-5 || 1e-5 < r)){
+      check = N6LBigFloatCalculator.acsch(x);
+      verify = Math.asinh(1 / r);
+      flg = flg & checksign(check, verify, r, r2, "acsch");
+      flg = flg & checkval(check, verify, r, r2, "acsch", err);
+      if(0 <= r && r <= 1){
+        check = N6LBigFloatCalculator.asech(x);
+        verify = Math.acosh(1 / r);
+        flg = flg & checksign(check, verify, r, r2, "asech");
+        flg = flg & checkval(check, verify, r, r2, "asech", err);
+      }
+      if(r < -1 || 1 < r) {
+        check = N6LBigFloatCalculator.acoth(x);
+        verify = Math.atanh(1 / r);
+        flg = flg & checksign(check, verify, r, r2, "acoth");
+        flg = flg & checkval(check, verify, r, r2, "acoth", err);
+      }
+    }
+    if(10 < idx){
+      check = x.add(x2);
+      verify = r + r2;
+      flg = flg & checksign(check, verify, r, r2, "add");
+      flg = flg & checkval(check, verify, r, r2, "add", err);
+      check = x.sub(x2);
+      verify = r - r2;
+      flg = flg & checksign(check, verify, r, r2, "sub");
+      flg = flg & checkval(check, verify, r, r2, "sub", err);
+      check = x.mul(x2);
+      verify = r * r2;
+      flg = flg & checksign(check, verify, r, r2, "mul");
+      flg = flg & checkval(check, verify, r, r2, "mul", err);
+      if(r2 !== 0) {
+        check = x.div(x2).quot;
+        verify = r / r2;
+        flg = flg & checksign(check, verify, r, r2, "div");
+        flg = flg & checkval(check, verify, r, r2, "div", err);
+      }
+      if(0 <= r){
+        check = N6LBigFloatCalculator.pow(x, x2);
+        verify = Math.pow(r, r2);
+        flg = flg & checksign(check, verify, r, r2, "pow");
+        flg = flg & checkval(check, verify, r, r2, "pow", err);
+      }
+    }
+    return flg;
+}
+
+function onchecks() {
+  const elm = document.getElementById("resNormal");
+  let flg = true;
+  
+  document.getElementById("val1").value = "0";
+  document.getElementById("val2").value = "0";
+  document.getElementById("resNormal").textContent = "-";
+  document.getElementById("resScientific").textContent = "-";
+
+  const testValues = [0, 1, -1, 0.0000001, -0.0000001, 10, -10, 5e10, -5e10, 5e-10, -5e-10];
+  for(let i = 0; i < 100; i++){
+    let r = Math.random() * 20 - 10;
+    if(Math.random() < 0.3) r /= 10;
+    testValues.push(r);
+  }
+
+  let index = 0;
+  function runNext() {
+    if (index < testValues.length) {
+      let r = testValues[index];
+      let r2 = (index === testValues.length - 1) ? testValues[11] : testValues[index + 1];
+      elm.textContent = "checking: " + String(r);
+      
+      flg = flg & chkmthd(r, r2, index, flg);
+      index++;
+      setTimeout(runNext, 10);
+    } else {
+      elm.textContent = "-";
+      if(flg) alert("check cleared!");
+      else alert("check failured!");
+    }
+  }
+  runNext();
+}
+
+document.getElementById("calcBtn").addEventListener("click", () => {
+  const val1Str = document.getElementById("val1").value;
+  const val2Str = document.getElementById("val2").value;
+  const valfp = document.getElementById("fp").value;
+  const valmac = document.getElementById("mac").value;
+  const op = document.querySelector('input[name="op"]:checked').value;
+
+  const resNormalEl = document.getElementById("resNormal");
+  const resScientificEl = document.getElementById("resScientific");
+
+  try {
+    let calc = new N6LBigFloatCalculator(val1Str);
+
+    if (op === "add") calc = calc.add(val2Str, valfp);
+    else if (op === "sub") calc = calc.sub(val2Str, valfp);
+    else if (op === "mul") calc = calc.mul(val2Str, valfp);
+    else if (op === "div") calc = calc.div(val2Str, valfp).quot;
+    else if (op === "pow") calc = N6LBigFloatCalculator.pow(calc, val2Str, valfp);
+    else if (op === "exp") calc = N6LBigFloatCalculator.exp(calc, valfp, valmac);
+    else if (op === "log") calc = N6LBigFloatCalculator.log(calc, valfp, valmac);
+    else if (op === "log10") calc = N6LBigFloatCalculator.logBase(calc, "10", valfp, valmac);
+    else if (op === "sin") calc = N6LBigFloatCalculator.sin(calc, valfp, valmac);
+    else if (op === "cos") calc = N6LBigFloatCalculator.cos(calc, valfp, valmac);
+    else if (op === "tan") calc = N6LBigFloatCalculator.tan(calc, valfp, valmac);
+    else if (op === "asin") calc = N6LBigFloatCalculator.asin(calc, valfp, valmac);
+    else if (op === "acos") calc = N6LBigFloatCalculator.acos(calc, valfp, valmac);
+    else if (op === "atan") calc = N6LBigFloatCalculator.atan(calc, valfp, valmac);
+    else if (op === "sinh") calc = N6LBigFloatCalculator.sinh(calc, valfp, valmac);
+    else if (op === "cosh") calc = N6LBigFloatCalculator.cosh(calc, valfp, valmac);
+    else if (op === "tanh") calc = N6LBigFloatCalculator.tanh(calc, valfp, valmac);
+    else if (op === "asinh") calc = N6LBigFloatCalculator.asinh(calc, valfp, valmac);
+    else if (op === "acosh") calc = N6LBigFloatCalculator.acosh(calc, valfp, valmac);
+    else if (op === "atanh") calc = N6LBigFloatCalculator.atanh(calc, valfp, valmac);
+    else if (op === "csc") calc = N6LBigFloatCalculator.csc(calc, valfp, valmac);
+    else if (op === "sec") calc = N6LBigFloatCalculator.sec(calc, valfp, valmac);
+    else if (op === "cot") calc = N6LBigFloatCalculator.cot(calc, valfp, valmac);
+    else if (op === "acsc") calc = N6LBigFloatCalculator.acsc(calc, valfp, valmac);
+    else if (op === "asec") calc = N6LBigFloatCalculator.asec(calc, valfp, valmac);
+    else if (op === "acot") calc = N6LBigFloatCalculator.acot(calc, valfp, valmac);
+    else if (op === "csch") calc = N6LBigFloatCalculator.csch(calc, valfp, valmac);
+    else if (op === "sech") calc = N6LBigFloatCalculator.sech(calc, valfp, valmac);
+    else if (op === "coth") calc = N6LBigFloatCalculator.coth(calc, valfp, valmac);
+    else if (op === "acsch") calc = N6LBigFloatCalculator.acsch(calc, valfp, valmac);
+    else if (op === "asech") calc = N6LBigFloatCalculator.asech(calc, valfp, valmac);
+    else if (op === "acoth") calc = N6LBigFloatCalculator.acoth(calc, valfp, valmac);
+    else if (op === "pi") calc = N6LBigFloatCalculator.calcPI(valfp, valmac);
+    else if (op === "piC") calc = N6LBigFloatCalculator.PI50();
+    else if (op === "e") calc = N6LBigFloatCalculator.calcE(valfp, valmac);
+    else if (op === "eC") calc = N6LBigFloatCalculator.E50();
+    else if (op === "fac") calc = N6LBigFloatCalculator.realFactorialBF(calc, valfp);
+
+    resNormalEl.textContent = calc.toString();
+    resScientificEl.textContent = calc.toStringScientific();
+
+  } catch (err) {
+    resNormalEl.textContent = "エラー: " + err.message;
+    resScientificEl.textContent = "-";
+  }
+});
+
+document.getElementById("clsBtn").addEventListener("click", () => {
+  document.getElementById("val1").value = "0";
+  document.getElementById("val2").value = "0";
+  document.getElementById("resNormal").textContent = "-";
+  document.getElementById("resScientific").textContent = "-";
+});
+</script>
+
+<br><br>
+<hr>
+<br><br>
+
+<script src="./javascripts/nas6/autoad.js" async></script>
+<div id="ad-container-053"></div>
+
+</body>
+</html>

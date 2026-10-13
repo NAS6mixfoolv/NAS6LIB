@@ -70,7 +70,7 @@ Experience NAS6LIB in action:
 * **Fresnel Effect**: [Fresnel Effect DEMO](https://nas6.net/javascripts/threejs/examples/WaterPlaneTest.htm)  
 * **Artillery simulation game**: [Artillery simulation game](https://nas6mixfoolv.github.io/NAS6LIB/pillbox000.htm)  
 A small artillery fire-control game built using NAS6LIB components.  
-![gif of Artillery simulation game](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/pillbox002.gif)  
+![gif of Artillery simulation game](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/pillbox002.gif)  
   
 ## Automated Test  
   

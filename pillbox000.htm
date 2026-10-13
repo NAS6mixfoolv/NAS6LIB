@@ -1,0 +1,1272 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>
+console.log("enter: " + location.href);
+
+window.addEventListener('error', function(e) {
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: "JS Error",
+            url: location.href,
+            msg: e.message,
+            src: e.filename,
+            line: e.lineno,
+            col: e.colno
+        }, "*");
+    }
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: "Promise Rejection",
+            url: location.href,
+            msg: String(e.reason)
+        }, "*");
+    }
+});
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QPTP4QSV32');
+</script>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="JavaScriptで動作する砲術照準シミュレーターです。測距照準を駆使して敵戦車を撃破せよ！">
+
+<!-- OGP Tags for SEO & Social Sharing -->
+<meta property="og:title" content="砲術照準シミュレーター">
+<meta property="og:description" content="JavaScriptで動作する砲術照準シミュレーターです。測距照準を駆使して敵戦車を撃破せよ！">
+<meta property="og:type" content="website">
+
+<script src="./javascripts/nas6lib/timer.js"></script>
+
+
+<title>砲術照準シミュレーター</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #111;
+    width: 100%;
+    height: 100%;
+    touch-action: none;         /* スクロール・ズーム禁止 */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+</style>
+</head>
+<body>
+
+<canvas id="cv"></canvas>
+
+<script>
+var TMan = new N6LTimerMan();  //タイマーマネージャー
+
+///////////////////////////////////////////////////////////////
+// 難易度設定
+///////////////////////////////////////////////////////////////
+const difficulties = [
+    { name: "EASY",   playerLife: 8, pointBonus: 0.5, tankLife: 3, reloadTime: 1.5, maxAmmo: 8, spdcrt: 1.3, storageKey: "tank_highscore_easy" },
+    { name: "NORMAL", playerLife: 6, pointBonus: 1.0, tankLife: 4, reloadTime: 2.2, maxAmmo: 6, spdcrt: 1.0, storageKey: "tank_highscore_normal" },
+    { name: "HARD",   playerLife: 5, pointBonus: 2.0, tankLife: 5, reloadTime: 2.8, maxAmmo: 5, spdcrt: 0.7, storageKey: "tank_highscore_hard" },
+    { name: "HELL",   playerLife: 4, pointBonus: 4.0, tankLife: 6, reloadTime: 3.2, maxAmmo: 4, spdcrt: 0.5, storageKey: "tank_highscore_hell" }
+];
+let currentDiffIndex = 1; // 初期値: NORMAL
+
+const autoModes = [
+    { name: "AUTO OFF",     error: 0},
+    { name: "AMATEUR AI",    error: 400},
+    { name: "GENERAL AI",  error: 200},
+    { name: "PRO AI",    error: 100},
+    { name: "LEGEND AI", error: 0}
+];
+let currentAutoIndex = 0; // 初期値: OFF
+
+// ヘルプ表示フラグ
+let isHelpOpen = false;
+
+// ハイスコアをローカルストレージから取得する関数
+function getHighScore() {
+    const key = difficulties[currentDiffIndex].storageKey;
+    const saved = localStorage.getItem(key);
+    return saved ? parseInt(saved, 10) : 0;
+}
+
+// ハイスコアを保存する関数
+function saveHighScore(newScore) {
+    const key = difficulties[currentDiffIndex].storageKey;
+    const currentHigh = getHighScore();
+    if (newScore > currentHigh) {
+        localStorage.setItem(key, newScore);
+        return true; // ハイスコア更新！
+    }
+    return false;
+}
+
+// ハイスコアをクリアする関数
+function clearHighScore() {
+    const key = difficulties[currentDiffIndex].storageKey;
+    localStorage.removeItem(key);
+}
+
+// 全記録をクリアする関数
+function clearAllRecord(){
+    for(const d of difficulties){
+        localStorage.removeItem(
+            d.storageKey
+        );
+    }
+}
+
+///////////////////////////////////////////////////////////////
+// ゲーム変数
+///////////////////////////////////////////////////////////////
+let lastBonusCount = 0;
+let score = 0;
+let screenFlash = 0;
+let destroyText = 0;
+let perfectText = 0;
+let lastShotInfo = "";
+
+let reloadTime = difficulties[currentDiffIndex].reloadTime;
+let reloadTimer = 0;
+let reloadTime2 = 0.8;
+let reloadTimer2 = 0;
+let superreloadTimer = 0;
+let ammo = difficulties[currentDiffIndex].maxAmmo;
+
+// プレイヤーのライフ（耐久力）と撃破カウント・ウェーブタイマー
+let playerLife = difficulties[currentDiffIndex].playerLife;
+let defeatedCount = 0;
+let waveTimer = 0;          // 現在のウェーブ経過時間
+let waveMessage = "";       // ウェーブクリア時のボーナス表示用
+let waveMessageTimer = 0;
+
+let isGameOver = false;
+let isBonus = false;
+let isBreakThrough = false;
+let autoFireTimer = 0;
+
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+
+///////////////////////////////////////////////////////////////
+// 照準位置
+///////////////////////////////////////////////////////////////
+let sightX;
+let sightY;
+
+///////////////////////////////////////////////////////////////
+// リサイズ（スマホの向き変更にも対応）
+///////////////////////////////////////////////////////////////
+function resize(){
+    cv.width  = window.innerWidth;
+    cv.height = window.innerHeight;
+
+    sightX = window.innerWidth * 0.5;
+    sightY = window.innerHeight * 0.4;
+
+    sightX = Math.max(0, Math.min(sightX , cv.width));
+    sightY = Math.max(0, Math.min(sightY , cv.height));
+}
+resize();
+window.addEventListener("resize", resize);
+window.addEventListener("orientationchange", () => {
+    setTimeout(resize, 100);
+});
+
+///////////////////////////////////////////////////////////////
+// レスポンシブ対応のボタンレイアウト計算ヘルパー
+///////////////////////////////////////////////////////////////
+function getButtonLayout() {
+    const btnW = cv.width < 450 ? 120 : 160;
+    const btnH = 34;
+    const btnX = cv.width - btnW - 15;
+    
+    return {
+        w: btnW,
+        h: btnH,
+        diff: { x: btnX, y: 12, w: btnW, h: btnH },
+        auto: { x: btnX, y: 12 + btnH + 6, w: btnW, h: btnH },
+        help: { x: btnX, y: 12 + (btnH + 6) * 2, w: btnW, h: btnH }
+    };
+}
+
+///////////////////////////////////////////////////////////////
+// 各種ボタンの当たり判定
+///////////////////////////////////////////////////////////////
+function checkDifficultyButton(clientX, clientY) {
+    const layout = getButtonLayout();
+    const b = layout.diff;
+
+    if (clientX >= b.x && clientX <= b.x + b.w && clientY >= b.y && clientY <= b.y + b.h) {
+        const localX = clientX - b.x;
+        if (localX < b.w / 2) {
+            currentDiffIndex = (currentDiffIndex - 1 + difficulties.length) % difficulties.length;
+        } else {
+            currentDiffIndex = (currentDiffIndex + 1 + difficulties.length) % difficulties.length;
+        }
+        applyDifficulty();
+        resetGame();
+        return true;
+    }
+    return false;
+}
+
+function applyDifficulty() {
+    const d = difficulties[currentDiffIndex];
+    reloadTime = d.reloadTime;
+    ammo = Math.min(ammo, d.maxAmmo);
+}
+
+// オートボタン
+function checkAutoButton(clientX, clientY) {
+    const layout = getButtonLayout();
+    const b = layout.auto;
+
+    if (clientX >= b.x && clientX <= b.x + b.w && clientY >= b.y && clientY <= b.y + b.h) {
+        const localX = clientX - b.x;
+        if (localX < b.w / 2) {
+            currentAutoIndex = (currentAutoIndex - 1 + autoModes.length) % autoModes.length;
+        } else {
+            currentAutoIndex = (currentAutoIndex + 1 + autoModes.length) % autoModes.length;
+        }
+        return true;
+    }
+    return false;
+}
+
+// ヘルプボタン
+function checkHelpButton(clientX, clientY) {
+    const layout = getButtonLayout();
+    const b = layout.help;
+
+    if (clientX >= b.x && clientX <= b.x + b.w && clientY >= b.y && clientY <= b.y + b.h) {
+        isHelpOpen = !isHelpOpen; // トグル切替
+        return true;
+    }
+    return false;
+}
+
+// ヘルプウィンドウ内の閉じるボタン判定
+function checkHelpCloseButton(clientX, clientY) {
+    if (!isHelpOpen) return false;
+
+    const boxW = Math.min(460, cv.width - 30);
+    const boxH = Math.min(360, cv.height - 60);
+    const boxX = cv.width / 2 - boxW / 2;
+    const boxY = cv.height / 2 - boxH / 2;
+
+    const closeW = 120;
+    const closeH = 36;
+    const closeX = boxX + boxW / 2 - closeW / 2;
+    const closeY = boxY + boxH - 50;
+
+    if (clientX >= closeX && clientX <= closeX + closeW && clientY >= closeY && clientY <= closeY + closeH) {
+        isHelpOpen = false;
+        return true;
+    }
+    return false;
+}
+
+function checkGameOverButtons(x, y){
+    if(!isGameOver) return false;
+
+    const btnW = Math.min(180, (cv.width - 60) / 2);
+    const btnH = 40;
+    const gap = 15;
+    const totalW = btnW * 2 + gap;
+    const startX = cv.width / 2 - totalW / 2;
+    const clearY = cv.height / 2 + 80;
+
+    const btnX1 = startX;
+    const btnX2 = startX + btnW + gap;
+
+    if(x >= btnX1 && x <= btnX1 + btnW && y >= clearY && y <= clearY + btnH){
+        if(confirm("ハイスコアを削除しますか？")){
+            clearHighScore();
+        }
+        return true;
+    }
+
+    if(x >= btnX2 && x <= btnX2 + btnW && y >= clearY && y <= clearY + btnH){
+        if(confirm("全記録を削除しますか？")){
+            clearAllRecord();
+        }
+        return true;
+    }
+
+    return false;
+}
+
+///////////////////////////////////////////////////////////////
+// マウス操作（PC用）
+///////////////////////////////////////////////////////////////
+cv.addEventListener("mousemove", e => {
+    if(isGameOver || isHelpOpen) return;
+    if(currentAutoIndex) return;
+    sightX = e.clientX;
+    sightY = e.clientY;
+});
+
+cv.addEventListener("mousedown", e => {
+    e.preventDefault();
+
+    if(isHelpOpen){
+        if(checkHelpCloseButton(e.clientX, e.clientY)) return;
+        return; // ヘルプが開いているときは他の操作をブロック
+    }
+
+    if(checkDifficultyButton(e.clientX, e.clientY)) return;
+    if(checkAutoButton(e.clientX, e.clientY)) return;
+    if(checkHelpButton(e.clientX, e.clientY)) return;
+
+    if(isGameOver){
+        if(checkGameOverButtons(e.clientX, e.clientY)){
+            return;
+        }
+        if(confirm("再戦しますか？")){
+            resetGame();
+        }
+        return;
+    }
+    if(currentAutoIndex) return;
+    fire();
+});
+
+///////////////////////////////////////////////////////////////
+// タッチ操作（スマホ用）
+///////////////////////////////////////////////////////////////
+cv.addEventListener("touchstart", e => {
+    e.preventDefault();
+
+    let t = null;
+    if (e.touches.length > 0) {
+        t = e.touches[0];
+    }
+
+    if(isHelpOpen){
+        if(t && checkHelpCloseButton(t.clientX, t.clientY)) return;
+        return;
+    }
+
+    if (t) {
+        if(checkDifficultyButton(t.clientX, t.clientY)) return;
+        if(checkAutoButton(t.clientX, t.clientY)) return;
+        if(checkHelpButton(t.clientX, t.clientY)) return;
+    }
+
+    if(isGameOver){
+        if(t && checkGameOverButtons(t.clientX, t.clientY)){
+            return;
+        }
+        if(confirm("再戦しますか？")){
+            resetGame();
+        }
+        return;
+    }
+    if(currentAutoIndex) return;
+
+    if (t) {
+        const FINGER_OFFSET = 120;
+        sightX = t.clientX;
+        sightY = t.clientY + FINGER_OFFSET;
+    }
+}, {passive:false});
+
+
+cv.addEventListener("touchmove", e => {
+    e.preventDefault();
+    if(isGameOver || isHelpOpen) return;
+    if(currentAutoIndex) return;
+    if (e.touches.length > 0) {
+        const FINGER_OFFSET = 120;
+        const t = e.touches[0];
+        sightX = t.clientX;
+        sightY = t.clientY + FINGER_OFFSET;
+    }
+}, {passive: false});
+
+cv.addEventListener("touchend", e => {
+    e.preventDefault();
+    if(isGameOver || isHelpOpen) return;
+    if(currentAutoIndex) return;
+    fire();
+}, {passive:false});
+
+///////////////////////////////////////////////////////////////
+// 距離目盛
+///////////////////////////////////////////////////////////////
+const marks = [
+    {range:0    , offset:0},
+    {range:200  , offset:40},
+    {range:400  , offset:80},
+    {range:600  , offset:120},
+    {range:800  , offset:160},
+    {range:1000 , offset:200}
+];
+
+///////////////////////////////////////////////////////////////
+// 敵戦車管理（複数台対応）
+///////////////////////////////////////////////////////////////
+let tanks = [];
+
+function spawnTanks(){
+    tanks = [];
+    const count = Math.min(1 + Math.floor(defeatedCount / 4), 3);
+    const tankLifeSetting = difficulties[currentDiffIndex].tankLife;
+    
+    for(let i = 0; i < count; i++){
+        const r = Math.random() * 2 - 1;
+        tanks.push({
+            distance: 1000 + i * 150,
+            t: i * 2.0,
+            life: tankLifeSetting,
+            laneOffset: (i - (count - 1) / 2 + r) * 160,
+            flashTimer: 0
+        });
+    }
+}
+spawnTanks();
+
+function resetGame(){
+    lastBonusCount = 0;
+    score = 0;
+    playerLife = difficulties[currentDiffIndex].playerLife;
+    defeatedCount = 0;
+    waveTimer = 0;
+    waveMessage = "";
+    waveMessageTimer = 0;
+    ammo = difficulties[currentDiffIndex].maxAmmo;
+    reloadTimer = 0;
+    reloadTimer2 = 0;
+    isBonus = false;
+    isGameOver = false;
+    shells.length = 0;
+    spawnTanks();
+}
+
+///////////////////////////////////////////////////////////////
+// 砲弾
+///////////////////////////////////////////////////////////////
+const shells = [];
+
+///////////////////////////////////////////////////////////////
+// 発射処理（マウス・タッチ共通）
+///////////////////////////////////////////////////////////////
+function fire(){
+    if(isGameOver || isHelpOpen) return;
+    if(reloadTimer > 0 || reloadTimer2 > 0) return;
+
+    ammo--;
+    reloadTimer2 = reloadTime2;
+
+    const maxA = difficulties[currentDiffIndex].maxAmmo;
+    if(ammo <= 0){
+        ammo = maxA;
+        reloadTimer = reloadTime;
+    }
+
+    let best = 0;
+    let bestDist = 999999;
+
+    if(tanks.length > 0){
+        let nearestTank = tanks[0];
+        let minCenterDist = 999999;
+
+        for(const tank of tanks){
+            const tx = cv.width * 0.5 + Math.sin(tank.t * 0.5) * 80 + tank.laneOffset;
+            const cDist = Math.abs(tx - cv.width * 0.5);
+            if(cDist < minCenterDist){
+                minCenterDist = cDist;
+                nearestTank = tank;
+            }
+        }
+
+        const tx = cv.width * 0.5 + Math.sin(nearestTank.t * 0.5) * 80 + nearestTank.laneOffset;
+        const ty = cv.height * 0.55;
+
+        for(const m of marks){
+            const mx = sightX;
+            const my = sightY + m.offset;
+            const d = Math.hypot(mx - tx, my - ty);
+            if(d < bestDist){
+                bestDist = d;
+                best = m.range;
+            }
+        }
+    }
+
+    const startX = cv.width / 2;
+    const startY = cv.height * 0.85;
+
+    let targetOffset = 0;
+    for(const m of marks){
+        if(m.range === best){
+            targetOffset = m.offset;
+            break;
+        }
+    }
+    const targetY = sightY + targetOffset;
+
+    lastShotInfo =
+        "推定距離 " + best +
+        "m / 狙い目 (X:" + Math.floor(sightX) + ")";
+
+    const flightLife = 0.8 + (best / 1000) * 1.2;
+
+    shells.push({
+        t : 0,
+        life : flightLife,
+        startX,
+        startY,
+        targetX : sightX,
+        targetY,
+        range : best
+    });
+}
+
+///////////////////////////////////////////////////////////////
+// 更新
+///////////////////////////////////////////////////////////////
+function update(dt){
+    if(isGameOver || isHelpOpen) return;
+
+    // ウェーブタイマーを進める（10体クリアするまでの時間計測）
+    waveTimer += dt;
+
+    if((currentAutoIndex && !isGameOver)||(superreloadTimer && !isGameOver)){
+       let aIdx = currentAutoIndex;
+       if(superreloadTimer) aIdx = 4;
+        autoFireTimer -= dt;
+
+        if(autoFireTimer <= 0){
+            let nearestTank = null;
+            let nearestDistance = 999999;
+
+            for(const tank of tanks){
+                if(tank.distance < nearestDistance){
+                    nearestDistance = tank.distance;
+                    nearestTank = tank;
+                }
+            }
+
+            if(nearestTank){
+                let estimateDistance = nearestTank.distance;
+                estimateDistance += ((Math.random()-0.5) * autoModes[aIdx].error);
+
+                const ranges = [0,200,400,600,800,1000];
+                let bestRange = 0;
+                let bestErr = 999999;
+
+                for(const r of ranges){
+                    const err = Math.abs(r - estimateDistance);
+                    if(err < bestErr){
+                        bestErr = err;
+                        bestRange = r;
+                    }
+                }
+
+                const mark = marks.find(m => m.range === bestRange);
+                sightY = cv.height * 0.55 - mark.offset;
+
+                const tankX = cv.width * 0.5 + Math.sin(nearestTank.t * 0.5) * 80 + nearestTank.laneOffset;
+                const correction = 1;
+                const flightLife = 0.8 + (bestRange / 1000) * 1.2 * correction;
+
+                // 左右の揺れの速度（Math.cos の中身）も tank.t がそのまま進むので 0.5 のまま
+                const velocityX = Math.cos(nearestTank.t * 0.5) * 25;
+                const velocityXX = Math.cos((nearestTank.t + flightLife) * 0.5) * 25;
+                const velocityXAve = (velocityX + velocityXX) / 2;
+                
+                const tankXFuture = tankX + velocityXAve * flightLife;
+
+                sightX = tankXFuture;
+                sightX += ((Math.random()-0.5) * autoModes[aIdx].error * 0.25);
+
+                fire();
+            }
+
+            autoFireTimer = 0.3;
+        }
+    }
+
+    for(let i = tanks.length - 1; i >= 0; i--){
+        const tank = tanks[i];
+        // tank.t はそのまま進める（これでAIの予測計算と完全に一致するよ）
+        tank.t += dt;
+        
+        const correctionSPD = 0.5 * difficulties[currentDiffIndex].spdcrt;
+        let speed = tank.distance < 300 ? 15 * dt : 25 * dt;
+        const waveNo = Math.floor(defeatedCount / 10) + 1;
+        speed = speed * (waveNo * 0.5 + 1) * correctionSPD;
+        tank.distance -= speed;
+
+        if(tank.flashTimer > 0) tank.flashTimer -= dt;
+
+        if(tank.distance < 150){
+            playerLife--;
+            screenFlash = 0.4;
+            isBreakThrough = true;
+            isBonus = false;
+            tanks.splice(i, 1);
+
+            if(playerLife <= 0){
+                isGameOver = true;
+
+                if(!currentAutoIndex){
+                    saveHighScore(score);
+                }
+            }
+        }
+    }
+
+
+    if(tanks.length === 0 && !isGameOver){
+        spawnTanks();
+    }
+
+
+    let distanceError;
+    let lateralError;
+
+    for(let i = shells.length - 1; i >= 0; i--){
+        const s = shells[i];
+        s.t += dt;
+
+        if(s.t >= s.life){
+            let hitTank = null;
+            let minTankDist = 999999;
+
+            for(const tank of tanks){
+                const tx = cv.width * 0.5 + Math.sin(tank.t * 0.5) * 80 + tank.laneOffset;
+                const distanceErrorW = Math.abs(tank.distance - s.range);
+                const lateralErrorW = Math.abs(tx - s.targetX);
+
+                const distThreshold = tank.distance < 300 ? 100 + ((300 - tank.distance) / 300) * 50 : 100;
+                const lateralThreshold = tank.distance < 300 ? 50 + ((300 - tank.distance) / 300) * 200 : 50;
+
+                if(distanceErrorW < distThreshold && lateralErrorW < lateralThreshold){
+                    const dErr = Math.hypot(distanceErrorW, lateralErrorW);
+                    if(dErr < minTankDist){
+                        minTankDist = dErr;
+                        hitTank = tank;
+                        distanceError = distanceErrorW;
+                        lateralError = lateralErrorW;
+                    }
+                }
+            }
+
+            if(hitTank){
+
+                const perfectDistance = hitTank.distance < 300 ? 50 + ((300 - hitTank.distance) / 300) * 25 : 50;
+                const perfectLateral = hitTank.distance < 300 ? 25 + ((300 - hitTank.distance) / 300) * 100 : 25;
+
+                const isPerfect =
+                    distanceError < perfectDistance &&
+                    lateralError < perfectLateral;
+
+                if(isPerfect){
+                    let pscr = Math.round(300 * difficulties[currentDiffIndex].pointBonus);
+                    pscr *= currentAutoIndex == 0 ? 1 : 0.1;
+                    pscr = Math.round(pscr);
+                    score += pscr;
+                    hitTank.flashTimer = 0.5;
+                    hitTank.life -= 2;
+                    perfectText = 1.5;
+                    reloadTimer = 0;
+                    reloadTimer2 = 0;
+                    superreloadTimer = 0.666666;
+                }else{
+                    let pscr = Math.round(100 * difficulties[currentDiffIndex].pointBonus);
+                    pscr *= currentAutoIndex == 0 ? 1 : 0.1;
+                    pscr = Math.round(pscr);
+                    score += pscr;
+                    hitTank.flashTimer = 0.25;
+                    hitTank.life -= 1;
+                }
+
+
+
+                if(hitTank.life <= 0){
+                    destroyText = 1.0;
+                    defeatedCount++;
+                    pscr = Math.round(1500 * difficulties[currentDiffIndex].pointBonus);
+                    pscr *= currentAutoIndex == 0 ? 1 : 0.1;
+                    pscr = Math.round(pscr);
+                    score += pscr;
+
+                    if (defeatedCount >= lastBonusCount + 10) {
+                        let bonusText = "GOT A REGULAR BONUS! ";
+                        
+                        if (waveTimer <= 150.0) {
+                            let timeBonus = Math.round(15000 * ((150 - waveTimer) / 150) * difficulties[currentDiffIndex].pointBonus);
+                            timeBonus *= currentAutoIndex == 0 ? 1 : 0.1;
+                            timeBonus = Math.round(timeBonus);
+                            score += timeBonus;
+                            pscr = Math.round(5000 * difficulties[currentDiffIndex].pointBonus);
+                            pscr *= currentAutoIndex == 0 ? 1 : 0.1;
+                            pscr = Math.round(pscr);
+                            bonusText = "WAVE SPEED BONUS + " + (timeBonus + pscr) + "pts! ";
+                        }
+
+                        pscr = Math.round(5000 * difficulties[currentDiffIndex].pointBonus);
+                        pscr *= currentAutoIndex == 0 ? 1 : 0.1;
+                        pscr = Math.round(pscr);
+                        score += pscr;
+
+                        lastBonusCount = defeatedCount;
+                        waveTimer = 0; 
+                        screenFlash = 0.8;
+                        isBonus = true;
+                        isBreakThrough = false;
+
+                        waveMessage = bonusText;
+                        waveMessageTimer = 3.0;
+                    }
+                    else {
+                        screenFlash = 0.4;
+                        isBonus = false;
+                        isBreakThrough = false;
+                    }
+                    
+                    const idx = tanks.indexOf(hitTank);
+                    if(idx !== -1){
+                        tanks.splice(idx, 1);
+                    }
+                }
+            }
+            shells.splice(i, 1);
+        }
+    }
+
+    if(screenFlash > 0) screenFlash -= dt;
+    if(destroyText > 0) destroyText -= dt;
+    if(perfectText > 0) perfectText -= dt;
+    if(superreloadTimer > 0) {
+            superreloadTimer -= dt;
+            if(superreloadTimer < 0) superreloadTimer = 0;
+            reloadTimer = 0;
+            reloadTimer2 = 0;
+    }
+    else {
+
+        if(reloadTimer > 0){
+            reloadTimer -= dt;
+            if(reloadTimer < 0) reloadTimer = 0;
+        }
+        if(reloadTimer2 > 0){
+            reloadTimer2 -= dt;
+            if(reloadTimer2 < 0) reloadTimer2 = 0;
+        }
+    }
+
+    if(waveMessageTimer > 0) waveMessageTimer -= dt;
+
+}
+
+///////////////////////////////////////////////////////////////
+// 描画系
+///////////////////////////////////////////////////////////////
+function drawShell(shell){
+    const u = shell.t / shell.life;
+    const x = shell.startX + (shell.targetX - shell.startX) * u;
+    const arcHeight = 80 + shell.range * 0.25;
+    const y = shell.startY + (shell.targetY - shell.startY) * u
+            - Math.sin(u * Math.PI) * arcHeight;
+
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawSight(){
+    ctx.strokeStyle = "lime";
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "lime";
+    ctx.font = Math.max(12, cv.width * 0.028) + "px sans-serif";
+
+    for(const m of marks){
+        const y = sightY + m.offset;
+        ctx.beginPath();
+        ctx.moveTo(sightX - 20, y);
+        ctx.lineTo(sightX + 20, y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(sightX, y - 8);
+        ctx.lineTo(sightX, y + 8);
+        ctx.stroke();
+
+        // 画面右端に近づいた際、文字がはみ出さないように画面幅や残り幅に比例させて左側に配置する
+        const textOffset = (cv.width - sightX) < 120 ? - (50 * (cv.width / 500) + 10) : 25;
+
+
+        ctx.fillText(
+            m.range + "m",
+            sightX + textOffset,
+            y + 4
+        );
+    }
+
+    // リロードバー
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(20, 175, 200, 14);
+    const ratio = 1.0 - reloadTimer / reloadTime;
+    ctx.fillStyle = "lime";
+    ctx.fillRect(20, 175, 200 * ratio, 14);
+}
+
+function drawTank(tank) {
+    const scale = 1000 / tank.distance;
+    const x = cv.width * 0.5 + Math.sin(tank.t * 0.5) * 80 + tank.laneOffset;
+    const y = cv.height * 0.55;
+    
+    const bodyW = 50 * scale;
+    const bodyH = 24 * scale;
+
+    const isFlashing = tank.flashTimer > 0;
+    const mainColor = isFlashing ? "white" : "#5a5";
+    const mainColor2 = isFlashing ? "#ddd" : "#494";
+    const subColor = isFlashing ? "#ddd" : "#383";
+    const turretColor = isFlashing ? "#eee" : "#585";
+    const turretColor2 = isFlashing ? "#bbb" : "#333";
+
+    ctx.fillStyle = subColor;
+    ctx.fillRect(x - bodyW/2 - 16 * scale, y - bodyH/2 - 4 * scale, 16 * scale, bodyH + 8 * scale);
+    ctx.fillRect(x + bodyW/2, y - bodyH/2 - 4 * scale, 16 * scale, bodyH + 8 * scale);
+    ctx.fillStyle = turretColor2;
+    ctx.fillRect(x - bodyW/2 - 16 * scale, y, 16 * scale, bodyH / 2 + 8 * scale);
+    ctx.fillRect(x + bodyW/2, y, 16 * scale, bodyH / 2 + 8 * scale);
+
+    ctx.fillStyle = mainColor;
+    ctx.fillRect(x - bodyW/2, y - bodyH/2, bodyW, bodyH);
+    ctx.fillStyle = mainColor2;
+    ctx.fillRect(x - bodyW/2, y + bodyH * 0.25, bodyW, bodyH * 0.25);
+
+    ctx.fillStyle = turretColor;
+    ctx.fillRect(x - bodyW * 0.375, y - bodyH/2 - 15 * scale, bodyW * 0.75, 20 * scale);
+
+    ctx.fillStyle = turretColor2;
+    ctx.fillRect(x + 5 * scale, y - bodyH/2 - 10 * scale, bodyW * 0.75, 3 * scale);
+
+    ctx.fillStyle = "white";
+    ctx.font = Math.max(12, cv.width * 0.028) + "px sans-serif";
+    ctx.fillText(Math.floor(tank.distance) + "m", x + 20, y - 20);
+}
+
+function drawDifficultyButton() {
+    const layout = getButtonLayout();
+    const b = layout.diff;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y);
+    grad.addColorStop(0.0, "rgba(0, 0, 0, 0.9)");
+    grad.addColorStop(0.2, "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(0.8, "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(1.0, "rgba(0, 0, 0, 0.9)");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    ctx.strokeStyle = "lime";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+    ctx.fillStyle = "lime";
+    ctx.font = "bold 15px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const diffName = difficulties[currentDiffIndex].name;
+    ctx.fillText("< " + diffName + " >", b.x + b.w / 2, b.y + b.h / 2);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+}
+
+function drawAutoButton(){
+    const layout = getButtonLayout();
+    const b = layout.auto;
+
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y);
+    grad.addColorStop(0.0, currentAutoIndex != 0 ? "rgba(0, 120, 255, 0.9)" : "rgba(0, 0, 0, 0.9)");
+    grad.addColorStop(0.2, currentAutoIndex != 0 ? "rgba(0, 120, 255, 0.2)" : "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(0.8, currentAutoIndex != 0 ? "rgba(0, 120, 255, 0.2)" : "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(1.0, currentAutoIndex != 0 ? "rgba(0, 120, 255, 0.9)" : "rgba(0, 0, 0, 0.9)");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+    ctx.fillStyle = "white";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const autoName = autoModes[currentAutoIndex].name;
+    ctx.fillText(
+        "< " +  autoName + " >",
+        b.x + b.w/2,
+        b.y + b.h/2
+    );
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+}
+
+// ヘルプボタン
+function drawHelpButton(){
+    const layout = getButtonLayout();
+    const b = layout.help;
+
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y);
+    grad.addColorStop(0.0, isHelpOpen ? "rgba(255, 140, 0, 0.9)" : "rgba(0, 0, 0, 0.9)");
+    grad.addColorStop(0.2, isHelpOpen ? "rgba(255, 140, 0, 0.2)" : "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(0.8, isHelpOpen ? "rgba(255, 140, 0, 0.2)" : "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(1.0, isHelpOpen ? "rgba(255, 140, 0, 0.9)" : "rgba(0, 0, 0, 0.9)");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    ctx.strokeStyle = "orange";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+    ctx.fillStyle = "#ccaa88";
+    ctx.font = "bold 15px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("？ HELP ？", b.x + b.w / 2, b.y + b.h / 2);
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+}
+
+// ヘルプメッセージボックス（モーダルウィンドウ）の描画
+function drawHelpModal(){
+    if (!isHelpOpen) return;
+
+    ctx.save();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+
+    const boxW = Math.min(460, cv.width - 30);
+    const boxH = Math.min(360, cv.height - 60);
+    const boxX = cv.width / 2 - boxW / 2;
+    const boxY = cv.height / 2 - boxH / 2;
+
+    // ウィンドウ背景
+    ctx.fillStyle = "rgba(20, 20, 25, 0.95)";
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = "orange";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    // タイトル
+    ctx.fillStyle = "orange";
+    ctx.font = "bold 18px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("【 砲術照準シミュレーター 遊び方 】", boxX + boxW / 2, boxY + 30);
+
+    // 説明テキスト
+    ctx.fillStyle = "white";
+    ctx.font = "13px sans-serif";
+    ctx.textAlign = "left";
+
+    let textY = boxY + 65;
+    const lineSpacing = 20;
+
+    const messages = [
+        "・目的：迫り来る敵戦車を測距照準で迎撃せよ！",
+        "・敗北：敵戦車に突破され続け、耐久力がなくなったら敗北。",
+        "・操作：マウス移動/タッチで照準を合わせ、クリック/タップで発射。",
+        "・距離目盛：敵の距離（m）に合わせて照準を合わせる。",
+        "・リロード：弾を撃ち切ると一定時間リロードに入ります。",
+        "・ボーナス：10撃破ごとにスコア大ボーナス獲得！",
+        "          さらに素早くクリアすると最大15000ptの追加報酬！",
+        "・難易度：右上のボタンでゲーム難易度を変更可能。",
+        "          難しいほど得点倍率が上がります。",
+        "・AI機能：右上のボタンでオートプレイやAI習熟度を変更可能。"
+    ];
+
+    for(const msg of messages){
+        ctx.fillText(msg, boxX + 20, textY);
+        textY += lineSpacing;
+    }
+
+    // 閉じるボタン
+    const closeW = 120;
+    const closeH = 34;
+    const closeX = boxX + boxW / 2 - closeW / 2;
+    const closeY = boxY + boxH - 45;
+
+    ctx.fillStyle = "orange";
+    ctx.fillRect(closeX, closeY, closeW, closeH);
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(closeX, closeY, closeW, closeH);
+
+    ctx.fillStyle = "black";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("閉じる", closeX + closeW / 2, closeY + closeH / 2);
+
+    ctx.restore();
+}
+
+function draw(){
+    ctx.fillStyle = "#9dd7ff";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+
+    const horizonY = cv.height * 0.55;
+    ctx.fillStyle = "#999966";
+    ctx.fillRect(0, horizonY, cv.width, cv.height - horizonY);
+
+    ctx.strokeStyle = "#7a7a4f"; 
+    ctx.fillStyle = "#7a7a4f"; 
+    ctx.fillRect(0, horizonY + 2, cv.width, cv.height * 0.01);
+
+    ctx.save();
+    ctx.lineWidth = 1.5;
+
+    const centerX = cv.width / 2;
+    const groundHeight = cv.height - horizonY;
+
+    const numHorizLines = 12;
+    for (let i = 0; i <= numHorizLines; i++) {
+        const t = i / numHorizLines;
+        const y = horizonY + groundHeight * (t * t); 
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cv.width, y);
+        ctx.stroke();
+    }
+
+    const numVertLines = 40;
+    const spreadWidth = cv.width * 15;
+    for (let i = -numVertLines/2; i <= numVertLines/2; i++) {
+        const bottomX = centerX + i * (spreadWidth / (numVertLines / 2));
+        ctx.beginPath();
+        ctx.moveTo(centerX, horizonY);
+        ctx.lineTo(bottomX, cv.height);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    const topY = horizonY + 2;
+    const gradHeight = cv.height * 0.05;
+    
+    const grad = ctx.createLinearGradient(0, topY, 0, topY + gradHeight);
+    grad.addColorStop(0.0, "rgba(222, 222, 188, 0.9)");
+    grad.addColorStop(0.6, "rgba(222, 222, 188, 0.3)");
+    grad.addColorStop(1.0, "rgba(222, 222, 188, 0.0)");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, topY, cv.width, gradHeight);
+
+    const sortedTanks = [...tanks].sort((a, b) => b.distance - a.distance);
+
+    for(const tank of sortedTanks){
+        drawTank(tank);
+    }
+
+    for(const s of shells){
+        drawShell(s);
+    }
+
+    drawSight();
+    drawDifficultyButton();
+    drawAutoButton();
+    drawHelpButton();
+
+    const fontSize = Math.max(12, Math.min(16, cv.width * 0.032));
+    ctx.font = fontSize + "px sans-serif";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "left";
+
+    const lineH = fontSize + 5;
+    let ty = 22;
+
+    ctx.fillText("SCORE : " + score + " (HI-SCORE : " + getHighScore() + ")", 15, ty); ty += lineH;
+
+    if(currentAutoIndex){
+        ctx.fillStyle = "blue";
+        ctx.fillText(
+            "AUTO PLAY (HI-SCORE DISABLED)",
+            15,
+            ty
+        );
+        ty += lineH;
+    }
+    
+    ctx.fillStyle = "white";
+    let lifeStr = "";
+    for(let i = 0; i < playerLife; i++) lifeStr += "[◎]";
+    ctx.fillText("LIFE (耐久) : " + lifeStr, 15, ty); ty += lineH;
+
+    ctx.fillText("撃破数 : " + defeatedCount + "台 (敵数: " + tanks.length + ")", 15, ty); ty += lineH;
+    ctx.fillText(lastShotInfo, 15, ty); ty += lineH + 4;
+
+    const canFire = reloadTimer <= 0 && reloadTimer2 <= 0;
+
+    ctx.fillText(
+        canFire ? "READY" : "RELOADING",
+        15, ty
+    );
+    const maxA = difficulties[currentDiffIndex].maxAmmo;
+    ctx.fillText("Ammo : " + ammo + " / " + maxA, 130, ty);
+
+
+    ctx.fillStyle = "white";
+    const waveNo = Math.floor(defeatedCount / 10) + 1;
+    ctx.fillText("WAVE " + waveNo + " :", 15, cv.height - 48);
+
+    ctx.fillStyle = waveTimer < 150 ? "yellow" : "red";
+    ctx.fillStyle = waveTimer < 120 ? "cyan" : ctx.fillStyle;
+    ctx.fillText("waveTimer : " + waveTimer.toFixed(3), 15, cv.height - 30);
+
+    if(screenFlash > 0){
+        const alpha = screenFlash / 0.4;
+        ctx.fillStyle = "rgba(255,255,255," + alpha + ")";
+        if(isBreakThrough) ctx.fillStyle = "rgba(222,22,22," + alpha + ")";
+        ctx.fillRect(0, 0, cv.width, cv.height);
+    }
+
+    if(destroyText > 0){
+        ctx.save();
+        ctx.globalAlpha = destroyText;
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";
+        ctx.font = "bold " + Math.max(24, cv.width * 0.07) + "px sans-serif";
+        ctx.fillText("TARGET DESTROYED!", cv.width/2, cv.height/2);
+        ctx.restore();
+    }
+
+    if(perfectText > 0){
+        ctx.save();
+        ctx.globalAlpha = perfectText / 1.5;
+        ctx.fillStyle = "cyan";
+        ctx.textAlign = "center";
+        ctx.font = "bold " + Math.max(24, cv.width * 0.07) + "px sans-serif";
+        ctx.fillText("CRITICAL DAMAGE !!", cv.width/2, cv.height/2 + 140);
+        ctx.restore();
+    }
+
+    // ウェーブクリア時の特別メッセージ表示
+    if(waveMessageTimer > 0){
+        ctx.save();
+        ctx.globalAlpha = waveMessageTimer / 1.5;
+        ctx.fillStyle = "cyan";
+        ctx.textAlign = "center";
+        ctx.font = "bold " + Math.max(20, cv.width * 0.05) + "px sans-serif";
+        ctx.fillText(waveMessage, cv.width/2, cv.height/2 - 140);
+        ctx.restore();
+    }
+
+    // ヘルプウィンドウの描画
+    drawHelpModal();
+
+    if(isGameOver){
+        ctx.save();
+        ctx.fillStyle = "rgba(0,0,0,0.7)";
+        ctx.fillRect(0, 0, cv.width, cv.height);
+        ctx.textAlign = "center";
+
+        ctx.fillStyle = "yellow";
+        ctx.font = Math.max(16, cv.width * 0.04) + "px sans-serif";
+        const waveNo = Math.floor(defeatedCount / 10) + 1;
+        ctx.fillText("難易度: " + difficulties[currentDiffIndex].name + " / WAVE " + waveNo, cv.width/2, cv.height/2 - 160);
+
+        ctx.fillStyle = "red";
+        ctx.font = "bold " + Math.max(28, cv.width * 0.07) + "px sans-serif";
+        ctx.fillText("GAME OVER", cv.width/2, cv.height/2 - 40);
+
+        ctx.fillStyle = "yellow";
+        ctx.font = Math.max(16, cv.width * 0.04) + "px sans-serif";
+        ctx.fillText("スコア: " + score + "  /  ハイスコア: " + getHighScore(), cv.width/2, cv.height/2 + 5);
+
+        ctx.fillStyle = "white";
+        ctx.font = Math.max(14, cv.width * 0.035) + "px sans-serif";
+        ctx.fillText("画面クリック（タップ）でRESTART", cv.width/2, cv.height/2 + 50);
+
+        // --- クリアボタンの配置と描画 ---
+        const btnW = Math.min(180, (cv.width - 60) / 2);
+        const btnH = 40;
+        const gap = 15;
+        const totalW = btnW * 2 + gap;
+        const startX = cv.width / 2 - totalW / 2;
+        const btnY = cv.height / 2 + 80;
+
+        const btnX1 = startX;
+        const btnX2 = startX + btnW + gap;
+
+        // 1つ目のボタン（HI-SCORE CLEAR）
+        ctx.fillStyle = "rgba(120,0,0,0.8)";
+        ctx.fillRect(btnX1, btnY, btnW, btnH);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(btnX1, btnY, btnW, btnH);
+
+        ctx.fillStyle = "white";
+        ctx.font = Math.max(11, cv.width * 0.015) + "px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("HI-SCORE CLEAR", btnX1 + btnW / 2, btnY + btnH / 2);
+
+        // 2つ目のボタン（ALL RECORD CLEAR）
+        ctx.fillStyle = "rgba(120,0,0,0.8)";
+        ctx.fillRect(btnX2, btnY, btnW, btnH);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(btnX2, btnY, btnW, btnH);
+
+        ctx.fillStyle = "white";
+        ctx.fillText("ALL RECORD CLEAR", btnX2 + btnW / 2, btnY + btnH / 2);
+
+        ctx.restore();
+    }
+}
+
+///////////////////////////////////////////////////////////////
+// メインループ
+///////////////////////////////////////////////////////////////
+init();
+
+function init(){
+    let id = TMan.add();
+    GLoop(id);
+}
+
+function GLoop(id){
+    const dt = 50;
+    update(dt / 1000);
+    draw();
+    TMan.timer[id].setalerm(function() { GLoop(id); }, dt);
+}
+</script>
+</body>
+</html>

@@ -69,6 +69,7 @@ Experience NAS6LIB in action:
 * **Satellite Orbit Simulator**: [https://nas6.net/satellite.htm](https://nas6.net/satellite.htm)  
 * **Fresnel Effect**: [Fresnel Effect DEMO](https://nas6.net/javascripts/threejs/examples/WaterPlaneTest.htm)  
 * **Artillery simulation game**: [Artillery simulation game](https://nas6mixfoolv.github.io/NAS6LIB/pillbox000.htm)  
+A small artillery fire-control game built using NAS6LIB components.  
 
 ## Automated Test  
   

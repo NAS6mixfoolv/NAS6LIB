@@ -68,7 +68,8 @@ Experience NAS6LIB in action:
 * **Solar System Planet Orbit Simulator**: [https://nas6.net/solarsystem.htm](https://nas6.net/solarsystem.htm)
 * **Satellite Orbit Simulator**: [https://nas6.net/satellite.htm](https://nas6.net/satellite.htm)  
 * **Fresnel Effect**: [Fresnel Effect DEMO](https://nas6.net/javascripts/threejs/examples/WaterPlaneTest.htm)  
-* **Artillery simulation game**: [Artillery simulation game](https://nas6mixfoolv.github.io/NAS6LIB/pillbox000.htm)  
+* **Arbitrary-precision scientific calculator**: [Arbitrary-precision scientific calculator](https://nas6mixfoolv.github.io/NAS6LIB/test002.htm)  
+* * **Artillery simulation game**: [Artillery simulation game](https://nas6mixfoolv.github.io/NAS6LIB/pillbox000.htm)  
 A small artillery fire-control game built using NAS6LIB components.  
 ![gif of Artillery simulation game](https://raw.githubusercontent.com/NAS6mixfoolv/NAS6LIB/main/img/pillbox002.gif)  
   

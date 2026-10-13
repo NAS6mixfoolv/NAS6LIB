@@ -1295,6 +1295,21 @@ function draw(){
 init();
 
 function init(){
+    alert(
+    "砲術照準シミュレーター / Artillery Simulator\n\n" +
+
+    "【日本語】\n" +
+    "敵までの距離に対応する照準目盛を使ってください。\n" +
+    "近距離は上、遠距離は下の照準です。\n" +
+    "クリティカルヒットでスーパーリロードが発動することがあります。\n\n" +
+
+    "【English】\n" +
+    "Use the aiming mark that matches the target distance.\n" +
+    "Upper marks are for short range targets.\n" +
+    "Lower marks are for long range targets.\n" +
+    "Critical hits may trigger a Super Reload."
+    );
+
     let id = TMan.add();
     GLoop(id);
 }

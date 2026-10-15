@@ -28,6 +28,15 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 </script>
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QPTP4QSV32');
+</script>
+
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -40,7 +49,7 @@ window.addEventListener('unhandledrejection', function(e) {
 <meta property="og:description" content="JavaScriptで動作する砲術照準シミュレーターです。測距照準を駆使して敵戦車を撃破せよ！">
 <meta property="og:type" content="website">
 
-<script src="https://cdn.jsdelivr.net/gh/NAS6mixfoolv/NAS6LIB@main/javascripts/nas6lib/timer.js"></script>
+<script src="./javascripts/nas6lib/timer.js"></script>
 
 
 <title>砲術照準シミュレーター</title>
@@ -154,6 +163,7 @@ let waveMessageTimer = 0;
 let isGameOver = false;
 let isBonus = false;
 let isBreakThrough = false;
+let isLock = false;
 let autoFireTimer = 0;
 
 const cv = document.getElementById("cv");
@@ -198,7 +208,8 @@ function getButtonLayout() {
         diff: { x: btnX, y: 12, w: btnW, h: btnH },
         auto: { x: btnX, y: 12 + btnH + 6, w: btnW, h: btnH },
         help: { x: btnX, y: 12 + (btnH + 6) * 2, w: btnW, h: btnH },
-        back: { x: btnX, y: cv.height - 12 - btnH - 6, w: btnW, h: btnH }
+        back: { x: btnX, y: cv.height - 12 - btnH - 6, w: btnW, h: btnH },
+        lock: { x: btnX, y: cv.height - 12 - (btnH + 6) * 2, w: btnW, h: btnH }
     };
 }
 
@@ -206,6 +217,7 @@ function getButtonLayout() {
 // 各種ボタンの当たり判定
 ///////////////////////////////////////////////////////////////
 function checkDifficultyButton(clientX, clientY) {
+    if(isLock) return false;
     const layout = getButtonLayout();
     const b = layout.diff;
 
@@ -231,6 +243,7 @@ function applyDifficulty() {
 
 // オートボタン
 function checkAutoButton(clientX, clientY) {
+    if(isLock) return false;
     const layout = getButtonLayout();
     const b = layout.auto;
 
@@ -248,6 +261,7 @@ function checkAutoButton(clientX, clientY) {
 
 // ヘルプボタン
 function checkHelpButton(clientX, clientY) {
+    if(isLock) return false;
     const layout = getButtonLayout();
     const b = layout.help;
 
@@ -281,14 +295,28 @@ function checkHelpCloseButton(clientX, clientY) {
 
 // ブラウザバックボタン判定
 function checkBackButton(clientX, clientY) {
+    if(isLock) return false;
     const layout = getButtonLayout();
     const b = layout.back;
 
     if (clientX >= b.x && clientX <= b.x + b.w && clientY >= b.y && clientY <= b.y + b.h) {
         const localX = clientX - b.x;
         if(confirm("元リンクに戻りますか？")){
-            window.location.href = "https://nas6mixfoolv.github.io/NAS6LIB/";
+            window.location.href = "https://nas6.net/";
         }
+        return true;
+    }
+    return false;
+}
+
+
+// ロックボタン判定
+function checkLockButton(clientX, clientY) {
+    const layout = getButtonLayout();
+    const b = layout.lock;
+
+    if (clientX >= b.x && clientX <= b.x + b.w && clientY >= b.y && clientY <= b.y + b.h) {
+        isLock = !isLock;
         return true;
     }
     return false;
@@ -346,6 +374,7 @@ cv.addEventListener("mousedown", e => {
     if(checkAutoButton(e.clientX, e.clientY)) return;
     if(checkHelpButton(e.clientX, e.clientY)) return;
     if(checkBackButton(e.clientX, e.clientY)) return;
+    if(checkLockButton(e.clientX, e.clientY)) return;
 
     if(isGameOver){
         if(checkGameOverButtons(e.clientX, e.clientY)){
@@ -381,6 +410,7 @@ cv.addEventListener("touchstart", e => {
         if(checkAutoButton(t.clientX, t.clientY)) return;
         if(checkHelpButton(t.clientX, t.clientY)) return;
         if(checkBackButton(t.clientX, t.clientY)) return;
+        if(checkLockButton(t.clientX, t.clientY)) return;
     }
 
     if(isGameOver){
@@ -1018,7 +1048,8 @@ function drawHelpModal(){
         "          さらに素早くクリアすると最大15000ptの追加報酬！",
         "・難易度：右上のボタンでゲーム難易度を変更可能。",
         "          難しいほど得点倍率が上がります。",
-        "・AI機能：右上のボタンでオートプレイやAI習熟度を変更可能。"
+        "・AI機能：右上のボタンでオートプレイやAI習熟度を変更可能。",
+        "・ロック：右下のボタンで各種ボタンの有効無効を変更可能。"
     ];
 
     for(const msg of messages){
@@ -1070,6 +1101,34 @@ function drawBackButton(){
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Back to Link", b.x + b.w / 2, b.y + b.h / 2);
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+}
+
+// ロックボタン
+function drawLockButton(){
+    const layout = getButtonLayout();
+    const b = layout.lock;
+
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y);
+    grad.addColorStop(0.0, isLock ? "rgba(0, 120, 255, 0.9)" : "rgba(0, 0, 0, 0.9)");
+    grad.addColorStop(0.2, isLock ? "rgba(0, 120, 255, 0.9)" : "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(0.8, isLock ? "rgba(0, 120, 255, 0.9)" : "rgba(0, 0, 0, 0.2)");
+    grad.addColorStop(1.0, isLock ? "rgba(0, 120, 255, 0.9)" : "rgba(0, 0, 0, 0.9)");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+    ctx.fillStyle = "white";
+    ctx.font = "bold 15px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(isLock ? "Lock" : "UnLock", b.x + b.w / 2, b.y + b.h / 2);
 
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
@@ -1140,6 +1199,7 @@ function draw(){
     drawAutoButton();
     drawHelpButton();
     drawBackButton();
+    drawLockButton();
 
     const fontSize = Math.max(12, Math.min(16, cv.width * 0.032));
     ctx.font = fontSize + "px sans-serif";

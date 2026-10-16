@@ -1322,7 +1322,7 @@ function draw(){
         ctx.strokeRect(btnX1, btnY, btnW, btnH);
 
         ctx.fillStyle = "white";
-        ctx.font = Math.max(11, cv.width * 0.015) + "px sans-serif";
+        ctx.font = Math.min(18, Math.max(11, cv.width * 0.015)) + "px sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("HI-SCORE CLEAR", btnX1 + btnW / 2, btnY + btnH / 2);

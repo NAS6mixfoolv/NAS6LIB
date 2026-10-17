@@ -695,7 +695,7 @@ class N6LVector {
     };
 
     //direction cosine//方向余弦
-    DirectionCosine() {
+    DirectionCosine(eps = 1e-6) {
         var r = this.Abs();
         var i = 0;
         var ret = new N6LVector(this);
@@ -704,14 +704,14 @@ class N6LVector {
             i = 1;
             l = l.Homogeneous();
         }
-        if(r == 0.0) return l;
+        if(r < eps) return l;
         for(; i < l.x.length; i++) ret.x[i] = l.x[i] / r;
         return ret;
     };
 
 
     //angle//なす角
-    Theta(rh) {
+    Theta(rh, eps = 1e-6) {
         if(!rh || rh.typename != "N6LVector"){
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Theta(rh): Invalid rh.typename. Returning 0.");
@@ -724,20 +724,20 @@ class N6LVector {
             var crs = this.Cross(rh);
             if(crs < 0.0) s = -1.0;
         }
-        if(this.Abs() == 0.0 || rh.Abs() == 0.0) return 0.0; //provisional//暫定値
+        if(this.Abs() < eps || rh.Abs() < eps) return 0.0; //provisional//暫定値
         dc = this.Dot(rh) / (this.Abs() * rh.Abs());
         return Math.acos(dc) * s;
     };
 
     //angle//なす角
-    ThetaN(rh) {
+    ThetaN(rh, eps = 1e-6) {
         if(!rh || rh.typename != "N6LVector"){
           if(N6L_DEBUG_MODE){
             console.warn("N6LVector.Theta(rh): Invalid rh.typename. Returning 0.");
           }
           return 0;
         }
-        var th = this.Theta(rh);
+        var th = this.Theta(rh, eps);
         if(th <= -Math.PI / 2.0 || Math.PI / 2.0 < th) return false;
         return true;
     };
@@ -869,9 +869,12 @@ class N6LVector {
         var ab = b.Sub(a);
         var ap = p.Sub(a);
         var aab = ab.Abs();
-        var pab = (ab.ProjectAxis(ap)).Abs();
-        if(aab < pab) return 0.0;
-        return Math.sqrt(aab * aab - pab * pab);
+        //var pab = (ab.ProjectAxis(ap)).Abs();
+        var pab = (ap.ProjectAxis(ab)).Abs();
+        var aap = ap.Abs();
+        return Math.sqrt(aap * aap - pab * pab);
+        //if(aab < pab) return 0.0;
+        //return Math.sqrt(aab * aab - pab * pab);
     };
 
     //all param is N6LVector // reta & retb is Array//直線と直線の距離と最接近位置
@@ -1120,9 +1123,9 @@ class N6LVector {
             1.0,
             (range - this.ToLogAxis(base, range, VecWK2.x[3])) * VecWK2.x[1] / range,
             (range - this.ToLogAxis(base, range, VecWK2.x[3])) * VecWK2.x[2] / range,
-            0.0], true);
+            VecWK2.x[3]], true);
 
-        return VecWK;
+        return VecWK.SetHomo(true);
     };
 
     //inverse frustum infinity//逆無限遠透視射影
@@ -1134,17 +1137,17 @@ class N6LVector {
             range * VecWK2.x[2] / (range - this.ToLogAxis(base, range, z)),
             z / range], true);
 
-        return VecWK;
+        return VecWK.SetHomo(true);
     };
 
     //frustum infinity//無限遠透視射影
     FrustumInfVec(base, range, v) {
-        return this.FrustumInfVec0(base, range, v).Div(range);
+        return this.FrustumInfVec0(base, range, v).Div(range).SetHomo(true);
     };
 
     //inverse frustum infinity//逆無限遠透視射影
     InvFrustumInfVec(base, range, v, z) {
-        return this.InvFrustumInfVec0(base, range, v, z).Mul(range);
+        return this.InvFrustumInfVec0(base, range, v, z).Mul(range).SetHomo(true);
     };
 
 }

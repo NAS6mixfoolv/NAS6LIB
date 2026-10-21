@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>
+console.log("enter: " + location.href);
+
+window.addEventListener('error', function(e) {
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: "JS Error",
+            url: location.href,
+            msg: e.message,
+            src: e.filename,
+            line: e.lineno,
+            col: e.colno
+        }, "*");
+    }
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+            type: "Promise Rejection",
+            url: location.href,
+            msg: String(e.reason)
+        }, "*");
+    }
+});
+</script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QPTP4QSV32');
+    </script>
+
+    <meta name="description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
+
+    <meta property="og:title" content="数独自動生成＆解答ツール">
+    <meta property="og:description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
+    <meta property="og:type" content="website">
+  <title>数独自動生成＆解答ツール</title>
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>数独自動生成＆問題共有ツール</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #333333;
+      --grid-line: #cccccc;
+      --given-color: #1a252f;
+      --user-color: #0d6efd;
+      --correct-bg: #d1e7dd;
+      --wrong-bg: #f8d7da;
+      --wrong-color: #842029;
+      --solved-bg: #e2e3e5;
+      --solved-color: #41464b;
+    }
+
+    * {
+      box-sizing: border-box;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      margin: 0;
+      min-height: 100vh;
+      background-image: url("./img/kumausagineko.jpg");
+      background-repeat: repeat;
+      background-size: auto;
+      background-attachment: fixed;
+    }
+
+    h1 {
+      margin: 5px 0 10px 0;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .container {
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    input[type="number"] {
+      width: 50px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    button {
+      padding: 7px 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #0d6efd;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      flex: 1 1 auto;
+      min-width: 80px;
+    }
+
+    button:hover {
+      background-color: #0b5ed7;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    button.secondary {
+      background-color: #6c757d;
+    }
+    button.secondary:hover {
+      background-color: #5c636a;
+    }
+
+    button.success {
+      background-color: #198754;
+    }
+    button.success:hover {
+      background-color: #157347;
+    }
+
+    button.warning {
+      background-color: #ffc107;
+      color: #000;
+    }
+    button.warning:hover {
+      background-color: #e0a800;
+    }
+
+    button.info {
+      background-color: #0dcaf0;
+      color: #000;
+    }
+    button.info:hover {
+      background-color: #31d2f2;
+    }
+
+    /* Board UI */
+    .board-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .header-row {
+      display: flex;
+      width: calc(100% - 20px);
+      margin-left: 20px;
+    }
+
+    .header-cell {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .grid-wrapper {
+      display: flex;
+      width: 100%;
+    }
+
+    .header-col {
+      display: flex;
+      flex-direction: column;
+      width: 20px;
+    }
+
+    .header-col-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .sudoku-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      aspect-ratio: 1 / 1;
+      width: calc(100% - 20px);
+      border: 2px solid var(--border-color);
+      background-color: var(--border-color);
+      gap: 1px;
+    }
+
+    .cell {
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .cell:nth-child(3n) {
+      border-right: 2px solid var(--border-color);
+    }
+    .cell:nth-child(9n) {
+      border-right: none;
+    }
+    .cell-row-end {
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .cell input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      text-align: center;
+      font-size: clamp(14px, 4.5vw, 20px);
+      font-weight: bold;
+      outline: none;
+      background: transparent;
+      box-sizing: border-box;
+      padding: 0;
+      border-radius: 0;
+      -webkit-appearance: none;
+      appearance: none; /* VS Codeの警告解消対応 */
+    }
+
+    .cell.given input {
+      color: var(--given-color);
+      font-weight: 900;
+      background-color: #f0f3f6;
+    }
+
+    .cell.user input {
+      color: var(--user-color);
+    }
+
+    .cell.edit-mode input {
+      color: #d63384;
+      background-color: #fff0f6;
+    }
+
+    .cell.correct input {
+      background-color: var(--correct-bg);
+      color: #0f5132;
+    }
+
+    .cell.wrong input {
+      background-color: var(--wrong-bg);
+      color: var(--wrong-color);
+    }
+
+    .cell.auto-solved input {
+      background-color: var(--solved-bg);
+      color: var(--solved-color);
+    }
+
+    .status-msg {
+      margin-top: 5px;
+      font-size: 13px;
+      text-align: center;
+      min-height: 36px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 8px;
+      font-size: 11px;
+      border-top: 1px solid #eee;
+      padding-top: 6px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>数独自動生成＆問題共有ツール</h1>
+
+  <div class="container">
+    <!-- 上部操作バー -->
+    <div class="controls" id="mode-controls">
+      <div class="control-group" id="hint-group">
+        <label for="hint-count">ヒント数:</label>
+        <input type="number" id="hint-count" value="30" min="20" max="60">
+      </div>
+      <button onclick="generateQuestion()" id="btn-generate">自動生成</button>
+      <button class="warning" onclick="toggleCustomEditMode()" id="btn-custom">自作問題作成</button>
+    </div>
+
+    <!-- 盤面エリア -->
+    <div class="board-container">
+      <div class="header-row">
+        <div class="header-cell">A</div><div class="header-cell">B</div><div class="header-cell">C</div>
+        <div class="header-cell">D</div><div class="header-cell">E</div><div class="header-cell">F</div>
+        <div class="header-cell">G</div><div class="header-cell">H</div><div class="header-cell">I</div>
+      </div>
+      <div class="grid-wrapper">
+        <div class="header-col">
+          <div class="header-col-cell">1</div><div class="header-col-cell">2</div><div class="header-col-cell">3</div>
+          <div class="header-col-cell">4</div><div class="header-col-cell">5</div><div class="header-col-cell">6</div>
+          <div class="header-col-cell">7</div><div class="header-col-cell">8</div><div class="header-col-cell">9</div>
+        </div>
+        <div id="grid" class="sudoku-grid"></div>
+      </div>
+    </div>
+
+    <!-- プレイ用ボタン -->
+    <div class="controls" id="play-controls">
+      <button class="success" onclick="checkAnswer()">入力チェック</button>
+      <button class="secondary" onclick="solvePuzzle()">解答を表示</button>
+      <button class="info" onclick="sharePuzzleUrl()">問題共有URLコピー</button>
+    </div>
+
+    <!-- 自作問題チェック用ボタン -->
+    <div class="controls" id="custom-controls" style="display: none;">
+      <button class="success" onclick="verifyCustomPuzzle()">妥当性チェック＆決定</button>
+      <button class="secondary" onclick="clearAllGrid()">全クリア</button>
+      <button class="secondary" onclick="toggleCustomEditMode()">キャンセル</button>
+    </div>
+
+    <div id="status" class="status-msg"></div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-box" style="background:#f0f3f6;"></div>初期ヒント</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--correct-bg);"></div>正解</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--wrong-bg);"></div>誤り</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--solved-bg);"></div>自動補完</div>
+    </div>
+    <div id="ad-container-053" style="margin-top: auto;"></div>
+  </div>
+
+  <script>
+    // --- C++ ソルバー移植部 ---
+    const NUM = [0x001, 0x002, 0x004, 0x008, 0x010, 0x020, 0x040, 0x080, 0x100];
+
+    let currentQuestion = Array(81).fill(0);
+    let currentSolution = Array(81).fill(0);
+    let isCustomMode = false;
+
+    function getNum(k, a) {
+      let ret = 1, j = 0;
+      for (let i = 1; i < 0x200; i *= 2, ret++) {
+        if (k & i) j++;
+        if (a && j === a) return ret;
+      }
+      return 0;
+    }
+
+    function searchNumPl(np, idx) {
+      if (np[idx] !== 0) return { n: 0, k: 0, valid: false };
+
+      const r = Math.floor(idx / 9);
+      const c = idx % 9;
+      const br = Math.floor(r / 3) * 3;
+      const bc = Math.floor(c / 3) * 3;
+
+      let used = 0;
+
+      for (let a = 0; a < 9; a++) {
+        const nr = np[r * 9 + a];
+        if (nr) used |= NUM[nr - 1];
+
+        const nc = np[a * 9 + c];
+        if (nc) used |= NUM[nc - 1];
+
+        const nb = np[(br + Math.floor(a / 3)) * 9 + (bc + (a % 3))];
+        if (nb) used |= NUM[nb - 1];
+      }
+
+      let count = 0, mask = 0;
+      for (let a = 0; a < 9; a++) {
+        if (!(used & NUM[a])) {
+          count++;
+          mask |= NUM[a];
+        }
+      }
+
+      return { n: count, k: mask, valid: true };
+    }
+
+    function calcNumPl(np, bans = false) {
+      let work = [...np];
+
+      function solve() {
+        let m = 10, j = -1, l = 0, emptyCount = 0;
+
+        for (let i = 0; i < 81; i++) {
+          const res = searchNumPl(work, i);
+          if (res.valid) {
+            if (res.n < m) {
+              m = res.n;
+              j = i;
+              l = res.k;
+            }
+          } else {
+            emptyCount++;
+          }
+        }
+
+        if (emptyCount === 81) return true;
+        if (m < 1 || m > 9) return false;
+
+        if (m === 1) {
+          work[j] = getNum(l, 1);
+          return solve();
+        } else {
+          const loopRange = bans 
+            ? Array.from({length: m}, (_, i) => m - i) 
+            : Array.from({length: m}, (_, i) => i + 1);
+
+          for (let a of loopRange) {
+            const backup = [...work];
+            work[j] = getNum(l, a);
+            if (solve()) return true;
+            work = backup;
+          }
+          return false;
+        }
+      }
+
+      return solve() ? work : null;
+    }
+
+    function hasRuleViolation(board) {
+      for (let i = 0; i < 9; i++) {
+        let rowSet = new Set(), colSet = new Set(), blockSet = new Set();
+        for (let j = 0; j < 9; j++) {
+          let rv = board[i * 9 + j];
+          if (rv !== 0) {
+            if (rowSet.has(rv)) return true;
+            rowSet.add(rv);
+          }
+          let cv = board[j * 9 + i];
+          if (cv !== 0) {
+            if (colSet.has(cv)) return true;
+            colSet.add(cv);
+          }
+          let br = Math.floor(i / 3) * 3 + Math.floor(j / 3);
+          let bc = (i % 3) * 3 + (j % 3);
+          let bv = board[br * 9 + bc];
+          if (bv !== 0) {
+            if (blockSet.has(bv)) return true;
+            blockSet.add(bv);
+          }
+        }
+      }
+      return false;
+    }
+
+    function solveAndVerifyUnique(np) {
+      if (hasRuleViolation(np)) {
+        return { solvable: false, unique: false, solution: null, reason: 'rule_violation' };
+      }
+
+      const ansForward = calcNumPl(np, false);
+      if (!ansForward) return { solvable: false, unique: false, solution: null, reason: 'unsolvable' };
+
+      const ansBackward = calcNumPl(np, true);
+      const isUnique = ansForward.every((val, i) => val === ansBackward[i]);
+
+      return {
+        solvable: true,
+        unique: isUnique,
+        solution: ansForward,
+        reason: isUnique ? 'valid' : 'multiple_solutions'
+      };
+    }
+
+    // --- 盤面データのエンコード・デコード（共有機能用） ---
+    // 81文字の数字列（例: "530070000..."）を英数字データ(XXX)に変換
+    function encodeBoard(board) {
+      const str = board.join('');
+      // btoaでBase64化し、URLセーフにするために +, /, = を置換
+      return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    function decodeBoard(encodedStr) {
+      try {
+        let base64 = encodedStr.replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4) base64 += '=';
+        const str = atob(base64);
+        if (str.length !== 81) return null;
+        return str.split('').map(Number);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // --- URL共有機能 ---
+    function sharePuzzleUrl() {
+      const encoded = encodeBoard(currentQuestion);
+      const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+      
+      navigator.clipboard.writeText(url).then(() => {
+        setStatus('共有用URLをクリップボードにコピーしました！', '#198754');
+      }).catch(err => {
+        // フォールバック
+        prompt('以下のURLをコピーして共有してください:', url);
+      });
+    }
+
+    // --- 自動生成アルゴリズム ---
+    function generateBaseBoard() {
+      const board = Array(81).fill(0);
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          board[r * 9 + c] = (Math.floor(r / 3) + (r % 3) * 3 + c) % 9 + 1;
+        }
+      }
+      return board;
+    }
+
+    function shuffleBoard(board) {
+      let b = [...board];
+      const swapRows = (r1, r2) => {
+        for (let c = 0; c < 9; c++) {
+          let tmp = b[r1 * 9 + c];
+          b[r1 * 9 + c] = b[r2 * 9 + c];
+          b[r2 * 9 + c] = tmp;
+        }
+      };
+
+      const swapCols = (c1, c2) => {
+        for (let r = 0; r < 9; r++) {
+          let tmp = b[r * 9 + c1];
+          b[r * 9 + c1] = b[r * 9 + c2];
+          b[r * 9 + c2] = tmp;
+        }
+      };
+
+      for (let i = 0; i < 20; i++) {
+        let block = Math.floor(Math.random() * 3) * 3;
+        swapRows(block + Math.floor(Math.random() * 3), block + Math.floor(Math.random() * 3));
+
+        block = Math.floor(Math.random() * 3) * 3;
+        swapCols(block + Math.floor(Math.random() * 3), block + Math.floor(Math.random() * 3));
+
+        let n1 = Math.floor(Math.random() * 9) + 1;
+        let n2 = Math.floor(Math.random() * 9) + 1;
+        if (n1 !== n2) {
+          for (let k = 0; k < 81; k++) {
+            if (b[k] === n1) b[k] = n2;
+            else if (b[k] === n2) b[k] = n1;
+          }
+        }
+      }
+      return b;
+    }
+
+    function createPuzzle(targetHints) {
+      let fullBoard = shuffleBoard(generateBaseBoard());
+      let puzzle = [...fullBoard];
+
+      let indices = Array.from({length: 81}, (_, i) => i);
+      indices.sort(() => Math.random() - 0.5);
+
+      let currentHints = 81;
+
+      for (let idx of indices) {
+        if (currentHints <= targetHints) break;
+
+        let temp = puzzle[idx];
+        puzzle[idx] = 0;
+
+        let res = solveAndVerifyUnique(puzzle);
+        if (!res.unique) {
+          puzzle[idx] = temp;
+        } else {
+          currentHints--;
+        }
+      }
+
+      return { puzzle, solution: fullBoard };
+    }
+
+    // --- UI レンダリング & イベントハンドリング ---
+    function initGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      for (let i = 0; i < 81; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+
+        const row = Math.floor(i / 9);
+        if (row === 2 || row === 5) {
+          cell.classList.add('cell-row-end');
+        }
+
+        const input = document.createElement('input');
+        input.type = 'tel';
+        input.inputMode = 'numeric';
+        input.pattern = '[1-9]*';
+        input.maxLength = 1;
+        input.dataset.index = i;
+
+        input.addEventListener('input', (e) => {
+          const val = e.target.value;
+          if (!/^[1-9]$/.test(val)) {
+            e.target.value = '';
+          }
+          clearCellStatus(cell);
+          document.getElementById('status').innerText = '';
+        });
+
+        cell.appendChild(input);
+        grid.appendChild(cell);
+      }
+    }
+
+    function clearCellStatus(cell) {
+      cell.classList.remove('correct', 'wrong', 'auto-solved');
+    }
+
+    function renderPuzzle(puzzle) {
+      const cells = document.querySelectorAll('.cell');
+      puzzle.forEach((val, i) => {
+        const cell = cells[i];
+        const input = cell.querySelector('input');
+
+        cell.className = 'cell';
+        if (Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5) {
+          cell.classList.add('cell-row-end');
+        }
+
+        input.value = val !== 0 ? val : '';
+        input.disabled = val !== 0;
+
+        if (val !== 0) {
+          cell.classList.add('given');
+        } else {
+          cell.classList.add('user');
+        }
+      });
+      document.getElementById('status').innerText = '';
+    }
+
+    function generateQuestion() {
+      if (isCustomMode) exitCustomModeUI();
+
+      const hintInput = document.getElementById('hint-count');
+      let hints = parseInt(hintInput.value, 10);
+      if (isNaN(hints) || hints < 20) hints = 20;
+      if (hints > 60) hints = 60;
+
+      setStatus('問題を生成中...', '#0d6efd');
+
+      setTimeout(() => {
+        const result = createPuzzle(hints);
+        currentQuestion = result.puzzle;
+        currentSolution = result.solution;
+        renderPuzzle(currentQuestion);
+        setStatus('新しい問題を生成しました。', '#198754');
+      }, 50);
+    }
+
+    // --- 自作問題作成機能 ---
+    function toggleCustomEditMode() {
+      if (!isCustomMode) {
+        enterCustomModeUI();
+      } else {
+        exitCustomModeUI();
+        renderPuzzle(currentQuestion);
+      }
+    }
+
+    function enterCustomModeUI() {
+      isCustomMode = true;
+      document.getElementById('play-controls').style.display = 'none';
+      document.getElementById('custom-controls').style.display = 'flex';
+      document.getElementById('hint-group').style.display = 'none';
+      document.getElementById('btn-generate').style.display = 'none';
+      document.getElementById('btn-custom').innerText = '作成中止';
+
+      clearAllGrid();
+      setStatus('マスに数字を入力し「妥当性チェック＆決定」を押してください。', '#d63384');
+    }
+
+    function exitCustomModeUI() {
+      isCustomMode = false;
+      document.getElementById('play-controls').style.display = 'flex';
+      document.getElementById('custom-controls').style.display = 'none';
+      document.getElementById('hint-group').style.display = 'flex';
+      document.getElementById('btn-generate').style.display = 'inline-block';
+      document.getElementById('btn-custom').innerText = '自作問題作成';
+    }
+
+    function clearAllGrid() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        const input = cell.querySelector('input');
+        input.value = '';
+        input.disabled = false;
+        cell.className = 'cell edit-mode';
+        if (Math.floor(cell.querySelector('input').dataset.index / 9) === 2 || 
+            Math.floor(cell.querySelector('input').dataset.index / 9) === 5) {
+          cell.classList.add('cell-row-end');
+        }
+      });
+      document.getElementById('status').innerText = '';
+    }
+
+    function verifyCustomPuzzle() {
+      const cells = document.querySelectorAll('.cell');
+      let customBoard = Array(81).fill(0);
+      let givenCount = 0;
+
+      cells.forEach((cell, i) => {
+        const input = cell.querySelector('input');
+        const val = parseInt(input.value, 10);
+        if (!isNaN(val) && val >= 1 && val <= 9) {
+          customBoard[i] = val;
+          givenCount++;
+        }
+      });
+
+      if (givenCount < 17) {
+        setStatus('数字が少なすぎます(少なくとも17ヒント以上が推奨されます)。', '#dc3545');
+        return;
+      }
+
+      setStatus('妥当性を検証中...', '#0d6efd');
+
+      setTimeout(() => {
+        const res = solveAndVerifyUnique(customBoard);
+
+        if (res.reason === 'rule_violation') {
+          setStatus('エラー: 同じ行・列・3x3ブロック内に数値が重複しています。', '#dc3545');
+        } else if (res.reason === 'unsolvable') {
+          setStatus('エラー: この問題は解が存在しません（破綻しています）。', '#dc3545');
+        } else if (res.reason === 'multiple_solutions') {
+          setStatus('注意: この問題は解けますが、答えが【複数パターン】存在します。', '#ffc107');
+        } else if (res.reason === 'valid') {
+          currentQuestion = customBoard;
+          currentSolution = res.solution;
+          exitCustomModeUI();
+          renderPuzzle(currentQuestion);
+          setStatus('妥当な問題を確認しました！プレイ可能です。', '#198754');
+        }
+      }, 50);
+    }
+
+    // --- プレイ機能 ---
+    function checkAnswer() {
+      if (isCustomMode) return;
+      const cells = document.querySelectorAll('.cell');
+      let filledCount = 0;
+      let wrongCount = 0;
+
+      cells.forEach((cell, i) => {
+        if (currentQuestion[i] !== 0) return;
+
+        const input = cell.querySelector('input');
+        const userVal = parseInt(input.value, 10);
+
+        clearCellStatus(cell);
+
+        if (!isNaN(userVal)) {
+          filledCount++;
+          if (userVal === currentSolution[i]) {
+            cell.classList.add('correct');
+          } else {
+            cell.classList.add('wrong');
+            wrongCount++;
+          }
+        }
+      });
+
+      if (filledCount === 0) {
+        setStatus('数字が入力されていません。', '#333');
+      } else if (wrongCount > 0) {
+        setStatus(`間違っているマスが ${wrongCount} 箇所あります。`, '#dc3545');
+      } else if (filledCount === (81 - currentQuestion.filter(v => v !== 0).length)) {
+        setStatus('おめでとうございます！全問正解です！', '#198754');
+      } else {
+        setStatus('現在入力されている数字はすべて正しいです。', '#198754');
+      }
+    }
+
+    function solvePuzzle() {
+      if (isCustomMode) return;
+      const cells = document.querySelectorAll('.cell');
+
+      cells.forEach((cell, i) => {
+        if (currentQuestion[i] !== 0) return;
+
+        const input = cell.querySelector('input');
+        const userVal = parseInt(input.value, 10);
+
+        clearCellStatus(cell);
+
+        if (!isNaN(userVal)) {
+          if (userVal === currentSolution[i]) {
+            cell.classList.add('correct');
+          } else {
+            input.value = currentSolution[i];
+            cell.classList.add('wrong');
+          }
+        } else {
+          input.value = currentSolution[i];
+          cell.classList.add('auto-solved');
+        }
+      });
+
+      setStatus('解答を表示しました。', '#333');
+    }
+
+    function setStatus(msg, color = '#333') {
+      const statusDiv = document.getElementById('status');
+      statusDiv.innerText = msg;
+      statusDiv.style.color = color;
+    }
+
+    // 初期化（URLパラメータがある場合は読み込み、なければ自動生成）
+    window.onload = () => {
+      initGrid();
+
+      const params = new URLSearchParams(window.location.search);
+      const dataParam = params.get('data');
+
+      if (dataParam) {
+        const decodedBoard = decodeBoard(dataParam);
+        if (decodedBoard) {
+          // 読み込んだ盤面がソルバーで解けるか検証
+          const res = solveAndVerifyUnique(decodedBoard);
+          if (res.solvable) {
+            currentQuestion = decodedBoard;
+            currentSolution = res.solution;
+            renderPuzzle(currentQuestion);
+            setStatus('URLから問題を読み込みました！', '#198754');
+            return;
+          }
+        }
+        setStatus('URLの盤面データが無効または解けないため、新しく生成します。', '#dc3545');
+      }
+
+      generateQuestion();
+    };
+  </script>
+<script src="./javascripts/nas6/autoad.js" async></script>
+</body>
+</html>

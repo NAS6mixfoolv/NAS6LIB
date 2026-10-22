@@ -4,57 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
-
-    <meta property="og:title" content="数独自動生成＆解答ツール">
-    <meta property="og:description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
-    <meta property="og:type" content="website">
-  <title>数独自動生成＆解答ツール</title>
-
-
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<script>
-console.log("enter: " + location.href);
-
-window.addEventListener('error', function(e) {
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-            type: "JS Error",
-            url: location.href,
-            msg: e.message,
-            src: e.filename,
-            line: e.lineno,
-            col: e.colno
-        }, "*");
-    }
-});
-
-window.addEventListener('unhandledrejection', function(e) {
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-            type: "Promise Rejection",
-            url: location.href,
-            msg: String(e.reason)
-        }, "*");
-    }
-});
-</script>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QPTP4QSV32');
-    </script>
-
-    <meta name="description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
-
     <meta property="og:title" content="数独自動生成＆解答ツール">
     <meta property="og:description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
     <meta property="og:type" content="website">

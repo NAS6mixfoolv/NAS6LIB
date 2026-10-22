@@ -633,8 +633,11 @@ window.addEventListener('unhandledrejection', function(e) {
       let puzzle = [...fullBoard];
 
       let indices = Array.from({length: 81}, (_, i) => i);
-      indices.sort(() => Math.random() - 0.5);
-
+      for (let i = indices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+        
       let currentHints = 81;
 
       for (let idx of indices) {

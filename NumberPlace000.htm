@@ -576,23 +576,8 @@
       elm = document.getElementById('SPauthor');
       const authorParam = elm.innerText; 
 
-      let url = `${window.location.origin}${window.location.pathname}?`;
-      let bbb = false;
-      if(titleParam != "-"){
-        bbb = true;
-        url = url + `title=${titleParam}`;
-      }
-      if(authorParam != "-" && bbb){
-        url = url + "&";
-      }
-      if(authorParam != "-"){
-        bbb = true;
-        url = url + `author=${authorParam}`;
-      }
-      if(bbb){
-        url = url + "&";
-      }
-      url = url + `data=${encoded}`;
+      let url = `${window.location.origin}${window.location.pathname}`;
+      url = url + `?title=${titleParam}&author=${authorParam}&data=${encoded}`;
       
       navigator.clipboard.writeText(url).then(() => {
         setStatus('共有用URLをクリップボードにコピーしました！', '#198754');

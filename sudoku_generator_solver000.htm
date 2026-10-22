@@ -343,7 +343,7 @@ window.addEventListener('unhandledrejection', function(e) {
 <body>
 
   <h1>数独自動生成＆問題共有ツール</h1>
-
+  <div>問題：<span id="SPtitle">-</span>">　出題者：<span id="SPauthor">-</span>"></div>
   <div class="container">
     <!-- 上部操作バー -->
     <div class="controls" id="mode-controls">
@@ -884,13 +884,21 @@ window.addEventListener('unhandledrejection', function(e) {
 
       const params = new URLSearchParams(window.location.search);
       const dataParam = params.get('data');
+      const titleParam = params.get('title');
+      const authorParam = params.get('author');
+      const elm = document.getElementById('SPtitle');
+      if(titleParam) elm.innerText = titleParam; 
+      else elm.innerText = "-";
+      elm = document.getElementById('SPauthor');
+      if(authorParam) elm.innerText = authorParam; 
+      else elm.innerText = "-";
 
       if (dataParam) {
         const decodedBoard = decodeBoard(dataParam);
         if (decodedBoard) {
           // 読み込んだ盤面がソルバーで解けるか検証
           const res = solveAndVerifyUnique(decodedBoard);
-          if (res.solvable) {
+          if (res.unique) {
             currentQuestion = decodedBoard;
             currentSolution = res.solution;
             renderPuzzle(currentQuestion);

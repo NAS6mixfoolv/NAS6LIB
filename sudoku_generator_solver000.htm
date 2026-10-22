@@ -343,7 +343,7 @@ window.addEventListener('unhandledrejection', function(e) {
 <body>
 
   <h1>数独自動生成＆問題共有ツール</h1>
-  <div>問題：<span id="SPtitle">-</span>">　出題者：<span id="SPauthor">-</span>"></div>
+  <div>問題：<span id="SPtitle">-</span>　出題者：<span id="SPauthor">-</span></div>
   <div class="container">
     <!-- 上部操作バー -->
     <div class="controls" id="mode-controls">
@@ -886,7 +886,7 @@ window.addEventListener('unhandledrejection', function(e) {
       const dataParam = params.get('data');
       const titleParam = params.get('title');
       const authorParam = params.get('author');
-      const elm = document.getElementById('SPtitle');
+      let elm = document.getElementById('SPtitle');
       if(titleParam) elm.innerText = titleParam; 
       else elm.innerText = "-";
       elm = document.getElementById('SPauthor');

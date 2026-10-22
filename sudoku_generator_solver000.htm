@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
+
+    <meta property="og:title" content="数独自動生成＆解答ツール">
+    <meta property="og:description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
+    <meta property="og:type" content="website">
+  <title>数独自動生成＆解答ツール</title>
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
 <script>
 console.log("enter: " + location.href);
 
@@ -31,6 +44,14 @@ window.addEventListener('unhandledrejection', function(e) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QPTP4QSV32"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QPTP4QSV32');
+    </script>
 
     <meta name="description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
 
@@ -38,14 +59,6 @@ window.addEventListener('unhandledrejection', function(e) {
     <meta property="og:description" content="数独自動生成＆解答ツール：javascriptによる数独自動生成＆解答ツール。">
     <meta property="og:type" content="website">
   <title>数独自動生成＆解答ツール</title>
-
-
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>数独自動生成＆問題共有ツール</title>
   <style>
     :root {
       --bg-color: #f4f6f9;
@@ -87,6 +100,16 @@ window.addEventListener('unhandledrejection', function(e) {
       margin: 5px 0 10px 0;
       font-size: 20px;
       text-align: center;
+    }
+
+    .info-bar {
+      font-size: 13px;
+      margin-bottom: 5px;
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
     }
 
     .container {
@@ -269,7 +292,7 @@ window.addEventListener('unhandledrejection', function(e) {
       padding: 0;
       border-radius: 0;
       -webkit-appearance: none;
-      appearance: none; /* VS Codeの警告解消対応 */
+      appearance: none;
     }
 
     .cell.given input {
@@ -343,7 +366,12 @@ window.addEventListener('unhandledrejection', function(e) {
 <body>
 
   <h1>数独自動生成＆問題共有ツール</h1>
-  <div>問題：<span id="SPtitle">-</span>　出題者：<span id="SPauthor">-</span></div>
+  <div class="info-bar">
+    <div>問題：<span id="SPtitle">-</span></div>
+    <div>出題者：<span id="SPauthor">-</span></div>
+    <div style="color: #d63384; font-weight: bold;" id="timer-display">タイム: 00:00</div>
+  </div>
+
   <div class="container">
     <!-- 上部操作バー -->
     <div class="controls" id="mode-controls">
@@ -397,8 +425,46 @@ window.addEventListener('unhandledrejection', function(e) {
   </div>
 
   <script>
-    let StrTitle = "";
-    let StrAuthor = "";
+    // --- タイマー関連変数 ---
+    let timerStartTime = null;
+    let timerInterval = null;
+    let isTimerRunning = false;
+    let puzzleCompleted = false;
+
+    function startTimer() {
+      if (isTimerRunning || puzzleCompleted) return;
+      timerStartTime = Date.now();
+      isTimerRunning = true;
+      timerInterval = setInterval(updateTimerDisplay, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      isTimerRunning = false;
+    }
+
+    function resetTimer() {
+      stopTimer();
+      timerStartTime = null;
+      puzzleCompleted = false;
+      updateTimerDisplayManual(0);
+    }
+
+    function updateTimerDisplay() {
+      if (!timerStartTime) return;
+      const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+      updateTimerDisplayManual(elapsed);
+    }
+
+    function updateTimerDisplayManual(elapsedSeconds) {
+      const minutes = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+      const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer-display').innerText = `タイム: ${minutes}:${seconds}`;
+    }
+
     // --- C++ ソルバー移植部 ---
     const NUM = [0x001, 0x002, 0x004, 0x008, 0x010, 0x020, 0x040, 0x080, 0x100];
 
@@ -536,10 +602,8 @@ window.addEventListener('unhandledrejection', function(e) {
     }
 
     // --- 盤面データのエンコード・デコード（共有機能用） ---
-    // 81文字の数字列（例: "530070000..."）を英数字データ(XXX)に変換
     function encodeBoard(board) {
       const str = board.join('');
-      // btoaでBase64化し、URLセーフにするために +, /, = を置換
       return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
@@ -558,24 +622,11 @@ window.addEventListener('unhandledrejection', function(e) {
     // --- URL共有機能 ---
     function sharePuzzleUrl() {
       const encoded = encodeBoard(currentQuestion);
-      let url = `${window.location.origin}${window.location.pathname}?`;
-      let bbb = false;
-      if(StrTitle) {
-          url = url + `title=${StrTitle}`;
-          bbb = true;
-      }
-      if(bbb && StrAuthor) url = url + `&`;
-      if(StrAuthor){
-          url = url + `author=${StrAuthor}`;
-          bbb = true;
-      }
-      if(bbb) url = url + `&`;
-      url = url + `data=${encoded}`;
+      const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
       
       navigator.clipboard.writeText(url).then(() => {
         setStatus('共有用URLをクリップボードにコピーしました！', '#198754');
       }).catch(err => {
-        // フォールバック
         prompt('以下のURLをコピーして共有してください:', url);
       });
     }
@@ -637,7 +688,7 @@ window.addEventListener('unhandledrejection', function(e) {
           const j = Math.floor(Math.random() * (i + 1));
           [indices[i], indices[j]] = [indices[j], indices[i]];
       }
-        
+      
       let currentHints = 81;
 
       for (let idx of indices) {
@@ -682,6 +733,9 @@ window.addEventListener('unhandledrejection', function(e) {
           const val = e.target.value;
           if (!/^[1-9]$/.test(val)) {
             e.target.value = '';
+          } else {
+            // 初めて数字が入力されたときにタイマー開始
+            startTimer();
           }
           clearCellStatus(cell);
           document.getElementById('status').innerText = '';
@@ -717,6 +771,7 @@ window.addEventListener('unhandledrejection', function(e) {
         }
       });
       document.getElementById('status').innerText = '';
+      resetTimer(); // 問題描画時にタイマーリセット
     }
 
     function generateQuestion() {
@@ -782,6 +837,7 @@ window.addEventListener('unhandledrejection', function(e) {
         }
       });
       document.getElementById('status').innerText = '';
+      resetTimer();
     }
 
     function verifyCustomPuzzle() {
@@ -830,6 +886,7 @@ window.addEventListener('unhandledrejection', function(e) {
       const cells = document.querySelectorAll('.cell');
       let filledCount = 0;
       let wrongCount = 0;
+      let emptyTotal = 81 - currentQuestion.filter(v => v !== 0).length;
 
       cells.forEach((cell, i) => {
         if (currentQuestion[i] !== 0) return;
@@ -854,8 +911,14 @@ window.addEventListener('unhandledrejection', function(e) {
         setStatus('数字が入力されていません。', '#333');
       } else if (wrongCount > 0) {
         setStatus(`間違っているマスが ${wrongCount} 箇所あります。`, '#dc3545');
-      } else if (filledCount === (81 - currentQuestion.filter(v => v !== 0).length)) {
-        setStatus('おめでとうございます！全問正解です！', '#198754');
+      } else if (filledCount === emptyTotal) {
+        // すべて埋まっていて正解の場合：タイマー停止
+        stopTimer();
+        puzzleCompleted = true;
+        const elapsed = timerStartTime ? Math.floor((Date.now() - timerStartTime) / 1000) : 0;
+        const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+        const seconds = (elapsed % 60).toString().padStart(2, '0');
+        setStatus(`おめでとうございます！全問正解です！ (タイム: ${minutes}:${seconds})`, '#198754');
       } else {
         setStatus('現在入力されている数字はすべて正しいです。', '#198754');
       }
@@ -863,6 +926,8 @@ window.addEventListener('unhandledrejection', function(e) {
 
     function solvePuzzle() {
       if (isCustomMode) return;
+      stopTimer();
+      puzzleCompleted = true;
       const cells = document.querySelectorAll('.cell');
 
       cells.forEach((cell, i) => {
@@ -902,9 +967,7 @@ window.addEventListener('unhandledrejection', function(e) {
       const params = new URLSearchParams(window.location.search);
       const dataParam = params.get('data');
       const titleParam = params.get('title');
-      StrTitle = String(titleParam);  
       const authorParam = params.get('author');
-      StrAuthor = String(authorParam);  
       let elm = document.getElementById('SPtitle');
       if(titleParam) elm.innerText = titleParam; 
       else elm.innerText = "-";
@@ -915,7 +978,6 @@ window.addEventListener('unhandledrejection', function(e) {
       if (dataParam) {
         const decodedBoard = decodeBoard(dataParam);
         if (decodedBoard) {
-          // 読み込んだ盤面がソルバーで解けるか検証
           const res = solveAndVerifyUnique(decodedBoard);
           if (res.unique) {
             currentQuestion = decodedBoard;

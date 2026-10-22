@@ -571,7 +571,14 @@
     // --- URL共有機能 ---
     function sharePuzzleUrl() {
       const encoded = encodeBoard(currentQuestion);
-      const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+
+      let elm = document.getElementById('SPtitle');
+      const titleParam = elm.innerText; 
+      elm = document.getElementById('SPauthor');
+      const authorParam = elm.innerText; 
+
+      let url = `${window.location.origin}${window.location.pathname}`;
+      url = url + `?title=${titleParam}&author=${authorParam}&data=${encoded}`;
       
       navigator.clipboard.writeText(url).then(() => {
         setStatus('共有用URLをクリップボードにコピーしました！', '#198754');

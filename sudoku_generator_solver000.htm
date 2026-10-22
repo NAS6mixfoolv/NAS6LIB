@@ -397,6 +397,8 @@ window.addEventListener('unhandledrejection', function(e) {
   </div>
 
   <script>
+    let StrTitle = "";
+    let StrAuthor = "";
     // --- C++ ソルバー移植部 ---
     const NUM = [0x001, 0x002, 0x004, 0x008, 0x010, 0x020, 0x040, 0x080, 0x100];
 
@@ -556,7 +558,19 @@ window.addEventListener('unhandledrejection', function(e) {
     // --- URL共有機能 ---
     function sharePuzzleUrl() {
       const encoded = encodeBoard(currentQuestion);
-      const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+      let url = `${window.location.origin}${window.location.pathname}?`;
+      let bbb = false;
+      if(StrTitle) {
+          url = url + `title=${StrTitle}`;
+          bbb = true;
+      }
+      if(bbb && StrAuthor) url = url + `&`;
+      if(StrAuthor){
+          url = url + `author=${StrAuthor}`;
+          bbb = true;
+      }
+      if(bbb) url = url + `&`;
+      url = url + `data=${encoded}`;
       
       navigator.clipboard.writeText(url).then(() => {
         setStatus('共有用URLをクリップボードにコピーしました！', '#198754');
@@ -885,7 +899,9 @@ window.addEventListener('unhandledrejection', function(e) {
       const params = new URLSearchParams(window.location.search);
       const dataParam = params.get('data');
       const titleParam = params.get('title');
+      StrTitle = String(titleParam);  
       const authorParam = params.get('author');
+      StrAuthor = String(AuthorParam);  
       let elm = document.getElementById('SPtitle');
       if(titleParam) elm.innerText = titleParam; 
       else elm.innerText = "-";
